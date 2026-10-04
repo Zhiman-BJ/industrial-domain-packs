@@ -17,7 +17,7 @@ The migration imports only committed public source: Harness `371b011b41417d5cb0c
 ## Consumers
 
 ```sh
-npm install --ignore-scripts 'git+https://github.com/Zhiman-BJ/industrial-domain-packs.git#<full-reviewed-commit>'
+npm install --ignore-scripts 'https://codeload.github.com/Zhiman-BJ/industrial-domain-packs/tar.gz/<full-reviewed-commit>'
 ```
 
 The package `@zhiman-bj/industrial-domain-packs` exports `catalog`, `identity`, `getSandboxProfile()` and integrity checks. `content-lock.json` identifies maintained code and metadata. Pin the full commit in both package.json and package-lock.json. No npm registry publication is required for this Git dependency.
