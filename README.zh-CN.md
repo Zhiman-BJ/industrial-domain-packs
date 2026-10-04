@@ -12,7 +12,7 @@
 | FreeCAD | 公开 PR29 已提交的 runtime、参数化模型校验器、原生代码、Skill | 沿用 macOS arm64 验收记录；Linux/Windows 未验收 |
 | CAD guidance | AutoCAD macOS、ezdxf、intent-loop Skills | 仅 Skills，没有远端执行 profile |
 
-导入来自 Harness 提交 371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e 和 FreeCAD PR29 提交 62510b22b47803e0841825ec1c2b34fae48b3b15。逐文件来源与哈希见 [迁移记录](provenance/domain-migration.json)。本地仍在修改的工作文件不纳入本次迁移。
+导入来自 Harness 提交 371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e 和 FreeCAD PR29 提交 62510b22b47803e0841825ec1c2b34fae48b3b15。逐文件来源与哈希见 [迁移记录](provenance/domain-migration.json)。本地仍在修改的工作文件不纳入本次迁移。Pack 子目录 README 与 harness-pack.json 保留原仓库／bootstrap 的安装说明，其中可能引用 Harness 专属脚本或先前计划；当前状态以本页、pack.json 和验收记录为准，旧消费端元数据待 Harness 迁移时再生成。
 
 remote 直接依赖 npm 包名 @zhiman-bj/industrial-domain-packs 对应的 Git 提交。它读取 Pack 提供的 descriptor、验证器、执行入口、证据导出器和 Dockerfile，不再维护独立 Chip runner。沙箱执行前必须与协调器核对内容身份；身份随能力快照和任务保存。
 

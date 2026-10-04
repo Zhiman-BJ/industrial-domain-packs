@@ -12,7 +12,7 @@ Maintained public source for Industrial Harness domains. Local and remote consum
 | FreeCAD | Committed public PR29 runtime, bounded recipe validator, native code and Skill | Inherited macOS arm64 qualification; Linux/Windows are not qualified |
 | CAD guidance | AutoCAD macOS, ezdxf and intent-loop Skills | Skill-only; no remote execution profile |
 
-The migration imports only committed public source: Harness `371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e` and FreeCAD PR29 `62510b22b47803e0841825ec1c2b34fae48b3b15`. Exact imports are recorded in [provenance](provenance/domain-migration.json). Existing uncommitted work and private PCB actor resources are excluded.
+The migration imports only committed public source: Harness `371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e` and FreeCAD PR29 `62510b22b47803e0841825ec1c2b34fae48b3b15`. Exact imports are recorded in [provenance](provenance/domain-migration.json). Existing uncommitted work and private PCB actor resources are excluded. Pack-local READMEs and harness-pack.json preserve upstream/bootstrap setup notes, including references to Harness-only scripts and earlier plans. Current availability and consumer instructions are defined by this README, pack.json and docs/migration-validation.md; legacy consumer metadata remains reference material until the Harness consumer transition.
 
 ## Consumers
 
