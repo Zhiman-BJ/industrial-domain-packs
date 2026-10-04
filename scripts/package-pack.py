@@ -26,7 +26,7 @@ def package(pack, output):
     metadata = json.loads(git("show", f"{commit}:{prefix}pack.json"))
     entries = []
     hashes = []
-    for record in git("ls-tree", "-r", "-z", commit, "--", prefix).split(b"\0"):
+    for record in git("ls-tree", "-r", "-z", commit, "--", prefix, "lib", "content-lock.json", "package.json").split(b"\0"):
         if not record:
             continue
         identity, name = record.split(b"\t", 1)
@@ -34,13 +34,13 @@ def package(pack, output):
         path = name.decode()
         if kind != "blob" or mode not in {"100644", "100755"}:
             raise ValueError(f"Pack sources must be regular files: {path}")
-        relative = path[len(prefix):]
+        relative = path[len(prefix):] if path.startswith(prefix) else "repository-shared/" + path
         data = git("cat-file", "blob", oid)
         entries.append((f"{pack}-pack/{relative}", data, 0o755 if mode == "100755" else 0o644))
         hashes.append({"path": relative, "sha256": hashlib.sha256(data).hexdigest(), "sizeBytes": len(data)})
     if not entries:
         raise ValueError("No committed Pack files found.")
-    for path in ("LICENSE", "THIRD_PARTY_NOTICES.md", "licenses/industrial-agent-harness.MIT", "provenance/chip-bootstrap.json"):
+    for path in ("LICENSE", "THIRD_PARTY_NOTICES.md", "licenses/industrial-agent-harness.MIT", "provenance/chip-bootstrap.json", "provenance/domain-migration.json"):
         entries.append((f"{pack}-pack/repository-notices/{path}", git("show", f"{commit}:{path}"), 0o644))
     manifest = {"schemaVersion": 1, "kind": "source-only", "packId": metadata["id"], "sourceVersion": metadata["sourceVersion"], "sourceCommit": commit, "files": hashes}
     entries.append((f"{pack}-pack/source-manifest.json", (json.dumps(manifest, indent=2) + "\n").encode(), 0o644))
@@ -63,7 +63,7 @@ def package(pack, output):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("pack", choices=["chip"])
+    parser.add_argument("pack", choices=["chip", "godot", "pcb", "freecad", "cad"])
     parser.add_argument("--output", type=Path, default=ROOT / "dist")
     args = parser.parse_args()
     print(json.dumps(package(args.pack, args.output)))

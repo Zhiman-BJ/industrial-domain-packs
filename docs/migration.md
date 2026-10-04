@@ -15,6 +15,6 @@ Pack publishing moves from Harness's `package-chip.cjs` / `release-chip.yml` to 
 
 The imported full EDA recipe and Core adapter are baseline source, not evidence of a new native or Kubernetes qualification. Current source tests include synthetic contract fixtures. Real native success, assertion failure, compile failure, timeout, cancellation, version rejection and restart recovery must be exercised before releasing the shared RTL profile.
 
-Chip is the first Pack. PCB, Godot and CAD are planned additions after their source ownership, dependency and qualification boundaries are established. Private PCB actor code, licensed assets and customer data are not imported as part of this bootstrap.
+Chip, Godot, public PCB bridges, FreeCAD public PR29 and CAD guidance have been imported. Public import paths and hashes are recorded; private PCB actor code remains an external dependency. The shared Chip profile is consumed by the remote service with an exact Git dependency. Linux native support for other domains remains a separate qualification gate.
 
 Linux sandbox qualification and protected Linux Agent qualification are separate gates. The lightweight CLI connection test on a server does not qualify a full Kimi industrial session. No large-scale concurrency or additional worker pool is introduced by this migration.

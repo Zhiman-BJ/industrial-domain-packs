@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "godot-pack",
+  "domain": "godot",
+  "sourceVersion": "0.1.0",
+  "status": "maintained-source",
+  "skills": [
+    "skills/godot-game-develop/SKILL.md",
+    "skills/godot-game-inspect/SKILL.md"
+  ],
+  "profiles": [],
+  "runtime": {
+    "entry": "src/runtime.cjs",
+    "gateway": "bridge/godot-gateway.cjs"
+  },
+  "externalDependencies": [
+    "Godot 4 executable"
+  ],
+  "remoteStatus": "not-qualified"
+}

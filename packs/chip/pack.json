@@ -3,22 +3,57 @@
   "id": "chip-pack",
   "domain": "chip",
   "sourceVersion": "0.6.1",
-  "status": "source-bootstrap",
-  "runtime": {
-    "entry": "runtime/index.cjs",
-    "toolId": "chip.rtl.verify",
-    "toolVersion": "0.6.1-core.1"
-  },
+  "status": "maintained-source",
+  "skills": [
+    "skills/chip-eda-operate/SKILL.md",
+    "skills/chip-layout-inspect/SKILL.md",
+    "skills/chip-netlist-inspect/SKILL.md",
+    "skills/chip-waveform-inspect/SKILL.md"
+  ],
   "profiles": [
     {
       "id": "eda-full",
       "platform": "linux/amd64",
       "recipe": "eda-harness/Dockerfile.tools",
-      "status": "recipe-only"
+      "status": "inherited-recipe"
     },
     {
       "id": "rtl-cpu",
-      "status": "planned"
+      "platform": "linux/amd64",
+      "recipe": "packs/chip/images/Dockerfile.rtl-cpu",
+      "status": "qualification-pending",
+      "entry": [
+        "python3",
+        "/opt/domain-packs/packs/chip/runtime/native-profile.py"
+      ],
+      "exportEntry": [
+        "python3",
+        "/opt/domain-packs/packs/chip/runtime/export.py"
+      ],
+      "inputProfile": "eda.yaml direct-source traced simulation; fixed resources; no execution overrides",
+      "artifacts": [
+        [
+          "tool.log",
+          "log.tool",
+          2097152
+        ],
+        [
+          "report.json",
+          "report.simulation",
+          65536
+        ],
+        [
+          "wave.vcd",
+          "waveform.vcd",
+          8388608
+        ]
+      ],
+      "canonicalEntry": "packs/chip/runtime/verifier.cjs"
     }
-  ]
+  ],
+  "runtime": {
+    "entry": "runtime/index.cjs",
+    "toolId": "chip.rtl.verify",
+    "toolVersion": "0.6.1-core.2"
+  }
 }

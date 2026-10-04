@@ -1,0 +1,691 @@
+{
+  "schemaVersion": 1,
+  "repository": "https://github.com/Zhiman-BJ/industrial-agent-harness",
+  "note": "Imported committed public source. Hashes record imports before maintained layout adaptations. Private PCB actor and uncommitted working files excluded.",
+  "files": [
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/Dockerfile.tools",
+      "destination": "packs/chip/eda-harness/Dockerfile.tools",
+      "sha256": "52f7d46bd3acf81a7a56e529c6f48d0e7e5db68cb4a8cb9fbf7a6dae67e6e2d6"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/LICENSE",
+      "destination": "packs/chip/eda-harness/LICENSE",
+      "sha256": "ae88344cbfe45db1f7e8dd301adf8c7152321397c1f1e2dd0712b62642eec681"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/docs/project.schema.json",
+      "destination": "packs/chip/eda-harness/docs/project.schema.json",
+      "sha256": "d85e5072191956b158d06bf54aeabacc990e58897cf757a19b752b9304f2d700"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/docs/runtime-reliability.md",
+      "destination": "packs/chip/eda-harness/docs/runtime-reliability.md",
+      "sha256": "ddcd4aa488619e191c1b94f4c64c8a9351b376cf7bb7e6e0c785a57e57dd6a2d"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/docs/tool-capabilities.json",
+      "destination": "packs/chip/eda-harness/docs/tool-capabilities.json",
+      "sha256": "846ae1ecead3d9c56c32f2cfd0f541cd1e7d7fd096d4e05bee0d7bb8ab345054"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/examples/counter/eda.yaml",
+      "destination": "packs/chip/eda-harness/examples/counter/eda.yaml",
+      "sha256": "9cb39f4b4208789103bc82b42ec0ae22ad7565d0fff3ecebc225d3ec4eec0e0a"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/examples/counter/rtl/counter.sv",
+      "destination": "packs/chip/eda-harness/examples/counter/rtl/counter.sv",
+      "sha256": "c0d6951d77e0f698d2fd20bf22198ecc8229a14b8a8bdefb0ba2576f23f6e939"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/examples/nangate45/scripts/streamout.py",
+      "destination": "packs/chip/eda-harness/examples/nangate45/scripts/streamout.py",
+      "sha256": "9b234579a3bd17e29dbe48c5da3b798b748f319826a68c37b025c28af95b8c85"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/examples/verification/README.md",
+      "destination": "packs/chip/eda-harness/examples/verification/README.md",
+      "sha256": "d4b64d1725b4ecbc41978134b028f4da9f768c5e891d336942abc4f356c41b11"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/examples/verification/eda.yaml",
+      "destination": "packs/chip/eda-harness/examples/verification/eda.yaml",
+      "sha256": "39435913512b549286a716ac5fd1f40a174ed5899746b4caf5760d99841d4ef6"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/examples/verification/layout/device.mag",
+      "destination": "packs/chip/eda-harness/examples/verification/layout/device.mag",
+      "sha256": "443e0192919bf45ba5a08bc74ae548242dd996625bb68d65326efc5a47196162"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/examples/verification/reference/device.spice",
+      "destination": "packs/chip/eda-harness/examples/verification/reference/device.spice",
+      "sha256": "172d5d38449cc4d822535dd00128aea52588273a78c12ba22e0705cf1165cc0f"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/examples/verification/scripts/compare.tcl",
+      "destination": "packs/chip/eda-harness/examples/verification/scripts/compare.tcl",
+      "sha256": "5cb167ae9d7e515764267f4ad44042e82178f4e40b8f8c2425891fe7e5bd73b2"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/examples/verification/scripts/extract.tcl",
+      "destination": "packs/chip/eda-harness/examples/verification/scripts/extract.tcl",
+      "sha256": "d9b8c189102c839ce4c71a64853b426c96308d79de5a742f475b772c000f7880"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/examples/verification/scripts/wave.sh",
+      "destination": "packs/chip/eda-harness/examples/verification/scripts/wave.sh",
+      "sha256": "0a05a40ec4492d6c426f1d6f1dd80bc634d8752aa9c657575baf2829c573f526"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/examples/verification/scripts/wave.tcl",
+      "destination": "packs/chip/eda-harness/examples/verification/scripts/wave.tcl",
+      "sha256": "25dca2f68ba18553177f550574b6ea0269f88a65589b55a9f33a1a95502058b0"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/examples/verification/waves/counter.vcd",
+      "destination": "packs/chip/eda-harness/examples/verification/waves/counter.vcd",
+      "sha256": "e61a2816bb88e4f133eb2f47b999adea8e9367fa09a6f18a901da9c830f8f3c3"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/pyproject.toml",
+      "destination": "packs/chip/eda-harness/pyproject.toml",
+      "sha256": "b5e5b3a263b0a265b1844777a557c353c139c5bfdc16143d210603420f242a4a"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/skills/eda-core/SKILL.md",
+      "destination": "packs/chip/eda-harness/skills/eda-core/SKILL.md",
+      "sha256": "5c3a56ee4c8ee7d8500c8c9a18ca45c0bd882f3b85cea82a190aa17d5d280b97"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/src/eda_harness/__init__.py",
+      "destination": "packs/chip/eda-harness/src/eda_harness/__init__.py",
+      "sha256": "7f207da0d4b41a14765e56bd061b9a6d924d60a773ee0330ba7e2494f27007d9"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/src/eda_harness/cli.py",
+      "destination": "packs/chip/eda-harness/src/eda_harness/cli.py",
+      "sha256": "4fab783b642857399a68fd8e0b4aa683270e40674cc8718ba079f4763a2cb454"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/src/eda_harness/core/__init__.py",
+      "destination": "packs/chip/eda-harness/src/eda_harness/core/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/src/eda_harness/core/acceptance.py",
+      "destination": "packs/chip/eda-harness/src/eda_harness/core/acceptance.py",
+      "sha256": "d0dd52b886a8bdc7c8d740ef34677feca1d70a05849351338cb21eac163355ea"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/src/eda_harness/core/context.py",
+      "destination": "packs/chip/eda-harness/src/eda_harness/core/context.py",
+      "sha256": "e9a684bc61fa65bca487e4575841b997d0c9e9eb6c4f8253c88794c3263e7912"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/src/eda_harness/core/environment.py",
+      "destination": "packs/chip/eda-harness/src/eda_harness/core/environment.py",
+      "sha256": "e8f2082932b085d819491a74d8170265d06ded9835443bda13557d9091675ddc"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/src/eda_harness/core/initialization.py",
+      "destination": "packs/chip/eda-harness/src/eda_harness/core/initialization.py",
+      "sha256": "1fe12f5a9bc6ce62acb26dc61d98fc87d63b1f6b21d19701727a5fc83a5f307a"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/src/eda_harness/core/models.py",
+      "destination": "packs/chip/eda-harness/src/eda_harness/core/models.py",
+      "sha256": "9e97d81522df461fa73272bf4f1819385e12946ec483e1ec18449badcad36544"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/src/eda_harness/core/parameters.py",
+      "destination": "packs/chip/eda-harness/src/eda_harness/core/parameters.py",
+      "sha256": "0d8a00f90f2c970437d3562e914a5b9dc611a5b35aac1e5c1815066bb1de913b"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/src/eda_harness/core/service.py",
+      "destination": "packs/chip/eda-harness/src/eda_harness/core/service.py",
+      "sha256": "c6cdaf77089704d53b18baf02cafb80cbee163a133367c76447aa57fe3e9e178"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/src/eda_harness/core/store.py",
+      "destination": "packs/chip/eda-harness/src/eda_harness/core/store.py",
+      "sha256": "9dbd924036d6ba4b48d1656e1017b64d4d5047aa696718e8154970aa49761c4e"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/src/eda_harness/core/workflow.py",
+      "destination": "packs/chip/eda-harness/src/eda_harness/core/workflow.py",
+      "sha256": "b3685de140a4dedce62b249f62a768a51df40ebe635ee742bffe29a1ff31485d"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/src/eda_harness/core/workspace.py",
+      "destination": "packs/chip/eda-harness/src/eda_harness/core/workspace.py",
+      "sha256": "334304c967448643434cffdecb72f3cc39602c6d1a19faa27728513713380d80"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/src/eda_harness/dependency_locks/build.txt",
+      "destination": "packs/chip/eda-harness/src/eda_harness/dependency_locks/build.txt",
+      "sha256": "f414ac60a696061f1080ee2b0e2f067dcadb3314ff5dbaee2489bd14c225ab8d"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/src/eda_harness/dependency_locks/runtime.txt",
+      "destination": "packs/chip/eda-harness/src/eda_harness/dependency_locks/runtime.txt",
+      "sha256": "7490b29ab361c86a1565d1d6bfd9443dd4eacbc3a74b5869e846d938b48fb051"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/src/eda_harness/netlist_viewer.py",
+      "destination": "packs/chip/eda-harness/src/eda_harness/netlist_viewer.py",
+      "sha256": "cbedfa79585ad2dd806298fdc3eb3cd92d8d07713df9364c6d995b0f376e2b5d"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/src/eda_harness/plugins/__init__.py",
+      "destination": "packs/chip/eda-harness/src/eda_harness/plugins/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/src/eda_harness/plugins/advanced.py",
+      "destination": "packs/chip/eda-harness/src/eda_harness/plugins/advanced.py",
+      "sha256": "7b406399f076519af08b64c7ae4a3d13d2fa1ed25293e76d17e9316bdb5849fa"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/src/eda_harness/plugins/equivalence.py",
+      "destination": "packs/chip/eda-harness/src/eda_harness/plugins/equivalence.py",
+      "sha256": "027b5a570d6224a45c23d4209081808c2fed1ca503e862fc37845662b7d9c63f"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/src/eda_harness/plugins/klayout_streamout.py",
+      "destination": "packs/chip/eda-harness/src/eda_harness/plugins/klayout_streamout.py",
+      "sha256": "536fe0cd75daae19d8bf121fba4cd947f37edbbb1340a9aa3283682f6263004c"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/src/eda_harness/plugins/semantic.py",
+      "destination": "packs/chip/eda-harness/src/eda_harness/plugins/semantic.py",
+      "sha256": "4094a79c1592026b8a333aecfa3071662351eefac26cbbc059f740eb6a0524ea"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/src/eda_harness/plugins/spice_reference.py",
+      "destination": "packs/chip/eda-harness/src/eda_harness/plugins/spice_reference.py",
+      "sha256": "3c5a77bb81419dbfa92597b441679e263238f8f0df658b1de3dbd51e8d223e2f"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/src/eda_harness/plugins/tools.py",
+      "destination": "packs/chip/eda-harness/src/eda_harness/plugins/tools.py",
+      "sha256": "22ce1e721f47abaadeafdcf04f85e6d3a3e207f661764d465bbe73fd01e8c83e"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/src/eda_harness/runtimes/__init__.py",
+      "destination": "packs/chip/eda-harness/src/eda_harness/runtimes/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/src/eda_harness/runtimes/capabilities.py",
+      "destination": "packs/chip/eda-harness/src/eda_harness/runtimes/capabilities.py",
+      "sha256": "8d66c047ecef010534ce5d4fc7db3f74a5a6af356f18dbe8e4126a423144b52d"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/src/eda_harness/runtimes/diagnostics.py",
+      "destination": "packs/chip/eda-harness/src/eda_harness/runtimes/diagnostics.py",
+      "sha256": "8abe8fb72032e2ce5a38401228fdda7392d54e3b0df73fc595cfd9c29a54d2e6"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/src/eda_harness/runtimes/execution.py",
+      "destination": "packs/chip/eda-harness/src/eda_harness/runtimes/execution.py",
+      "sha256": "5a9796a99267deb7ef4bcf39e6f9359933912efbdad9c912b00e438314f1c170"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/src/eda_harness/runtimes/resources.py",
+      "destination": "packs/chip/eda-harness/src/eda_harness/runtimes/resources.py",
+      "sha256": "b829a779d8e6f4b5601d2f3dc6535962d26c3a4e21bcefab7c83f69d0299213f"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/src/eda_harness/server/__init__.py",
+      "destination": "packs/chip/eda-harness/src/eda_harness/server/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/src/eda_harness/server/identity.py",
+      "destination": "packs/chip/eda-harness/src/eda_harness/server/identity.py",
+      "sha256": "906155302f57d4182fe9a27f85dffc385afc3bc2d590fa82a1dfbd27fcb63e93"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/src/eda_harness/server/mcp.py",
+      "destination": "packs/chip/eda-harness/src/eda_harness/server/mcp.py",
+      "sha256": "90ff72b186909361379fd3a485ba08e529340b9ef5468373c395b12ce5273dad"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/src/eda_harness/server/tool-guide.md",
+      "destination": "packs/chip/eda-harness/src/eda_harness/server/tool-guide.md",
+      "sha256": "093e5d3f6cc76bf0344d0d9da9db2c56378071f9a7b1f2fe03237fe0d0ea83da"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/src/eda_harness/tool_inventory.py",
+      "destination": "packs/chip/eda-harness/src/eda_harness/tool_inventory.py",
+      "sha256": "82612b8b6fadcc98ad2ea78c173b94324330293d33049b52e653e9ea00688d48"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/src/eda_harness/viewers.py",
+      "destination": "packs/chip/eda-harness/src/eda_harness/viewers.py",
+      "sha256": "c4b768c713ec3c3402c004a425eb3345c914adba6b59b825364a6a76ef098b22"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/src/eda_harness/worker.py",
+      "destination": "packs/chip/eda-harness/src/eda_harness/worker.py",
+      "sha256": "150ad18818dc6ed5384b02475709dafd1cdcbbd97d14e80c6b76d47b3ec1884d"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/src/eda_harness/yosys_viewer.py",
+      "destination": "packs/chip/eda-harness/src/eda_harness/yosys_viewer.py",
+      "sha256": "67664a2c9bec456cc67457f470d8a912dd9c89d42d6b46eb4855dcac20b9ab3e"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/tests/conftest.py",
+      "destination": "packs/chip/eda-harness/tests/conftest.py",
+      "sha256": "43b6061d4064e2873b999a944bc5b0bfd684b7298da03fa1bebf173c1b721f77"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/tests/test_equivalence_adapter.py",
+      "destination": "packs/chip/eda-harness/tests/test_equivalence_adapter.py",
+      "sha256": "4313452f5c9747264299ba66a994b2374aea5db4a7c8f7225f987900428df9c2"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/tests/test_orfs_lec.py",
+      "destination": "packs/chip/eda-harness/tests/test_orfs_lec.py",
+      "sha256": "f0c396aef9084c76460712a55fbcebfc8d9dd0f3f5ed7aa82ca480dad6b94383"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/tests/test_resource_admission.py",
+      "destination": "packs/chip/eda-harness/tests/test_resource_admission.py",
+      "sha256": "4dfeb50239e413c2cb608f67590243e07226961fad090a0ceaf29267685eaaa3"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/tests/test_runtime_cleanup.py",
+      "destination": "packs/chip/eda-harness/tests/test_runtime_cleanup.py",
+      "sha256": "fa8976cae57a2d131563daccda63962a5a2c2d0ae7c4febcedf583d63b096451"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/tests/test_runtime_native.py",
+      "destination": "packs/chip/eda-harness/tests/test_runtime_native.py",
+      "sha256": "0760435e6e3a94e41658308b65f66ca2efb6677b73da0dec971c74041df19bfb"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/tools/gtkwave",
+      "destination": "packs/chip/eda-harness/tools/gtkwave",
+      "sha256": "d1780406ec105e21f326083ecd7089937335b315d8a925aa07cdfe973bcdefcc"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/tools/inventory.py",
+      "destination": "packs/chip/eda-harness/tools/inventory.py",
+      "sha256": "b310a24ae26ed8ec506a78f9082d1fcb80e22f378a122ca1daf457b720333522"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/tools/netlist-viewer/package-lock.json",
+      "destination": "packs/chip/eda-harness/tools/netlist-viewer/package-lock.json",
+      "sha256": "5ff63312eaebca5e03095e52cdae0ea1ad2c3c8b488c4315d54de031dd9878c5"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/tools/netlist-viewer/package.json",
+      "destination": "packs/chip/eda-harness/tools/netlist-viewer/package.json",
+      "sha256": "6e83531c6971b9d5dbc171e09f0e856681039a324a4ce099e4c710cc8132fed8"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/tools/orfs-lec.py",
+      "destination": "packs/chip/eda-harness/tools/orfs-lec.py",
+      "sha256": "54579de57f6c19a82b9204f80938bdfd05702e6d4363670595c75bd65ad53904"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/tools/patch-orfs.py",
+      "destination": "packs/chip/eda-harness/tools/patch-orfs.py",
+      "sha256": "350ca4b38c45f776006156a20fa7008fec1cb7e093b2078e1a2cb0d5a42e8aa6"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/tools/resource-wrapper.py",
+      "destination": "packs/chip/eda-harness/tools/resource-wrapper.py",
+      "sha256": "7b105f54de9462bc407da49a746e3d012cb914aaa629ebe4d1433d4a1dc76f0c"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/tools/smoke.py",
+      "destination": "packs/chip/eda-harness/tools/smoke.py",
+      "sha256": "083648f73fb65a70a936b475912583c0986c277b2d3759c3399416cbc2ac2411"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/tools/test_contract.py",
+      "destination": "packs/chip/eda-harness/tools/test_contract.py",
+      "sha256": "f6c0bbd3f293fbdb96b2855a01dce9b2797ab8d161aeeb18f2c48cde988f3d85"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/tools/validate.py",
+      "destination": "packs/chip/eda-harness/tools/validate.py",
+      "sha256": "6bfe8ff830381ae97620b46ccd27f7f16c8bc7494cffa96d5e60864ca9ebacda"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/tools/verification_smoke.py",
+      "destination": "packs/chip/eda-harness/tools/verification_smoke.py",
+      "sha256": "fb50a0d5c1906da132b5207c95de08b3a616ca59c52371e523d61258f0606700"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/eda-harness/uv.lock",
+      "destination": "packs/chip/eda-harness/uv.lock",
+      "sha256": "5db5ea00eb8ee1889bd1f482744c189c6764b227d10539382239f8c0324858d1"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/runtime/bridge.py",
+      "destination": "packs/chip/runtime/bridge.py",
+      "sha256": "3f9a42c3e6bf8ad9296e5b10a7bdcd48cb5e34d31b62c8808fe8b26b32de0dfe"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/runtime/index.cjs",
+      "destination": "packs/chip/runtime/index.cjs",
+      "sha256": "6efc4f8355a4c5acc2c88cccc38b0c01c8219fd65fb84121b576624db7440fa1"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/scripts/mcp-smoke.py",
+      "destination": "packs/chip/scripts/mcp-smoke.py",
+      "sha256": "18e64b1ba3d105b02a8e8c08a0d689d68b0bcb0d44154c15a7a85e1f7bd818d9"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/chip/PROVENANCE.md",
+      "destination": "packs/chip/UPSTREAM_PROVENANCE.md",
+      "sha256": "51ea883bbbe9dd4dcf38470a88c5be8d41a2f88b94a0257c391d14a4dc75f216"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "packages/domain-skills/packs/chip-pack.json",
+      "destination": "packs/chip/harness-pack.json",
+      "sha256": "c38133a1b179934555e45222e387b02cb3ef777f204e13cebe07784c70d7a99c"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "LICENSE",
+      "destination": "licenses/industrial-agent-harness.MIT",
+      "sha256": "4a45426c620d8f7faf84e0ee9ed42730725a4a4df93ae59ef8c84149767a64f0"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/godot/README.md",
+      "destination": "packs/godot/README.md",
+      "sha256": "ac0f4e14a678d7743dbef7daa45e5fef34f0ef5a8ffed8d499b883e28096ef98"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/godot/src/inspect_scene.gd",
+      "destination": "packs/godot/src/inspect_scene.gd",
+      "sha256": "89a4fc583b90af71d697692a87c32c1daff635a4453b6cd354740c9414575201"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/godot/src/runtime.cjs",
+      "destination": "packs/godot/src/runtime.cjs",
+      "sha256": "e6977d490ac5ac85753693a8af4db42fc58ce20f976259fa0d9ff8e220032074"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "packages/domain-skills/packs/godot-local.json",
+      "destination": "packs/godot/harness-pack.json",
+      "sha256": "9b47d555d1125b16d702cf391f5cb1ba623f6bf18d7133920c34d803184aedfe"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/pcb/Dockerfile.local-dev",
+      "destination": "packs/pcb/Dockerfile.local-dev",
+      "sha256": "fb8fa2272b85ca5ccf518fd1db6af49b135f1310b4d2786bf2f0da65bcbc8b9e"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/pcb/PROVENANCE.md",
+      "destination": "packs/pcb/PROVENANCE.md",
+      "sha256": "ce86c74b1233dfd2e1bb826880a9deb6939c1b9525fb06652f7c469d542d6b80"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/pcb/README.md",
+      "destination": "packs/pcb/README.md",
+      "sha256": "93e8bf71c5b8225f7f46c5db99979aff0b1a7be9c246989629a1d4faa2c4c3ba"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/pcb/pyproject.toml",
+      "destination": "packs/pcb/pyproject.toml",
+      "sha256": "baa7b9c41b2b57b7e19898fa7138828d1d1401b992dd859e6c5a922a1e793951"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "domain-packs/pcb/uv.lock",
+      "destination": "packs/pcb/uv.lock",
+      "sha256": "d4e08ee289d8ee8ebb7a8d9672f6e62efa9a6bd50bf70efa7e06627fc2e8c282"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "packages/domain-skills/packs/pcb-bench.json",
+      "destination": "packs/pcb/harness-pack.json",
+      "sha256": "1591b3e14a35ddd06bbba8abb72f61932d5f61270d132ffdbbaa546cc94ae474"
+    },
+    {
+      "sourceCommit": "62510b22b47803e0841825ec1c2b34fae48b3b15",
+      "source": "domain-packs/freecad/README.md",
+      "destination": "packs/freecad/README.md",
+      "sha256": "e58d1c60ea7be01c460dd0a0bcf436115a1bffdd5eac1d71b5aeb0120326bd80"
+    },
+    {
+      "sourceCommit": "62510b22b47803e0841825ec1c2b34fae48b3b15",
+      "source": "domain-packs/freecad/runtime/index.cjs",
+      "destination": "packs/freecad/runtime/index.cjs",
+      "sha256": "c73027521d2d70b449231b1b68be46f8473bcdd433363b7612d7e89c1f380fd4"
+    },
+    {
+      "sourceCommit": "62510b22b47803e0841825ec1c2b34fae48b3b15",
+      "source": "domain-packs/freecad/runtime/native.py",
+      "destination": "packs/freecad/runtime/native.py",
+      "sha256": "db7213e55afe8420d4981c7a2accb45cec89d90660d472860ba1df259880daf4"
+    },
+    {
+      "sourceCommit": "62510b22b47803e0841825ec1c2b34fae48b3b15",
+      "source": "domain-packs/freecad/runtime/recipe.cjs",
+      "destination": "packs/freecad/runtime/recipe.cjs",
+      "sha256": "6858090d5af8ff47c4b5c35fcf1546b238bf614831f649cd5c87376157069336"
+    },
+    {
+      "sourceCommit": "62510b22b47803e0841825ec1c2b34fae48b3b15",
+      "source": "packages/domain-skills/packs/freecad-local.json",
+      "destination": "packs/freecad/harness-pack.json",
+      "sha256": "5c5217af60d4a7d159d894ab4053bd49a67f1292ea1ec0b7230d9819159f4b34"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "packages/domain-mcp/src/godot-runtime.cjs",
+      "destination": "packs/godot/bridge/godot-runtime.cjs",
+      "sha256": "f882206e27ee48d9aa149865f6679ad1d7758abf7221c22835fa27088f2bfba9"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "packages/domain-mcp/src/godot-gateway.cjs",
+      "destination": "packs/godot/bridge/godot-gateway.cjs",
+      "sha256": "ae13df663c482c13cc6a86707ea1f22b9060d52c95900a8de2215c2d9e95a270"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "packages/domain-mcp/src/pcb-runtime.cjs",
+      "destination": "packs/pcb/bridge/pcb-runtime.cjs",
+      "sha256": "52b61c6fa42ad0cba4da59f59a388550621d98d7afb2dfd06b329367d1fa3e17"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "packages/domain-mcp/src/pcb-gateway.py",
+      "destination": "packs/pcb/bridge/pcb-gateway.py",
+      "sha256": "aef380f4c7392b7fde35977060c1172047759e34aecf97a7db54eda2d55a5b1c"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "packages/domain-mcp/src/pcb-controller.py",
+      "destination": "packs/pcb/bridge/pcb-controller.py",
+      "sha256": "e7571ef15f9d71685938aa0ec46cf9c921edf0d1fa75acf6b259bb5686198e84"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "packages/domain-skills/skills/chip-eda-operate/SKILL.md",
+      "destination": "packs/chip/skills/chip-eda-operate/SKILL.md",
+      "sha256": "d225e14c09a0d6d7830e34f36fe9c7a5bf5f90e1df0fded9c3f28ec53959ead6"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "packages/domain-skills/skills/chip-layout-inspect/SKILL.md",
+      "destination": "packs/chip/skills/chip-layout-inspect/SKILL.md",
+      "sha256": "ee49372d16295b4a373192909c94d06158d7fda94895c6a2cb9fc6dcfb04ea09"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "packages/domain-skills/skills/chip-netlist-inspect/SKILL.md",
+      "destination": "packs/chip/skills/chip-netlist-inspect/SKILL.md",
+      "sha256": "f21784ef368f751503c77adda8e4a901624f5634f481b0d75f84cf665ad8f998"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "packages/domain-skills/skills/chip-waveform-inspect/SKILL.md",
+      "destination": "packs/chip/skills/chip-waveform-inspect/SKILL.md",
+      "sha256": "86262333183443ff322cb5e389d87b7ab9b406b2830b30bb1c0d059f57937c67"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "packages/domain-skills/skills/godot-game-develop/SKILL.md",
+      "destination": "packs/godot/skills/godot-game-develop/SKILL.md",
+      "sha256": "900b169f968b3e0784d3d48f2ff99cd12aa9f4cd79501c7b41edb2a1b05da3f0"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "packages/domain-skills/skills/godot-game-inspect/SKILL.md",
+      "destination": "packs/godot/skills/godot-game-inspect/SKILL.md",
+      "sha256": "65d31e9ceeef7304e2c115da7e6a12323c75feecd7e130d672bc3ea7a2f842a4"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "packages/domain-skills/skills/pcb-design-e2e/SKILL.md",
+      "destination": "packs/pcb/skills/pcb-design-e2e/SKILL.md",
+      "sha256": "9a5905f75db27aa01b32f82bfd140180704e7857c7a896f38a2d66226901efca"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "packages/domain-skills/skills/pcb-layout-inspect/SKILL.md",
+      "destination": "packs/pcb/skills/pcb-layout-inspect/SKILL.md",
+      "sha256": "32fc6159e077641b8672920157a2f6552d9abae0511945fb972351a10f64d856"
+    },
+    {
+      "sourceCommit": "62510b22b47803e0841825ec1c2b34fae48b3b15",
+      "source": "packages/domain-skills/skills/cad-freecad-headless/SKILL.md",
+      "destination": "packs/freecad/skills/cad-freecad-headless/SKILL.md",
+      "sha256": "f68ba5fc1b9046d5c776f517725af82f7f10178bc7e870a61ae21ca836ec9845"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "packages/domain-skills/skills/cad-autocad-macos/SKILL.md",
+      "destination": "packs/cad/skills/cad-autocad-macos/SKILL.md",
+      "sha256": "811d0f6c007070196720b761fff3698a39cea735a5bc5bf096efa3e6bf315975"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "packages/domain-skills/skills/cad-ezdxf/SKILL.md",
+      "destination": "packs/cad/skills/cad-ezdxf/SKILL.md",
+      "sha256": "362854ccb87587bb7b6b6b4917c358ecf7b18f2bcd0b0b0313e908f9d7f52d13"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "packages/domain-skills/skills/cad-ezdxf/scripts/dxf_diff.py",
+      "destination": "packs/cad/skills/cad-ezdxf/scripts/dxf_diff.py",
+      "sha256": "7260d29064c40e8fdc737f6bacb7cfff45e74bacc489899a5c56f08d3ff4df50"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "packages/domain-skills/skills/cad-intent-loop/SKILL.md",
+      "destination": "packs/cad/skills/cad-intent-loop/SKILL.md",
+      "sha256": "d416dc502e8376faf79c0c97506555eb6a57f24488759ed70f1f9190b3083115"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "packages/domain-skills/skill-only-packs/cad.json",
+      "destination": "packs/cad/harness-pack.json",
+      "sha256": "9637aaaf60b12f9884fef809db255f4cedd04f6b90725a3b8092bebf65638d3b"
+    },
+    {
+      "sourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "source": "packages/domain-skills/src/pack-resources.cjs",
+      "destination": "lib/resources.cjs",
+      "sha256": "1b24a8da7ecfd52aebb17d042edd82860348d1c2c6e5962c3fdd7dffa7c8f755"
+    }
+  ]
+}

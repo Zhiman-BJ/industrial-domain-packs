@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 1,
+  "id": "freecad-local",
+  "domain": "cad",
+  "version": "1.1.4-pack.1",
+  "provider": {
+    "id": "freecad-local.runtime",
+    "title": "FreeCAD 1.1.4 · persistent native tools",
+    "domain": "cad",
+    "version": "1.1.4-pack.1",
+    "transport": "runtime",
+    "packDirectory": "freecad",
+    "sourceSha256": "34fca7a23149f44a8b6a621021c6866900d1a70d244b6f6fab97158755a0958a",
+    "tools": [
+      {
+        "id": "cad.freecad.build",
+        "name": "build",
+        "risk": "mutating",
+        "summary": "Build a FreeCAD feature tree from a bounded parametric recipe; save FCStd, STEP and STL, then reopen in a separate process.",
+        "verification": [
+          "cad.freecad.geometry"
+        ]
+      },
+      {
+        "id": "cad.freecad.inspect",
+        "name": "inspect",
+        "risk": "read-only",
+        "summary": "Read a project FCStd/STEP, report geometry and export FCStd/STEP/STL through the persistent runtime. FCStd accepts only the supported native feature types, with no Python proxies or expressions.",
+        "verification": [
+          "cad.freecad.geometry"
+        ]
+      },
+      {
+        "id": "cad.freecad.export",
+        "name": "export",
+        "risk": "mutating",
+        "summary": "Read a project FCStd/STEP, report geometry and export FCStd/STEP/STL through the persistent runtime. FCStd accepts only the supported native feature types, with no Python proxies or expressions.",
+        "verification": [
+          "cad.freecad.geometry"
+        ]
+      }
+    ],
+    "resourceRoots": [
+      "runtime"
+    ],
+    "sourceFiles": {
+      "runtime/index.cjs": "c73027521d2d70b449231b1b68be46f8473bcdd433363b7612d7e89c1f380fd4",
+      "runtime/native.py": "db7213e55afe8420d4981c7a2accb45cec89d90660d472860ba1df259880daf4",
+      "runtime/recipe.cjs": "6858090d5af8ff47c4b5c35fcf1546b238bf614831f649cd5c87376157069336"
+    }
+  },
+  "runtime": {
+    "entry": "runtime/index.cjs"
+  },
+  "capabilities": [
+    {
+      "id": "cad.freecad.model",
+      "domain": "cad",
+      "title": "FreeCAD parametric solid modelling",
+      "stages": [],
+      "priority": 100,
+      "keywords": [
+        "cad",
+        "freecad",
+        "3d",
+        "sketch",
+        "parametric",
+        "step",
+        "fcstd",
+        "建模",
+        "三维",
+        "零件",
+        "草图",
+        "拉伸",
+        "打孔",
+        "布尔"
+      ],
+      "skills": [
+        {
+          "id": "cad.freecad.headless",
+          "summary": "Persistent FreeCAD tools, parametric recipes and independent geometry readback."
+        }
+      ],
+      "tools": [
+        {
+          "id": "cad.freecad.build",
+          "name": "build",
+          "risk": "mutating",
+          "summary": "Build a FreeCAD feature tree from a bounded parametric recipe; save FCStd, STEP and STL, then reopen in a separate process.",
+          "verification": [
+            "cad.freecad.geometry"
+          ]
+        },
+        {
+          "id": "cad.freecad.inspect",
+          "name": "inspect",
+          "risk": "read-only",
+          "summary": "Read a project FCStd/STEP, report geometry and export FCStd/STEP/STL through the persistent runtime. FCStd accepts only the supported native feature types, with no Python proxies or expressions.",
+          "verification": [
+            "cad.freecad.geometry"
+          ]
+        },
+        {
+          "id": "cad.freecad.export",
+          "name": "export",
+          "risk": "mutating",
+          "summary": "Read a project FCStd/STEP, report geometry and export FCStd/STEP/STL through the persistent runtime. FCStd accepts only the supported native feature types, with no Python proxies or expressions.",
+          "verification": [
+            "cad.freecad.geometry"
+          ]
+        }
+      ],
+      "viewers": [
+        "cad"
+      ],
+      "verification": [
+        "cad.freecad.geometry"
+      ]
+    }
+  ]
+}

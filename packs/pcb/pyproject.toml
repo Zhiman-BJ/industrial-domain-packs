@@ -1,0 +1,9 @@
+[project]
+name = "industrial-harness-pcb-gateway"
+version = "0.1.0"
+description = "Locked MCP client/server environment; native PCB tools stay in their separate Docker runtime"
+requires-python = ">=3.13,<3.14"
+dependencies = ["mcp==1.29.1", "jsonschema==4.26.0"]
+
+[tool.uv]
+package = false

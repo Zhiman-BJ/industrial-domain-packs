@@ -12,3 +12,5 @@ output/
 data/
 .eda/
 *.log
+node_modules/
+tmp/
