@@ -1,0 +1,31 @@
+name: independent-verification
+top: device
+inputs:
+  layout: [layout/*.mag]
+  reference: [reference/*.spice]
+  waveform: [waves/*.vcd, scripts/wave.tcl]
+runtime:
+  kind: docker
+  image: eda-harness-tools:dev
+  resources: {cpu: 2, memory_gb: 2, timeout_seconds: 120}
+workflow:
+  actions:
+    - {id: layout.extract, tool: magic, dependencies: [], input_types: [layout], artifact_types: [netlist.extracted]}
+    - {id: verify.netgen, tool: netgen, dependencies: [layout.extract], input_types: [reference], artifact_types: [report.lvs]}
+    - {id: debug.waveform, tool: gtkwave, dependencies: [], input_types: [waveform], artifact_types: [waveform.fst, waveform.session]}
+  targets:
+    verification: [verify.netgen, debug.waveform]
+actions:
+  layout.extract:
+    script: scripts/extract.tcl
+    args: [-T, scmos]
+    outputs: {netlist.extracted: extracted.spice}
+  verify.netgen:
+    script: scripts/compare.tcl
+    outputs: {report.lvs: lvs.log}
+    verification_file: checks.json
+  debug.waveform:
+    script: scripts/wave.sh
+    outputs: {waveform.fst: wave.fst, waveform.vcd: roundtrip.vcd, waveform.session: wave.gtkw}
+    verification_file: wave-checks.json
+required_verification: [verify.netgen, debug.waveform]

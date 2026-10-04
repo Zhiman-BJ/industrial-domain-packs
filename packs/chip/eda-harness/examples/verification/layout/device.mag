@@ -1,0 +1,15 @@
+magic
+tech scmos
+timestamp 0
+<< ndiffusion >>
+rect 0 0 12 4
+<< polysilicon >>
+rect 5 -2 7 6
+<< labels >>
+rlabel ndiffusion 1 1 2 2 0 D
+port 1 nsew
+rlabel polysilicon 5 5 7 6 0 G
+port 2 nsew
+rlabel ndiffusion 10 1 11 2 0 S
+port 3 nsew
+<< end >>

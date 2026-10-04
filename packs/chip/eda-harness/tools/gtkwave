@@ -1,0 +1,16 @@
+#!/bin/sh
+# GTKWave 3.3 dereferences getpwuid() for arbitrary container UIDs.
+# Supply an ephemeral NSS record without changing /etc or running as root.
+set -eu
+export GSETTINGS_BACKEND=memory
+if getent passwd "$(id -u)" >/dev/null; then
+    exec /usr/bin/gtkwave "$@"
+fi
+nss_dir=$(mktemp -d /tmp/eda-gtkwave-nss.XXXXXX)
+trap 'rm -rf "$nss_dir"' EXIT HUP INT TERM
+cat /etc/passwd > "$nss_dir/passwd"
+printf 'eda:x:%s:%s:EDA waveform user:%s:/bin/sh\n' "$(id -u)" "$(id -g)" "${HOME:-/tmp}" >> "$nss_dir/passwd"
+cat /etc/group > "$nss_dir/group"
+export NSS_WRAPPER_PASSWD="$nss_dir/passwd" NSS_WRAPPER_GROUP="$nss_dir/group"
+export LD_PRELOAD="/usr/lib/x86_64-linux-gnu/libnss_wrapper.so${LD_PRELOAD:+:$LD_PRELOAD}"
+/usr/bin/gtkwave "$@"

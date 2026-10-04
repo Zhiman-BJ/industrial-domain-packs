@@ -1,0 +1,38 @@
+# syntax=docker/dockerfile:1
+# ORFS supplies OpenROAD/OpenSTA, Yosys, KLayout, and Nangate45; add Verilator from its official image.
+# Fixed linux/amd64 manifests from the official upstream projects (see tools/README.md).
+FROM verilator/verilator@sha256:4381a83fc2864cc2be91c5acb8ddff688077c73db20304b7f2c38cccd6a965da AS verilator
+FROM openroad/orfs@sha256:cdb377cec7796c5cb01d482ca035811bfe559ca55dcca7f5e5f46fa811c63142
+USER root
+# Fixed Ubuntu binary releases; netgen-lvs is the circuit comparator, not the mesh generator.
+RUN apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    magic=8.3.105+ds.1-1.1 netgen-lvs=1.5.133-1.1 gtkwave=3.3.104-2build1 graphviz=2.42.2-6ubuntu0.1 z3=4.8.12-1 \
+    xvfb=2:21.1.4-2ubuntu1.7~22.04.16 xauth=1:1.1-1build2 libnss-wrapper=1.1.11-1ubuntu2 \
+    && ln -s /usr/bin/netgen-lvs /usr/local/bin/netgen \
+    && rm -rf /var/lib/apt/lists/*
+COPY --chmod=755 tools/gtkwave /usr/local/bin/gtkwave
+COPY --from=verilator /usr/local/bin/verilator* /usr/local/bin/
+COPY --from=verilator /usr/local/share/verilator /usr/local/share/verilator
+COPY --chmod=755 tools/resource-wrapper.py /opt/eda-tools/resource-wrapper.py
+COPY --chmod=755 tools/orfs-lec.py /opt/eda-tools/orfs-lec.py
+COPY tools/patch-orfs.py /opt/eda-tools/patch-orfs.py
+RUN python3 /opt/eda-tools/patch-orfs.py
+RUN mv /usr/local/bin/verilator /usr/local/bin/verilator-real \
+    && ln -s /opt/eda-tools/resource-wrapper.py /usr/local/bin/verilator \
+    && ln -s /opt/eda-tools/resource-wrapper.py /usr/local/bin/make \
+    && mv /OpenROAD-flow-scripts/tools/install/kepler-formal/bin/kepler-formal /OpenROAD-flow-scripts/tools/install/kepler-formal/bin/kepler-formal.upstream \
+    && ln -s /opt/eda-tools/orfs-lec.py /OpenROAD-flow-scripts/tools/install/kepler-formal/bin/kepler-formal \
+    && ln -s /opt/eda-tools/orfs-lec.py /usr/local/bin/eda-orfs-lec
+ENV PATH="/usr/local/bin:/OpenROAD-flow-scripts/tools/install/OpenROAD/bin:/OpenROAD-flow-scripts/tools/install/yosys/bin:${PATH}" \
+    QT_QPA_PLATFORM=offscreen CCACHE_DISABLE=1 EDA_BUILD_JOBS=1 EDA_CPU_LIMIT=2 NUM_CORES=2
+COPY tools/inventory.py tools/smoke.py tools/verification_smoke.py /opt/eda-tools/
+COPY examples/nangate45/scripts/streamout.py /opt/eda-tools/streamout.py
+COPY examples/verification /opt/eda-tools/verification
+COPY examples/counter/rtl/counter.sv /opt/eda-tools-smoke/counter.sv
+# Compilers and make remain necessary at runtime to build Verilator simulations.
+RUN python3 /opt/eda-tools/inventory.py \
+    && python3 /opt/eda-tools/smoke.py --input /opt/eda-tools-smoke/counter.sv --output /tmp/eda-build-smoke \
+    && rm -rf /tmp/eda-build-smoke
+WORKDIR /work
+ENTRYPOINT []
+CMD ["python3", "/opt/eda-tools/inventory.py"]

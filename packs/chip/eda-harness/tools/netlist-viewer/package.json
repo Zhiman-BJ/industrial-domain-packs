@@ -1,0 +1,7 @@
+{
+  "name": "eda-harness-netlist-viewer",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Optional local netlist SVG renderer; install with npm ci",
+  "dependencies": {"netlistsvg": "1.0.2"}
+}

@@ -1,0 +1,44 @@
+[build-system]
+requires = ["hatchling==1.32.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "eda-harness"
+version = "0.6.1"
+description = "Persistent design state and deterministic execution for agentic EDA"
+requires-python = ">=3.11"
+dependencies = ["pydantic>=2.10,<3", "PyYAML>=6,<7", "mcp>=1.12,<2"]
+
+[project.scripts]
+eda = "eda_harness.cli:main"
+
+[dependency-groups]
+dev = ["pytest>=8,<9", "ruff>=0.11,<1"]
+build = ["hatchling"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 110
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]
+
+# MCP distribution contains reusable implementation only. Design projects are test material.
+[tool.hatch.build.targets.wheel]
+packages = ["src/eda_harness"]
+
+[tool.hatch.build.targets.sdist]
+include = ["/src/eda_harness", "/pyproject.toml", "/README.md", "/LICENSE", "/uv.lock"]
+
+# Keep local build isolation on the same versions as the deployed plugin.
+[tool.uv]
+build-constraint-dependencies = [
+  "hatchling==1.32.0",
+  "packaging==26.3",
+  "pathspec==1.1.1",
+  "pluggy==1.6.0",
+  "tomlkit==0.15.1",
+  "trove-classifiers==2026.6.1.19",
+]

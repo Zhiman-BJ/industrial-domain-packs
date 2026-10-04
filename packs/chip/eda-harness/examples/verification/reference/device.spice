@@ -1,0 +1,5 @@
+* Independent schematic: SCMOS NMOS, dimensions in metres.
+.global Gnd
+.subckt device D G S
+M1 D G S Gnd nfet W=4u L=2u AD=20p AS=20p PD=18u PS=18u
+.ends device

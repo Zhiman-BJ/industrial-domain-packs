@@ -1,0 +1,403 @@
+{
+  "schemaVersion": 1,
+  "sourceRepository": "https://github.com/Zhiman-BJ/industrial-agent-harness",
+  "sourceCommit": "01d8ea2c01bdf3e3be858b1bcee0c29b174ad8c5",
+  "scope": "Public MIT Chip Pack source bootstrap; no runtime logs, customer projects, PDKs or binaries.",
+  "files": [
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/Dockerfile.tools",
+      "path": "packs/chip/eda-harness/Dockerfile.tools",
+      "sha256": "52f7d46bd3acf81a7a56e529c6f48d0e7e5db68cb4a8cb9fbf7a6dae67e6e2d6"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/LICENSE",
+      "path": "packs/chip/eda-harness/LICENSE",
+      "sha256": "ae88344cbfe45db1f7e8dd301adf8c7152321397c1f1e2dd0712b62642eec681"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/docs/project.schema.json",
+      "path": "packs/chip/eda-harness/docs/project.schema.json",
+      "sha256": "d85e5072191956b158d06bf54aeabacc990e58897cf757a19b752b9304f2d700"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/docs/runtime-reliability.md",
+      "path": "packs/chip/eda-harness/docs/runtime-reliability.md",
+      "sha256": "ddcd4aa488619e191c1b94f4c64c8a9351b376cf7bb7e6e0c785a57e57dd6a2d"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/docs/tool-capabilities.json",
+      "path": "packs/chip/eda-harness/docs/tool-capabilities.json",
+      "sha256": "846ae1ecead3d9c56c32f2cfd0f541cd1e7d7fd096d4e05bee0d7bb8ab345054"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/examples/counter/eda.yaml",
+      "path": "packs/chip/eda-harness/examples/counter/eda.yaml",
+      "sha256": "9cb39f4b4208789103bc82b42ec0ae22ad7565d0fff3ecebc225d3ec4eec0e0a"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/examples/counter/rtl/counter.sv",
+      "path": "packs/chip/eda-harness/examples/counter/rtl/counter.sv",
+      "sha256": "c0d6951d77e0f698d2fd20bf22198ecc8229a14b8a8bdefb0ba2576f23f6e939"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/examples/nangate45/scripts/streamout.py",
+      "path": "packs/chip/eda-harness/examples/nangate45/scripts/streamout.py",
+      "sha256": "9b234579a3bd17e29dbe48c5da3b798b748f319826a68c37b025c28af95b8c85"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/examples/verification/README.md",
+      "path": "packs/chip/eda-harness/examples/verification/README.md",
+      "sha256": "d4b64d1725b4ecbc41978134b028f4da9f768c5e891d336942abc4f356c41b11"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/examples/verification/eda.yaml",
+      "path": "packs/chip/eda-harness/examples/verification/eda.yaml",
+      "sha256": "39435913512b549286a716ac5fd1f40a174ed5899746b4caf5760d99841d4ef6"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/examples/verification/layout/device.mag",
+      "path": "packs/chip/eda-harness/examples/verification/layout/device.mag",
+      "sha256": "443e0192919bf45ba5a08bc74ae548242dd996625bb68d65326efc5a47196162"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/examples/verification/reference/device.spice",
+      "path": "packs/chip/eda-harness/examples/verification/reference/device.spice",
+      "sha256": "172d5d38449cc4d822535dd00128aea52588273a78c12ba22e0705cf1165cc0f"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/examples/verification/scripts/compare.tcl",
+      "path": "packs/chip/eda-harness/examples/verification/scripts/compare.tcl",
+      "sha256": "5cb167ae9d7e515764267f4ad44042e82178f4e40b8f8c2425891fe7e5bd73b2"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/examples/verification/scripts/extract.tcl",
+      "path": "packs/chip/eda-harness/examples/verification/scripts/extract.tcl",
+      "sha256": "d9b8c189102c839ce4c71a64853b426c96308d79de5a742f475b772c000f7880"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/examples/verification/scripts/wave.sh",
+      "path": "packs/chip/eda-harness/examples/verification/scripts/wave.sh",
+      "sha256": "0a05a40ec4492d6c426f1d6f1dd80bc634d8752aa9c657575baf2829c573f526"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/examples/verification/scripts/wave.tcl",
+      "path": "packs/chip/eda-harness/examples/verification/scripts/wave.tcl",
+      "sha256": "25dca2f68ba18553177f550574b6ea0269f88a65589b55a9f33a1a95502058b0"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/examples/verification/waves/counter.vcd",
+      "path": "packs/chip/eda-harness/examples/verification/waves/counter.vcd",
+      "sha256": "e61a2816bb88e4f133eb2f47b999adea8e9367fa09a6f18a901da9c830f8f3c3"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/pyproject.toml",
+      "path": "packs/chip/eda-harness/pyproject.toml",
+      "sha256": "b5e5b3a263b0a265b1844777a557c353c139c5bfdc16143d210603420f242a4a"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/skills/eda-core/SKILL.md",
+      "path": "packs/chip/eda-harness/skills/eda-core/SKILL.md",
+      "sha256": "5c3a56ee4c8ee7d8500c8c9a18ca45c0bd882f3b85cea82a190aa17d5d280b97"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/src/eda_harness/__init__.py",
+      "path": "packs/chip/eda-harness/src/eda_harness/__init__.py",
+      "sha256": "7f207da0d4b41a14765e56bd061b9a6d924d60a773ee0330ba7e2494f27007d9"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/src/eda_harness/cli.py",
+      "path": "packs/chip/eda-harness/src/eda_harness/cli.py",
+      "sha256": "4fab783b642857399a68fd8e0b4aa683270e40674cc8718ba079f4763a2cb454"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/src/eda_harness/core/__init__.py",
+      "path": "packs/chip/eda-harness/src/eda_harness/core/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/src/eda_harness/core/acceptance.py",
+      "path": "packs/chip/eda-harness/src/eda_harness/core/acceptance.py",
+      "sha256": "d0dd52b886a8bdc7c8d740ef34677feca1d70a05849351338cb21eac163355ea"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/src/eda_harness/core/context.py",
+      "path": "packs/chip/eda-harness/src/eda_harness/core/context.py",
+      "sha256": "e9a684bc61fa65bca487e4575841b997d0c9e9eb6c4f8253c88794c3263e7912"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/src/eda_harness/core/environment.py",
+      "path": "packs/chip/eda-harness/src/eda_harness/core/environment.py",
+      "sha256": "e8f2082932b085d819491a74d8170265d06ded9835443bda13557d9091675ddc"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/src/eda_harness/core/initialization.py",
+      "path": "packs/chip/eda-harness/src/eda_harness/core/initialization.py",
+      "sha256": "1fe12f5a9bc6ce62acb26dc61d98fc87d63b1f6b21d19701727a5fc83a5f307a"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/src/eda_harness/core/models.py",
+      "path": "packs/chip/eda-harness/src/eda_harness/core/models.py",
+      "sha256": "9e97d81522df461fa73272bf4f1819385e12946ec483e1ec18449badcad36544"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/src/eda_harness/core/parameters.py",
+      "path": "packs/chip/eda-harness/src/eda_harness/core/parameters.py",
+      "sha256": "0d8a00f90f2c970437d3562e914a5b9dc611a5b35aac1e5c1815066bb1de913b"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/src/eda_harness/core/service.py",
+      "path": "packs/chip/eda-harness/src/eda_harness/core/service.py",
+      "sha256": "c6cdaf77089704d53b18baf02cafb80cbee163a133367c76447aa57fe3e9e178"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/src/eda_harness/core/store.py",
+      "path": "packs/chip/eda-harness/src/eda_harness/core/store.py",
+      "sha256": "9dbd924036d6ba4b48d1656e1017b64d4d5047aa696718e8154970aa49761c4e"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/src/eda_harness/core/workflow.py",
+      "path": "packs/chip/eda-harness/src/eda_harness/core/workflow.py",
+      "sha256": "b3685de140a4dedce62b249f62a768a51df40ebe635ee742bffe29a1ff31485d"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/src/eda_harness/core/workspace.py",
+      "path": "packs/chip/eda-harness/src/eda_harness/core/workspace.py",
+      "sha256": "334304c967448643434cffdecb72f3cc39602c6d1a19faa27728513713380d80"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/src/eda_harness/dependency_locks/build.txt",
+      "path": "packs/chip/eda-harness/src/eda_harness/dependency_locks/build.txt",
+      "sha256": "f414ac60a696061f1080ee2b0e2f067dcadb3314ff5dbaee2489bd14c225ab8d"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/src/eda_harness/dependency_locks/runtime.txt",
+      "path": "packs/chip/eda-harness/src/eda_harness/dependency_locks/runtime.txt",
+      "sha256": "7490b29ab361c86a1565d1d6bfd9443dd4eacbc3a74b5869e846d938b48fb051"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/src/eda_harness/netlist_viewer.py",
+      "path": "packs/chip/eda-harness/src/eda_harness/netlist_viewer.py",
+      "sha256": "cbedfa79585ad2dd806298fdc3eb3cd92d8d07713df9364c6d995b0f376e2b5d"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/src/eda_harness/plugins/__init__.py",
+      "path": "packs/chip/eda-harness/src/eda_harness/plugins/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/src/eda_harness/plugins/advanced.py",
+      "path": "packs/chip/eda-harness/src/eda_harness/plugins/advanced.py",
+      "sha256": "7b406399f076519af08b64c7ae4a3d13d2fa1ed25293e76d17e9316bdb5849fa"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/src/eda_harness/plugins/equivalence.py",
+      "path": "packs/chip/eda-harness/src/eda_harness/plugins/equivalence.py",
+      "sha256": "027b5a570d6224a45c23d4209081808c2fed1ca503e862fc37845662b7d9c63f"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/src/eda_harness/plugins/klayout_streamout.py",
+      "path": "packs/chip/eda-harness/src/eda_harness/plugins/klayout_streamout.py",
+      "sha256": "536fe0cd75daae19d8bf121fba4cd947f37edbbb1340a9aa3283682f6263004c"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/src/eda_harness/plugins/semantic.py",
+      "path": "packs/chip/eda-harness/src/eda_harness/plugins/semantic.py",
+      "sha256": "4094a79c1592026b8a333aecfa3071662351eefac26cbbc059f740eb6a0524ea"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/src/eda_harness/plugins/spice_reference.py",
+      "path": "packs/chip/eda-harness/src/eda_harness/plugins/spice_reference.py",
+      "sha256": "3c5a77bb81419dbfa92597b441679e263238f8f0df658b1de3dbd51e8d223e2f"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/src/eda_harness/plugins/tools.py",
+      "path": "packs/chip/eda-harness/src/eda_harness/plugins/tools.py",
+      "sha256": "22ce1e721f47abaadeafdcf04f85e6d3a3e207f661764d465bbe73fd01e8c83e"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/src/eda_harness/runtimes/__init__.py",
+      "path": "packs/chip/eda-harness/src/eda_harness/runtimes/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/src/eda_harness/runtimes/capabilities.py",
+      "path": "packs/chip/eda-harness/src/eda_harness/runtimes/capabilities.py",
+      "sha256": "8d66c047ecef010534ce5d4fc7db3f74a5a6af356f18dbe8e4126a423144b52d"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/src/eda_harness/runtimes/diagnostics.py",
+      "path": "packs/chip/eda-harness/src/eda_harness/runtimes/diagnostics.py",
+      "sha256": "8abe8fb72032e2ce5a38401228fdda7392d54e3b0df73fc595cfd9c29a54d2e6"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/src/eda_harness/runtimes/execution.py",
+      "path": "packs/chip/eda-harness/src/eda_harness/runtimes/execution.py",
+      "sha256": "5a9796a99267deb7ef4bcf39e6f9359933912efbdad9c912b00e438314f1c170"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/src/eda_harness/runtimes/resources.py",
+      "path": "packs/chip/eda-harness/src/eda_harness/runtimes/resources.py",
+      "sha256": "b829a779d8e6f4b5601d2f3dc6535962d26c3a4e21bcefab7c83f69d0299213f"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/src/eda_harness/server/__init__.py",
+      "path": "packs/chip/eda-harness/src/eda_harness/server/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/src/eda_harness/server/identity.py",
+      "path": "packs/chip/eda-harness/src/eda_harness/server/identity.py",
+      "sha256": "906155302f57d4182fe9a27f85dffc385afc3bc2d590fa82a1dfbd27fcb63e93"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/src/eda_harness/server/mcp.py",
+      "path": "packs/chip/eda-harness/src/eda_harness/server/mcp.py",
+      "sha256": "90ff72b186909361379fd3a485ba08e529340b9ef5468373c395b12ce5273dad"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/src/eda_harness/server/tool-guide.md",
+      "path": "packs/chip/eda-harness/src/eda_harness/server/tool-guide.md",
+      "sha256": "093e5d3f6cc76bf0344d0d9da9db2c56378071f9a7b1f2fe03237fe0d0ea83da"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/src/eda_harness/tool_inventory.py",
+      "path": "packs/chip/eda-harness/src/eda_harness/tool_inventory.py",
+      "sha256": "82612b8b6fadcc98ad2ea78c173b94324330293d33049b52e653e9ea00688d48"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/src/eda_harness/viewers.py",
+      "path": "packs/chip/eda-harness/src/eda_harness/viewers.py",
+      "sha256": "c4b768c713ec3c3402c004a425eb3345c914adba6b59b825364a6a76ef098b22"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/src/eda_harness/worker.py",
+      "path": "packs/chip/eda-harness/src/eda_harness/worker.py",
+      "sha256": "150ad18818dc6ed5384b02475709dafd1cdcbbd97d14e80c6b76d47b3ec1884d"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/src/eda_harness/yosys_viewer.py",
+      "path": "packs/chip/eda-harness/src/eda_harness/yosys_viewer.py",
+      "sha256": "67664a2c9bec456cc67457f470d8a912dd9c89d42d6b46eb4855dcac20b9ab3e"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/tests/conftest.py",
+      "path": "packs/chip/eda-harness/tests/conftest.py",
+      "sha256": "43b6061d4064e2873b999a944bc5b0bfd684b7298da03fa1bebf173c1b721f77"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/tests/test_equivalence_adapter.py",
+      "path": "packs/chip/eda-harness/tests/test_equivalence_adapter.py",
+      "sha256": "4313452f5c9747264299ba66a994b2374aea5db4a7c8f7225f987900428df9c2"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/tests/test_orfs_lec.py",
+      "path": "packs/chip/eda-harness/tests/test_orfs_lec.py",
+      "sha256": "f0c396aef9084c76460712a55fbcebfc8d9dd0f3f5ed7aa82ca480dad6b94383"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/tests/test_resource_admission.py",
+      "path": "packs/chip/eda-harness/tests/test_resource_admission.py",
+      "sha256": "4dfeb50239e413c2cb608f67590243e07226961fad090a0ceaf29267685eaaa3"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/tests/test_runtime_cleanup.py",
+      "path": "packs/chip/eda-harness/tests/test_runtime_cleanup.py",
+      "sha256": "fa8976cae57a2d131563daccda63962a5a2c2d0ae7c4febcedf583d63b096451"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/tests/test_runtime_native.py",
+      "path": "packs/chip/eda-harness/tests/test_runtime_native.py",
+      "sha256": "0760435e6e3a94e41658308b65f66ca2efb6677b73da0dec971c74041df19bfb"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/tools/gtkwave",
+      "path": "packs/chip/eda-harness/tools/gtkwave",
+      "sha256": "d1780406ec105e21f326083ecd7089937335b315d8a925aa07cdfe973bcdefcc"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/tools/inventory.py",
+      "path": "packs/chip/eda-harness/tools/inventory.py",
+      "sha256": "b310a24ae26ed8ec506a78f9082d1fcb80e22f378a122ca1daf457b720333522"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/tools/netlist-viewer/package-lock.json",
+      "path": "packs/chip/eda-harness/tools/netlist-viewer/package-lock.json",
+      "sha256": "5ff63312eaebca5e03095e52cdae0ea1ad2c3c8b488c4315d54de031dd9878c5"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/tools/netlist-viewer/package.json",
+      "path": "packs/chip/eda-harness/tools/netlist-viewer/package.json",
+      "sha256": "6e83531c6971b9d5dbc171e09f0e856681039a324a4ce099e4c710cc8132fed8"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/tools/orfs-lec.py",
+      "path": "packs/chip/eda-harness/tools/orfs-lec.py",
+      "sha256": "54579de57f6c19a82b9204f80938bdfd05702e6d4363670595c75bd65ad53904"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/tools/patch-orfs.py",
+      "path": "packs/chip/eda-harness/tools/patch-orfs.py",
+      "sha256": "350ca4b38c45f776006156a20fa7008fec1cb7e093b2078e1a2cb0d5a42e8aa6"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/tools/resource-wrapper.py",
+      "path": "packs/chip/eda-harness/tools/resource-wrapper.py",
+      "sha256": "7b105f54de9462bc407da49a746e3d012cb914aaa629ebe4d1433d4a1dc76f0c"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/tools/smoke.py",
+      "path": "packs/chip/eda-harness/tools/smoke.py",
+      "sha256": "083648f73fb65a70a936b475912583c0986c277b2d3759c3399416cbc2ac2411"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/tools/test_contract.py",
+      "path": "packs/chip/eda-harness/tools/test_contract.py",
+      "sha256": "f6c0bbd3f293fbdb96b2855a01dce9b2797ab8d161aeeb18f2c48cde988f3d85"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/tools/validate.py",
+      "path": "packs/chip/eda-harness/tools/validate.py",
+      "sha256": "6bfe8ff830381ae97620b46ccd27f7f16c8bc7494cffa96d5e60864ca9ebacda"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/tools/verification_smoke.py",
+      "path": "packs/chip/eda-harness/tools/verification_smoke.py",
+      "sha256": "fb50a0d5c1906da132b5207c95de08b3a616ca59c52371e523d61258f0606700"
+    },
+    {
+      "sourcePath": "domain-packs/chip/eda-harness/uv.lock",
+      "path": "packs/chip/eda-harness/uv.lock",
+      "sha256": "5db5ea00eb8ee1889bd1f482744c189c6764b227d10539382239f8c0324858d1"
+    },
+    {
+      "sourcePath": "domain-packs/chip/runtime/bridge.py",
+      "path": "packs/chip/runtime/bridge.py",
+      "sha256": "3f9a42c3e6bf8ad9296e5b10a7bdcd48cb5e34d31b62c8808fe8b26b32de0dfe"
+    },
+    {
+      "sourcePath": "domain-packs/chip/runtime/index.cjs",
+      "path": "packs/chip/runtime/index.cjs",
+      "sha256": "6efc4f8355a4c5acc2c88cccc38b0c01c8219fd65fb84121b576624db7440fa1"
+    },
+    {
+      "sourcePath": "domain-packs/chip/scripts/mcp-smoke.py",
+      "path": "packs/chip/scripts/mcp-smoke.py",
+      "sha256": "18e64b1ba3d105b02a8e8c08a0d689d68b0bcb0d44154c15a7a85e1f7bd818d9"
+    },
+    {
+      "sourcePath": "domain-packs/chip/PROVENANCE.md",
+      "path": "packs/chip/UPSTREAM_PROVENANCE.md",
+      "sha256": "51ea883bbbe9dd4dcf38470a88c5be8d41a2f88b94a0257c391d14a4dc75f216"
+    },
+    {
+      "sourcePath": "packages/domain-skills/packs/chip-pack.json",
+      "path": "packs/chip/harness-pack.json",
+      "sha256": "c38133a1b179934555e45222e387b02cb3ef777f204e13cebe07784c70d7a99c"
+    },
+    {
+      "sourcePath": "LICENSE",
+      "path": "licenses/industrial-agent-harness.MIT",
+      "sha256": "4a45426c620d8f7faf84e0ee9ed42730725a4a4df93ae59ef8c84149767a64f0"
+    }
+  ]
+}

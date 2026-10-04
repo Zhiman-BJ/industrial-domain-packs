@@ -1,0 +1,14 @@
+name: counter
+top: counter
+inputs:
+  rtl: [rtl/**/*.sv]
+runtime:
+  kind: docker
+  image: eda-harness-tools:dev
+  resources:
+    cpu: 2
+    memory_gb: 2
+    timeout_seconds: 120
+constraints:
+  lint.errors: {op: '==', value: 0, unit: count}
+required_verification: [rtl.lint, logic.synthesize]

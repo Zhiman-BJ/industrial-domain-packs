@@ -1,0 +1,3406 @@
+{
+  "schema_version": 1,
+  "operations": {
+    "floorplan": [
+      "openroad"
+    ],
+    "place": [
+      "openroad"
+    ],
+    "cts": [
+      "openroad"
+    ],
+    "route": [
+      "openroad"
+    ],
+    "streamout": [
+      "klayout"
+    ],
+    "lint": [
+      "verilator"
+    ],
+    "simulate": [
+      "verilator"
+    ],
+    "synthesize": [
+      "yosys"
+    ],
+    "equivalence": [
+      "yosys"
+    ],
+    "extract": [
+      "magic"
+    ],
+    "lvs": [
+      "netgen",
+      "klayout"
+    ],
+    "drc": [
+      "klayout"
+    ],
+    "waveform": [
+      "gtkwave"
+    ],
+    "sta": [
+      "openroad"
+    ],
+    "power": [
+      "openroad"
+    ],
+    "check_netlist": [
+      "yosys"
+    ],
+    "elaborate": [
+      "yosys"
+    ],
+    "prepare_lvs_reference": [
+      "yosys"
+    ],
+    "check_constraints": [
+      "openroad"
+    ],
+    "check_design_rules": [
+      "openroad"
+    ],
+    "connect_power": [
+      "openroad"
+    ],
+    "export_design": [
+      "openroad"
+    ],
+    "generate_pdn": [
+      "openroad"
+    ],
+    "insert_fillers": [
+      "openroad"
+    ],
+    "insert_tapcells": [
+      "openroad"
+    ],
+    "repair_antennas": [
+      "openroad"
+    ],
+    "repair_design": [
+      "openroad"
+    ],
+    "repair_tie_fanout": [
+      "openroad"
+    ],
+    "repair_timing": [
+      "openroad"
+    ]
+  },
+  "parameters_schema": {
+    "$defs": {
+      "DRCParameters": {
+        "additionalProperties": false,
+        "properties": {
+          "rule_format": {
+            "default": "ruby",
+            "enum": [
+              "ruby",
+              "macro"
+            ],
+            "title": "Rule Format",
+            "type": "string"
+          },
+          "variables": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "$ref": "#/$defs/InputRef"
+                }
+              ]
+            },
+            "title": "Variables",
+            "type": "object"
+          },
+          "layout_variable": {
+            "default": "in_gds",
+            "title": "Layout Variable",
+            "type": "string"
+          },
+          "report_variable": {
+            "default": "report_file",
+            "title": "Report Variable",
+            "type": "string"
+          },
+          "reference_variable": {
+            "default": "cdl_file",
+            "title": "Reference Variable",
+            "type": "string"
+          },
+          "operation": {
+            "const": "drc",
+            "title": "Operation",
+            "type": "string"
+          },
+          "layout": {
+            "$ref": "#/$defs/InputRef"
+          },
+          "rules": {
+            "$ref": "#/$defs/InputRef"
+          }
+        },
+        "required": [
+          "operation",
+          "layout",
+          "rules"
+        ],
+        "title": "DRCParameters",
+        "type": "object"
+      },
+      "EquivalenceParameters": {
+        "additionalProperties": false,
+        "properties": {
+          "operation": {
+            "const": "equivalence",
+            "title": "Operation",
+            "type": "string"
+          },
+          "gold_sources": {
+            "items": {
+              "$ref": "#/$defs/InputRef"
+            },
+            "minItems": 1,
+            "title": "Gold Sources",
+            "type": "array"
+          },
+          "gate_sources": {
+            "items": {
+              "$ref": "#/$defs/InputRef"
+            },
+            "minItems": 1,
+            "title": "Gate Sources",
+            "type": "array"
+          },
+          "cell_models": {
+            "items": {
+              "$ref": "#/$defs/InputRef"
+            },
+            "title": "Cell Models",
+            "type": "array"
+          },
+          "cell_liberties": {
+            "items": {
+              "$ref": "#/$defs/InputRef"
+            },
+            "title": "Cell Liberties",
+            "type": "array"
+          },
+          "top": {
+            "title": "Top",
+            "type": "string"
+          },
+          "engine": {
+            "default": "yosys",
+            "enum": [
+              "yosys",
+              "eqy"
+            ],
+            "title": "Engine",
+            "type": "string"
+          },
+          "memory_mode": {
+            "const": "map",
+            "default": "map",
+            "title": "Memory Mode",
+            "type": "string"
+          },
+          "depth": {
+            "default": 10,
+            "maximum": 100,
+            "minimum": 1,
+            "title": "Depth",
+            "type": "integer"
+          },
+          "partition_timeout_seconds": {
+            "default": 60,
+            "minimum": 1,
+            "title": "Partition Timeout Seconds",
+            "type": "integer"
+          },
+          "solver": {
+            "default": "z3",
+            "enum": [
+              "z3",
+              "cvc5",
+              "boolector"
+            ],
+            "title": "Solver",
+            "type": "string"
+          }
+        },
+        "required": [
+          "operation",
+          "gold_sources",
+          "gate_sources",
+          "top"
+        ],
+        "title": "EquivalenceParameters",
+        "type": "object"
+      },
+      "ExportParameters": {
+        "additionalProperties": false,
+        "properties": {
+          "database": {
+            "$ref": "#/$defs/InputRef"
+          },
+          "top": {
+            "title": "Top",
+            "type": "string"
+          },
+          "libraries": {
+            "items": {
+              "$ref": "#/$defs/InputRef"
+            },
+            "title": "Libraries",
+            "type": "array"
+          },
+          "constraints": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/InputRef"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "technology_setup": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/InputRef"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "parasitics": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/InputRef"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "operation": {
+            "const": "export_design",
+            "title": "Operation",
+            "type": "string"
+          },
+          "formats": {
+            "items": {
+              "enum": [
+                "odb",
+                "def",
+                "verilog",
+                "sdc",
+                "spef"
+              ],
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Formats",
+            "type": "array"
+          },
+          "include_power_ground": {
+            "default": true,
+            "title": "Include Power Ground",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "database",
+          "top",
+          "operation",
+          "formats"
+        ],
+        "title": "ExportParameters",
+        "type": "object"
+      },
+      "ExtractionParameters": {
+        "additionalProperties": false,
+        "properties": {
+          "operation": {
+            "const": "extract",
+            "title": "Operation",
+            "type": "string"
+          },
+          "layout": {
+            "$ref": "#/$defs/InputRef"
+          },
+          "technology": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/InputRef"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "builtin_technology": {
+            "anyOf": [
+              {
+                "const": "scmos",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Builtin Technology"
+          },
+          "top": {
+            "title": "Top",
+            "type": "string"
+          }
+        },
+        "required": [
+          "operation",
+          "layout",
+          "top"
+        ],
+        "title": "ExtractionParameters",
+        "type": "object"
+      },
+      "InputRef": {
+        "additionalProperties": false,
+        "properties": {
+          "path": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Path"
+          },
+          "action": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Action"
+          },
+          "artifact": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Artifact"
+          }
+        },
+        "title": "InputRef",
+        "type": "object"
+      },
+      "LVSParameters": {
+        "additionalProperties": false,
+        "properties": {
+          "rule_format": {
+            "default": "ruby",
+            "enum": [
+              "ruby",
+              "macro"
+            ],
+            "title": "Rule Format",
+            "type": "string"
+          },
+          "variables": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "$ref": "#/$defs/InputRef"
+                }
+              ]
+            },
+            "title": "Variables",
+            "type": "object"
+          },
+          "layout_variable": {
+            "default": "in_gds",
+            "title": "Layout Variable",
+            "type": "string"
+          },
+          "report_variable": {
+            "default": "report_file",
+            "title": "Report Variable",
+            "type": "string"
+          },
+          "reference_variable": {
+            "default": "cdl_file",
+            "title": "Reference Variable",
+            "type": "string"
+          },
+          "operation": {
+            "const": "lvs",
+            "title": "Operation",
+            "type": "string"
+          },
+          "layout": {
+            "$ref": "#/$defs/InputRef"
+          },
+          "reference": {
+            "$ref": "#/$defs/InputRef"
+          },
+          "top": {
+            "title": "Top",
+            "type": "string"
+          },
+          "reference_top": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Reference Top"
+          },
+          "rules": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/InputRef"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "required": [
+          "operation",
+          "layout",
+          "reference",
+          "top"
+        ],
+        "title": "LVSParameters",
+        "type": "object"
+      },
+      "LintParameters": {
+        "additionalProperties": false,
+        "properties": {
+          "operation": {
+            "const": "lint",
+            "title": "Operation",
+            "type": "string"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/$defs/InputRef"
+            },
+            "minItems": 1,
+            "title": "Sources",
+            "type": "array"
+          },
+          "top": {
+            "title": "Top",
+            "type": "string"
+          }
+        },
+        "required": [
+          "operation",
+          "sources",
+          "top"
+        ],
+        "title": "LintParameters",
+        "type": "object"
+      },
+      "PhysicalParameters": {
+        "additionalProperties": false,
+        "properties": {
+          "operation": {
+            "enum": [
+              "floorplan",
+              "place",
+              "cts",
+              "route"
+            ],
+            "title": "Operation",
+            "type": "string"
+          },
+          "top": {
+            "title": "Top",
+            "type": "string"
+          },
+          "libraries": {
+            "items": {
+              "$ref": "#/$defs/InputRef"
+            },
+            "minItems": 1,
+            "title": "Libraries",
+            "type": "array"
+          },
+          "constraints": {
+            "$ref": "#/$defs/InputRef"
+          },
+          "database": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/InputRef"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "netlist": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/InputRef"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "lefs": {
+            "items": {
+              "$ref": "#/$defs/InputRef"
+            },
+            "title": "Lefs",
+            "type": "array"
+          },
+          "technology_setup": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/InputRef"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "site": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Site"
+          },
+          "die_area": {
+            "anyOf": [
+              {
+                "maxItems": 4,
+                "minItems": 4,
+                "prefixItems": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ],
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Die Area"
+          },
+          "core_area": {
+            "anyOf": [
+              {
+                "maxItems": 4,
+                "minItems": 4,
+                "prefixItems": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ],
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Core Area"
+          },
+          "pin_layers": {
+            "anyOf": [
+              {
+                "maxItems": 2,
+                "minItems": 2,
+                "prefixItems": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Pin Layers"
+          },
+          "density": {
+            "default": 0.5,
+            "exclusiveMinimum": 0,
+            "maximum": 1,
+            "title": "Density",
+            "type": "number"
+          },
+          "clock_buffers": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Clock Buffers",
+            "type": "array"
+          },
+          "routing_layers": {
+            "anyOf": [
+              {
+                "maxItems": 2,
+                "minItems": 2,
+                "prefixItems": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Routing Layers"
+          },
+          "extraction_rules": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/InputRef"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "required": [
+          "operation",
+          "top",
+          "libraries",
+          "constraints"
+        ],
+        "title": "PhysicalParameters",
+        "type": "object"
+      },
+      "PhysicalUtilityParameters": {
+        "additionalProperties": false,
+        "properties": {
+          "database": {
+            "$ref": "#/$defs/InputRef"
+          },
+          "top": {
+            "title": "Top",
+            "type": "string"
+          },
+          "libraries": {
+            "items": {
+              "$ref": "#/$defs/InputRef"
+            },
+            "title": "Libraries",
+            "type": "array"
+          },
+          "constraints": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/InputRef"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "technology_setup": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/InputRef"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "parasitics": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/InputRef"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "operation": {
+            "enum": [
+              "connect_power",
+              "generate_pdn",
+              "insert_tapcells",
+              "insert_fillers"
+            ],
+            "title": "Operation",
+            "type": "string"
+          },
+          "connections": {
+            "items": {
+              "$ref": "#/$defs/PowerConnection"
+            },
+            "title": "Connections",
+            "type": "array"
+          },
+          "power_net": {
+            "default": "VDD",
+            "title": "Power Net",
+            "type": "string"
+          },
+          "ground_net": {
+            "default": "VSS",
+            "title": "Ground Net",
+            "type": "string"
+          },
+          "stripes": {
+            "items": {
+              "$ref": "#/$defs/Stripe"
+            },
+            "title": "Stripes",
+            "type": "array"
+          },
+          "connect_layers": {
+            "items": {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "string"
+                }
+              ],
+              "type": "array"
+            },
+            "title": "Connect Layers",
+            "type": "array"
+          },
+          "tapcell": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Tapcell"
+          },
+          "endcap": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Endcap"
+          },
+          "distance": {
+            "default": 20,
+            "exclusiveMinimum": 0,
+            "title": "Distance",
+            "type": "number"
+          },
+          "fillers": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Fillers",
+            "type": "array"
+          }
+        },
+        "required": [
+          "database",
+          "top",
+          "operation"
+        ],
+        "title": "PhysicalUtilityParameters",
+        "type": "object"
+      },
+      "PowerConnection": {
+        "additionalProperties": false,
+        "properties": {
+          "net": {
+            "title": "Net",
+            "type": "string"
+          },
+          "pin_pattern": {
+            "title": "Pin Pattern",
+            "type": "string"
+          },
+          "instance_pattern": {
+            "default": ".*",
+            "title": "Instance Pattern",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "power",
+              "ground"
+            ],
+            "title": "Kind",
+            "type": "string"
+          }
+        },
+        "required": [
+          "net",
+          "pin_pattern",
+          "kind"
+        ],
+        "title": "PowerConnection",
+        "type": "object"
+      },
+      "RepairParameters": {
+        "additionalProperties": false,
+        "properties": {
+          "database": {
+            "$ref": "#/$defs/InputRef"
+          },
+          "top": {
+            "title": "Top",
+            "type": "string"
+          },
+          "libraries": {
+            "items": {
+              "$ref": "#/$defs/InputRef"
+            },
+            "title": "Libraries",
+            "type": "array"
+          },
+          "constraints": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/InputRef"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "technology_setup": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/InputRef"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "parasitics": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/InputRef"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "operation": {
+            "enum": [
+              "repair_design",
+              "repair_timing",
+              "repair_tie_fanout",
+              "repair_antennas"
+            ],
+            "title": "Operation",
+            "type": "string"
+          },
+          "mode": {
+            "default": "setup",
+            "enum": [
+              "setup",
+              "hold"
+            ],
+            "title": "Mode",
+            "type": "string"
+          },
+          "margin": {
+            "default": 0,
+            "minimum": 0,
+            "title": "Margin",
+            "type": "number"
+          },
+          "max_utilization": {
+            "default": 80,
+            "exclusiveMinimum": 0,
+            "maximum": 100,
+            "title": "Max Utilization",
+            "type": "number"
+          },
+          "tie_port": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Tie Port"
+          },
+          "separation": {
+            "default": 0,
+            "minimum": 0,
+            "title": "Separation",
+            "type": "number"
+          },
+          "diode_cell": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Diode Cell"
+          },
+          "iterations": {
+            "default": 1,
+            "maximum": 100,
+            "minimum": 1,
+            "title": "Iterations",
+            "type": "integer"
+          },
+          "routing_layers": {
+            "anyOf": [
+              {
+                "maxItems": 2,
+                "minItems": 2,
+                "prefixItems": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Routing Layers"
+          }
+        },
+        "required": [
+          "database",
+          "top",
+          "operation"
+        ],
+        "title": "RepairParameters",
+        "type": "object"
+      },
+      "SimulationParameters": {
+        "additionalProperties": false,
+        "properties": {
+          "operation": {
+            "const": "simulate",
+            "title": "Operation",
+            "type": "string"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/$defs/InputRef"
+            },
+            "minItems": 1,
+            "title": "Sources",
+            "type": "array"
+          },
+          "top": {
+            "title": "Top",
+            "type": "string"
+          },
+          "trace": {
+            "default": true,
+            "title": "Trace",
+            "type": "boolean"
+          },
+          "output_split": {
+            "default": 10000,
+            "minimum": 100,
+            "title": "Output Split",
+            "type": "integer"
+          },
+          "output_split_cfuncs": {
+            "default": 500,
+            "minimum": 10,
+            "title": "Output Split Cfuncs",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "operation",
+          "sources",
+          "top"
+        ],
+        "title": "SimulationParameters",
+        "type": "object"
+      },
+      "StreamoutParameters": {
+        "additionalProperties": false,
+        "properties": {
+          "operation": {
+            "const": "streamout",
+            "title": "Operation",
+            "type": "string"
+          },
+          "top": {
+            "title": "Top",
+            "type": "string"
+          },
+          "layout": {
+            "$ref": "#/$defs/InputRef"
+          },
+          "technology": {
+            "$ref": "#/$defs/InputRef"
+          },
+          "lefs": {
+            "items": {
+              "$ref": "#/$defs/InputRef"
+            },
+            "minItems": 1,
+            "title": "Lefs",
+            "type": "array"
+          },
+          "libraries": {
+            "items": {
+              "$ref": "#/$defs/InputRef"
+            },
+            "minItems": 1,
+            "title": "Libraries",
+            "type": "array"
+          },
+          "dbu": {
+            "exclusiveMinimum": 0,
+            "title": "Dbu",
+            "type": "number"
+          }
+        },
+        "required": [
+          "operation",
+          "top",
+          "layout",
+          "technology",
+          "lefs",
+          "libraries",
+          "dbu"
+        ],
+        "title": "StreamoutParameters",
+        "type": "object"
+      },
+      "Stripe": {
+        "additionalProperties": false,
+        "properties": {
+          "layer": {
+            "title": "Layer",
+            "type": "string"
+          },
+          "width": {
+            "exclusiveMinimum": 0,
+            "title": "Width",
+            "type": "number"
+          },
+          "pitch": {
+            "exclusiveMinimum": 0,
+            "title": "Pitch",
+            "type": "number"
+          },
+          "offset": {
+            "default": 0,
+            "minimum": 0,
+            "title": "Offset",
+            "type": "number"
+          },
+          "followpins": {
+            "default": false,
+            "title": "Followpins",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "layer",
+          "width",
+          "pitch"
+        ],
+        "title": "Stripe",
+        "type": "object"
+      },
+      "SynthesisParameters": {
+        "additionalProperties": false,
+        "properties": {
+          "operation": {
+            "enum": [
+              "synthesize",
+              "elaborate",
+              "check_netlist",
+              "prepare_lvs_reference"
+            ],
+            "title": "Operation",
+            "type": "string"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/$defs/InputRef"
+            },
+            "minItems": 1,
+            "title": "Sources",
+            "type": "array"
+          },
+          "top": {
+            "title": "Top",
+            "type": "string"
+          },
+          "liberty": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/InputRef"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "flatten": {
+            "default": false,
+            "title": "Flatten",
+            "type": "boolean"
+          },
+          "frontend": {
+            "default": "verilog",
+            "enum": [
+              "verilog",
+              "slang"
+            ],
+            "title": "Frontend",
+            "type": "string"
+          },
+          "includes": {
+            "items": {
+              "$ref": "#/$defs/InputRef"
+            },
+            "title": "Includes",
+            "type": "array"
+          },
+          "defines": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Defines",
+            "type": "object"
+          },
+          "top_parameters": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Top Parameters",
+            "type": "object"
+          },
+          "technology_maps": {
+            "items": {
+              "$ref": "#/$defs/InputRef"
+            },
+            "title": "Technology Maps",
+            "type": "array"
+          },
+          "cell_models": {
+            "items": {
+              "$ref": "#/$defs/InputRef"
+            },
+            "title": "Cell Models",
+            "type": "array"
+          },
+          "spice_models": {
+            "items": {
+              "$ref": "#/$defs/InputRef"
+            },
+            "title": "Spice Models",
+            "type": "array"
+          },
+          "mapped": {
+            "default": false,
+            "title": "Mapped",
+            "type": "boolean"
+          },
+          "power_net": {
+            "default": "VDD",
+            "title": "Power Net",
+            "type": "string"
+          },
+          "ground_net": {
+            "default": "VSS",
+            "title": "Ground Net",
+            "type": "string"
+          }
+        },
+        "required": [
+          "operation",
+          "sources",
+          "top"
+        ],
+        "title": "SynthesisParameters",
+        "type": "object"
+      },
+      "TimingCheckParameters": {
+        "additionalProperties": false,
+        "properties": {
+          "database": {
+            "$ref": "#/$defs/InputRef"
+          },
+          "top": {
+            "title": "Top",
+            "type": "string"
+          },
+          "libraries": {
+            "items": {
+              "$ref": "#/$defs/InputRef"
+            },
+            "title": "Libraries",
+            "type": "array"
+          },
+          "constraints": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/InputRef"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "technology_setup": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/InputRef"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "parasitics": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/InputRef"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "operation": {
+            "enum": [
+              "check_constraints",
+              "check_design_rules"
+            ],
+            "title": "Operation",
+            "type": "string"
+          }
+        },
+        "required": [
+          "database",
+          "top",
+          "operation"
+        ],
+        "title": "TimingCheckParameters",
+        "type": "object"
+      },
+      "TimingParameters": {
+        "additionalProperties": false,
+        "properties": {
+          "corner": {
+            "anyOf": [
+              {
+                "pattern": "^[A-Za-z_][A-Za-z0-9_]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Corner"
+          },
+          "min_libraries": {
+            "items": {
+              "$ref": "#/$defs/InputRef"
+            },
+            "title": "Min Libraries",
+            "type": "array"
+          },
+          "operation": {
+            "enum": [
+              "sta",
+              "power"
+            ],
+            "title": "Operation",
+            "type": "string"
+          },
+          "database": {
+            "$ref": "#/$defs/InputRef"
+          },
+          "libraries": {
+            "items": {
+              "$ref": "#/$defs/InputRef"
+            },
+            "minItems": 1,
+            "title": "Libraries",
+            "type": "array"
+          },
+          "constraints": {
+            "$ref": "#/$defs/InputRef"
+          },
+          "parasitics": {
+            "$ref": "#/$defs/InputRef"
+          }
+        },
+        "required": [
+          "operation",
+          "database",
+          "libraries",
+          "constraints",
+          "parasitics"
+        ],
+        "title": "TimingParameters",
+        "type": "object"
+      },
+      "WaveformParameters": {
+        "additionalProperties": false,
+        "properties": {
+          "operation": {
+            "const": "waveform",
+            "title": "Operation",
+            "type": "string"
+          },
+          "waveform": {
+            "$ref": "#/$defs/InputRef"
+          },
+          "format": {
+            "enum": [
+              "vcd",
+              "fst"
+            ],
+            "title": "Format",
+            "type": "string"
+          }
+        },
+        "required": [
+          "operation",
+          "waveform",
+          "format"
+        ],
+        "title": "WaveformParameters",
+        "type": "object"
+      }
+    },
+    "discriminator": {
+      "mapping": {
+        "check_constraints": "#/$defs/TimingCheckParameters",
+        "check_design_rules": "#/$defs/TimingCheckParameters",
+        "check_netlist": "#/$defs/SynthesisParameters",
+        "connect_power": "#/$defs/PhysicalUtilityParameters",
+        "cts": "#/$defs/PhysicalParameters",
+        "drc": "#/$defs/DRCParameters",
+        "elaborate": "#/$defs/SynthesisParameters",
+        "equivalence": "#/$defs/EquivalenceParameters",
+        "export_design": "#/$defs/ExportParameters",
+        "extract": "#/$defs/ExtractionParameters",
+        "floorplan": "#/$defs/PhysicalParameters",
+        "generate_pdn": "#/$defs/PhysicalUtilityParameters",
+        "insert_fillers": "#/$defs/PhysicalUtilityParameters",
+        "insert_tapcells": "#/$defs/PhysicalUtilityParameters",
+        "lint": "#/$defs/LintParameters",
+        "lvs": "#/$defs/LVSParameters",
+        "place": "#/$defs/PhysicalParameters",
+        "power": "#/$defs/TimingParameters",
+        "prepare_lvs_reference": "#/$defs/SynthesisParameters",
+        "repair_antennas": "#/$defs/RepairParameters",
+        "repair_design": "#/$defs/RepairParameters",
+        "repair_tie_fanout": "#/$defs/RepairParameters",
+        "repair_timing": "#/$defs/RepairParameters",
+        "route": "#/$defs/PhysicalParameters",
+        "simulate": "#/$defs/SimulationParameters",
+        "sta": "#/$defs/TimingParameters",
+        "streamout": "#/$defs/StreamoutParameters",
+        "synthesize": "#/$defs/SynthesisParameters",
+        "waveform": "#/$defs/WaveformParameters"
+      },
+      "propertyName": "operation"
+    },
+    "oneOf": [
+      {
+        "$ref": "#/$defs/LintParameters"
+      },
+      {
+        "$ref": "#/$defs/SynthesisParameters"
+      },
+      {
+        "$ref": "#/$defs/SimulationParameters"
+      },
+      {
+        "$ref": "#/$defs/EquivalenceParameters"
+      },
+      {
+        "$ref": "#/$defs/ExtractionParameters"
+      },
+      {
+        "$ref": "#/$defs/LVSParameters"
+      },
+      {
+        "$ref": "#/$defs/DRCParameters"
+      },
+      {
+        "$ref": "#/$defs/WaveformParameters"
+      },
+      {
+        "$ref": "#/$defs/TimingParameters"
+      },
+      {
+        "$ref": "#/$defs/PhysicalParameters"
+      },
+      {
+        "$ref": "#/$defs/StreamoutParameters"
+      },
+      {
+        "$ref": "#/$defs/ExportParameters"
+      },
+      {
+        "$ref": "#/$defs/RepairParameters"
+      },
+      {
+        "$ref": "#/$defs/PhysicalUtilityParameters"
+      },
+      {
+        "$ref": "#/$defs/TimingCheckParameters"
+      }
+    ]
+  },
+  "project_schema": {
+    "$defs": {
+      "ActionConfig": {
+        "additionalProperties": false,
+        "properties": {
+          "parameters": {
+            "anyOf": [
+              {
+                "discriminator": {
+                  "mapping": {
+                    "check_constraints": "#/$defs/TimingCheckParameters",
+                    "check_design_rules": "#/$defs/TimingCheckParameters",
+                    "check_netlist": "#/$defs/SynthesisParameters",
+                    "connect_power": "#/$defs/PhysicalUtilityParameters",
+                    "cts": "#/$defs/PhysicalParameters",
+                    "drc": "#/$defs/DRCParameters",
+                    "elaborate": "#/$defs/SynthesisParameters",
+                    "equivalence": "#/$defs/EquivalenceParameters",
+                    "export_design": "#/$defs/ExportParameters",
+                    "extract": "#/$defs/ExtractionParameters",
+                    "floorplan": "#/$defs/PhysicalParameters",
+                    "generate_pdn": "#/$defs/PhysicalUtilityParameters",
+                    "insert_fillers": "#/$defs/PhysicalUtilityParameters",
+                    "insert_tapcells": "#/$defs/PhysicalUtilityParameters",
+                    "lint": "#/$defs/LintParameters",
+                    "lvs": "#/$defs/LVSParameters",
+                    "place": "#/$defs/PhysicalParameters",
+                    "power": "#/$defs/TimingParameters",
+                    "prepare_lvs_reference": "#/$defs/SynthesisParameters",
+                    "repair_antennas": "#/$defs/RepairParameters",
+                    "repair_design": "#/$defs/RepairParameters",
+                    "repair_tie_fanout": "#/$defs/RepairParameters",
+                    "repair_timing": "#/$defs/RepairParameters",
+                    "route": "#/$defs/PhysicalParameters",
+                    "simulate": "#/$defs/SimulationParameters",
+                    "sta": "#/$defs/TimingParameters",
+                    "streamout": "#/$defs/StreamoutParameters",
+                    "synthesize": "#/$defs/SynthesisParameters",
+                    "waveform": "#/$defs/WaveformParameters"
+                  },
+                  "propertyName": "operation"
+                },
+                "oneOf": [
+                  {
+                    "$ref": "#/$defs/LintParameters"
+                  },
+                  {
+                    "$ref": "#/$defs/SynthesisParameters"
+                  },
+                  {
+                    "$ref": "#/$defs/SimulationParameters"
+                  },
+                  {
+                    "$ref": "#/$defs/EquivalenceParameters"
+                  },
+                  {
+                    "$ref": "#/$defs/ExtractionParameters"
+                  },
+                  {
+                    "$ref": "#/$defs/LVSParameters"
+                  },
+                  {
+                    "$ref": "#/$defs/DRCParameters"
+                  },
+                  {
+                    "$ref": "#/$defs/WaveformParameters"
+                  },
+                  {
+                    "$ref": "#/$defs/TimingParameters"
+                  },
+                  {
+                    "$ref": "#/$defs/PhysicalParameters"
+                  },
+                  {
+                    "$ref": "#/$defs/StreamoutParameters"
+                  },
+                  {
+                    "$ref": "#/$defs/ExportParameters"
+                  },
+                  {
+                    "$ref": "#/$defs/RepairParameters"
+                  },
+                  {
+                    "$ref": "#/$defs/PhysicalUtilityParameters"
+                  },
+                  {
+                    "$ref": "#/$defs/TimingCheckParameters"
+                  }
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Parameters"
+          },
+          "runtime": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/RuntimeConfig"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "script": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Script"
+          },
+          "outputs": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Outputs",
+            "type": "object"
+          },
+          "metrics_file": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Metrics File"
+          },
+          "verification_file": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Verification File"
+          },
+          "args": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Args",
+            "type": "array"
+          }
+        },
+        "title": "ActionConfig",
+        "type": "object"
+      },
+      "ActionSpec": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "pattern": "^[a-z][a-z0-9_]*(?:\\.[a-z][a-z0-9_]*)+$",
+            "title": "Id",
+            "type": "string"
+          },
+          "tool": {
+            "title": "Tool",
+            "type": "string"
+          },
+          "dependencies": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Dependencies",
+            "type": "array"
+          },
+          "input_types": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Input Types",
+            "type": "array"
+          },
+          "artifact_types": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Artifact Types",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "tool",
+          "dependencies",
+          "input_types",
+          "artifact_types"
+        ],
+        "title": "ActionSpec",
+        "type": "object"
+      },
+      "Constraint": {
+        "additionalProperties": false,
+        "properties": {
+          "op": {
+            "enum": [
+              ">=",
+              "<=",
+              "==",
+              ">",
+              "<"
+            ],
+            "title": "Op",
+            "type": "string"
+          },
+          "value": {
+            "title": "Value",
+            "type": "number"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Unit"
+          }
+        },
+        "required": [
+          "op",
+          "value"
+        ],
+        "title": "Constraint",
+        "type": "object"
+      },
+      "DRCParameters": {
+        "additionalProperties": false,
+        "properties": {
+          "rule_format": {
+            "default": "ruby",
+            "enum": [
+              "ruby",
+              "macro"
+            ],
+            "title": "Rule Format",
+            "type": "string"
+          },
+          "variables": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "$ref": "#/$defs/InputRef"
+                }
+              ]
+            },
+            "title": "Variables",
+            "type": "object"
+          },
+          "layout_variable": {
+            "default": "in_gds",
+            "title": "Layout Variable",
+            "type": "string"
+          },
+          "report_variable": {
+            "default": "report_file",
+            "title": "Report Variable",
+            "type": "string"
+          },
+          "reference_variable": {
+            "default": "cdl_file",
+            "title": "Reference Variable",
+            "type": "string"
+          },
+          "operation": {
+            "const": "drc",
+            "title": "Operation",
+            "type": "string"
+          },
+          "layout": {
+            "$ref": "#/$defs/InputRef"
+          },
+          "rules": {
+            "$ref": "#/$defs/InputRef"
+          }
+        },
+        "required": [
+          "operation",
+          "layout",
+          "rules"
+        ],
+        "title": "DRCParameters",
+        "type": "object"
+      },
+      "EquivalenceParameters": {
+        "additionalProperties": false,
+        "properties": {
+          "operation": {
+            "const": "equivalence",
+            "title": "Operation",
+            "type": "string"
+          },
+          "gold_sources": {
+            "items": {
+              "$ref": "#/$defs/InputRef"
+            },
+            "minItems": 1,
+            "title": "Gold Sources",
+            "type": "array"
+          },
+          "gate_sources": {
+            "items": {
+              "$ref": "#/$defs/InputRef"
+            },
+            "minItems": 1,
+            "title": "Gate Sources",
+            "type": "array"
+          },
+          "cell_models": {
+            "items": {
+              "$ref": "#/$defs/InputRef"
+            },
+            "title": "Cell Models",
+            "type": "array"
+          },
+          "cell_liberties": {
+            "items": {
+              "$ref": "#/$defs/InputRef"
+            },
+            "title": "Cell Liberties",
+            "type": "array"
+          },
+          "top": {
+            "title": "Top",
+            "type": "string"
+          },
+          "engine": {
+            "default": "yosys",
+            "enum": [
+              "yosys",
+              "eqy"
+            ],
+            "title": "Engine",
+            "type": "string"
+          },
+          "memory_mode": {
+            "const": "map",
+            "default": "map",
+            "title": "Memory Mode",
+            "type": "string"
+          },
+          "depth": {
+            "default": 10,
+            "maximum": 100,
+            "minimum": 1,
+            "title": "Depth",
+            "type": "integer"
+          },
+          "partition_timeout_seconds": {
+            "default": 60,
+            "minimum": 1,
+            "title": "Partition Timeout Seconds",
+            "type": "integer"
+          },
+          "solver": {
+            "default": "z3",
+            "enum": [
+              "z3",
+              "cvc5",
+              "boolector"
+            ],
+            "title": "Solver",
+            "type": "string"
+          }
+        },
+        "required": [
+          "operation",
+          "gold_sources",
+          "gate_sources",
+          "top"
+        ],
+        "title": "EquivalenceParameters",
+        "type": "object"
+      },
+      "ExportParameters": {
+        "additionalProperties": false,
+        "properties": {
+          "database": {
+            "$ref": "#/$defs/InputRef"
+          },
+          "top": {
+            "title": "Top",
+            "type": "string"
+          },
+          "libraries": {
+            "items": {
+              "$ref": "#/$defs/InputRef"
+            },
+            "title": "Libraries",
+            "type": "array"
+          },
+          "constraints": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/InputRef"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "technology_setup": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/InputRef"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "parasitics": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/InputRef"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "operation": {
+            "const": "export_design",
+            "title": "Operation",
+            "type": "string"
+          },
+          "formats": {
+            "items": {
+              "enum": [
+                "odb",
+                "def",
+                "verilog",
+                "sdc",
+                "spef"
+              ],
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Formats",
+            "type": "array"
+          },
+          "include_power_ground": {
+            "default": true,
+            "title": "Include Power Ground",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "database",
+          "top",
+          "operation",
+          "formats"
+        ],
+        "title": "ExportParameters",
+        "type": "object"
+      },
+      "ExtractionParameters": {
+        "additionalProperties": false,
+        "properties": {
+          "operation": {
+            "const": "extract",
+            "title": "Operation",
+            "type": "string"
+          },
+          "layout": {
+            "$ref": "#/$defs/InputRef"
+          },
+          "technology": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/InputRef"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "builtin_technology": {
+            "anyOf": [
+              {
+                "const": "scmos",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Builtin Technology"
+          },
+          "top": {
+            "title": "Top",
+            "type": "string"
+          }
+        },
+        "required": [
+          "operation",
+          "layout",
+          "top"
+        ],
+        "title": "ExtractionParameters",
+        "type": "object"
+      },
+      "InputRef": {
+        "additionalProperties": false,
+        "properties": {
+          "path": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Path"
+          },
+          "action": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Action"
+          },
+          "artifact": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Artifact"
+          }
+        },
+        "title": "InputRef",
+        "type": "object"
+      },
+      "LVSParameters": {
+        "additionalProperties": false,
+        "properties": {
+          "rule_format": {
+            "default": "ruby",
+            "enum": [
+              "ruby",
+              "macro"
+            ],
+            "title": "Rule Format",
+            "type": "string"
+          },
+          "variables": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "$ref": "#/$defs/InputRef"
+                }
+              ]
+            },
+            "title": "Variables",
+            "type": "object"
+          },
+          "layout_variable": {
+            "default": "in_gds",
+            "title": "Layout Variable",
+            "type": "string"
+          },
+          "report_variable": {
+            "default": "report_file",
+            "title": "Report Variable",
+            "type": "string"
+          },
+          "reference_variable": {
+            "default": "cdl_file",
+            "title": "Reference Variable",
+            "type": "string"
+          },
+          "operation": {
+            "const": "lvs",
+            "title": "Operation",
+            "type": "string"
+          },
+          "layout": {
+            "$ref": "#/$defs/InputRef"
+          },
+          "reference": {
+            "$ref": "#/$defs/InputRef"
+          },
+          "top": {
+            "title": "Top",
+            "type": "string"
+          },
+          "reference_top": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Reference Top"
+          },
+          "rules": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/InputRef"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "required": [
+          "operation",
+          "layout",
+          "reference",
+          "top"
+        ],
+        "title": "LVSParameters",
+        "type": "object"
+      },
+      "LintParameters": {
+        "additionalProperties": false,
+        "properties": {
+          "operation": {
+            "const": "lint",
+            "title": "Operation",
+            "type": "string"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/$defs/InputRef"
+            },
+            "minItems": 1,
+            "title": "Sources",
+            "type": "array"
+          },
+          "top": {
+            "title": "Top",
+            "type": "string"
+          }
+        },
+        "required": [
+          "operation",
+          "sources",
+          "top"
+        ],
+        "title": "LintParameters",
+        "type": "object"
+      },
+      "PhysicalParameters": {
+        "additionalProperties": false,
+        "properties": {
+          "operation": {
+            "enum": [
+              "floorplan",
+              "place",
+              "cts",
+              "route"
+            ],
+            "title": "Operation",
+            "type": "string"
+          },
+          "top": {
+            "title": "Top",
+            "type": "string"
+          },
+          "libraries": {
+            "items": {
+              "$ref": "#/$defs/InputRef"
+            },
+            "minItems": 1,
+            "title": "Libraries",
+            "type": "array"
+          },
+          "constraints": {
+            "$ref": "#/$defs/InputRef"
+          },
+          "database": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/InputRef"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "netlist": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/InputRef"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "lefs": {
+            "items": {
+              "$ref": "#/$defs/InputRef"
+            },
+            "title": "Lefs",
+            "type": "array"
+          },
+          "technology_setup": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/InputRef"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "site": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Site"
+          },
+          "die_area": {
+            "anyOf": [
+              {
+                "maxItems": 4,
+                "minItems": 4,
+                "prefixItems": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ],
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Die Area"
+          },
+          "core_area": {
+            "anyOf": [
+              {
+                "maxItems": 4,
+                "minItems": 4,
+                "prefixItems": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ],
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Core Area"
+          },
+          "pin_layers": {
+            "anyOf": [
+              {
+                "maxItems": 2,
+                "minItems": 2,
+                "prefixItems": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Pin Layers"
+          },
+          "density": {
+            "default": 0.5,
+            "exclusiveMinimum": 0,
+            "maximum": 1,
+            "title": "Density",
+            "type": "number"
+          },
+          "clock_buffers": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Clock Buffers",
+            "type": "array"
+          },
+          "routing_layers": {
+            "anyOf": [
+              {
+                "maxItems": 2,
+                "minItems": 2,
+                "prefixItems": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Routing Layers"
+          },
+          "extraction_rules": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/InputRef"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "required": [
+          "operation",
+          "top",
+          "libraries",
+          "constraints"
+        ],
+        "title": "PhysicalParameters",
+        "type": "object"
+      },
+      "PhysicalUtilityParameters": {
+        "additionalProperties": false,
+        "properties": {
+          "database": {
+            "$ref": "#/$defs/InputRef"
+          },
+          "top": {
+            "title": "Top",
+            "type": "string"
+          },
+          "libraries": {
+            "items": {
+              "$ref": "#/$defs/InputRef"
+            },
+            "title": "Libraries",
+            "type": "array"
+          },
+          "constraints": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/InputRef"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "technology_setup": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/InputRef"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "parasitics": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/InputRef"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "operation": {
+            "enum": [
+              "connect_power",
+              "generate_pdn",
+              "insert_tapcells",
+              "insert_fillers"
+            ],
+            "title": "Operation",
+            "type": "string"
+          },
+          "connections": {
+            "items": {
+              "$ref": "#/$defs/PowerConnection"
+            },
+            "title": "Connections",
+            "type": "array"
+          },
+          "power_net": {
+            "default": "VDD",
+            "title": "Power Net",
+            "type": "string"
+          },
+          "ground_net": {
+            "default": "VSS",
+            "title": "Ground Net",
+            "type": "string"
+          },
+          "stripes": {
+            "items": {
+              "$ref": "#/$defs/Stripe"
+            },
+            "title": "Stripes",
+            "type": "array"
+          },
+          "connect_layers": {
+            "items": {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "string"
+                }
+              ],
+              "type": "array"
+            },
+            "title": "Connect Layers",
+            "type": "array"
+          },
+          "tapcell": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Tapcell"
+          },
+          "endcap": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Endcap"
+          },
+          "distance": {
+            "default": 20,
+            "exclusiveMinimum": 0,
+            "title": "Distance",
+            "type": "number"
+          },
+          "fillers": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Fillers",
+            "type": "array"
+          }
+        },
+        "required": [
+          "database",
+          "top",
+          "operation"
+        ],
+        "title": "PhysicalUtilityParameters",
+        "type": "object"
+      },
+      "PowerConnection": {
+        "additionalProperties": false,
+        "properties": {
+          "net": {
+            "title": "Net",
+            "type": "string"
+          },
+          "pin_pattern": {
+            "title": "Pin Pattern",
+            "type": "string"
+          },
+          "instance_pattern": {
+            "default": ".*",
+            "title": "Instance Pattern",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "power",
+              "ground"
+            ],
+            "title": "Kind",
+            "type": "string"
+          }
+        },
+        "required": [
+          "net",
+          "pin_pattern",
+          "kind"
+        ],
+        "title": "PowerConnection",
+        "type": "object"
+      },
+      "RepairParameters": {
+        "additionalProperties": false,
+        "properties": {
+          "database": {
+            "$ref": "#/$defs/InputRef"
+          },
+          "top": {
+            "title": "Top",
+            "type": "string"
+          },
+          "libraries": {
+            "items": {
+              "$ref": "#/$defs/InputRef"
+            },
+            "title": "Libraries",
+            "type": "array"
+          },
+          "constraints": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/InputRef"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "technology_setup": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/InputRef"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "parasitics": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/InputRef"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "operation": {
+            "enum": [
+              "repair_design",
+              "repair_timing",
+              "repair_tie_fanout",
+              "repair_antennas"
+            ],
+            "title": "Operation",
+            "type": "string"
+          },
+          "mode": {
+            "default": "setup",
+            "enum": [
+              "setup",
+              "hold"
+            ],
+            "title": "Mode",
+            "type": "string"
+          },
+          "margin": {
+            "default": 0,
+            "minimum": 0,
+            "title": "Margin",
+            "type": "number"
+          },
+          "max_utilization": {
+            "default": 80,
+            "exclusiveMinimum": 0,
+            "maximum": 100,
+            "title": "Max Utilization",
+            "type": "number"
+          },
+          "tie_port": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Tie Port"
+          },
+          "separation": {
+            "default": 0,
+            "minimum": 0,
+            "title": "Separation",
+            "type": "number"
+          },
+          "diode_cell": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Diode Cell"
+          },
+          "iterations": {
+            "default": 1,
+            "maximum": 100,
+            "minimum": 1,
+            "title": "Iterations",
+            "type": "integer"
+          },
+          "routing_layers": {
+            "anyOf": [
+              {
+                "maxItems": 2,
+                "minItems": 2,
+                "prefixItems": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Routing Layers"
+          }
+        },
+        "required": [
+          "database",
+          "top",
+          "operation"
+        ],
+        "title": "RepairParameters",
+        "type": "object"
+      },
+      "Resources": {
+        "additionalProperties": false,
+        "properties": {
+          "cpu": {
+            "default": 2,
+            "minimum": 1,
+            "title": "Cpu",
+            "type": "integer"
+          },
+          "memory_gb": {
+            "default": 4,
+            "exclusiveMinimum": 0,
+            "title": "Memory Gb",
+            "type": "number"
+          },
+          "timeout_seconds": {
+            "default": 600,
+            "minimum": 1,
+            "title": "Timeout Seconds",
+            "type": "integer"
+          },
+          "build_jobs": {
+            "default": 1,
+            "minimum": 1,
+            "title": "Build Jobs",
+            "type": "integer"
+          },
+          "pids": {
+            "default": 256,
+            "minimum": 16,
+            "title": "Pids",
+            "type": "integer"
+          }
+        },
+        "title": "Resources",
+        "type": "object"
+      },
+      "RuntimeConfig": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "default": "docker",
+            "enum": [
+              "local",
+              "docker"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "image": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Image"
+          },
+          "resources": {
+            "$ref": "#/$defs/Resources"
+          },
+          "require_native": {
+            "default": false,
+            "title": "Require Native",
+            "type": "boolean"
+          }
+        },
+        "title": "RuntimeConfig",
+        "type": "object"
+      },
+      "SimulationParameters": {
+        "additionalProperties": false,
+        "properties": {
+          "operation": {
+            "const": "simulate",
+            "title": "Operation",
+            "type": "string"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/$defs/InputRef"
+            },
+            "minItems": 1,
+            "title": "Sources",
+            "type": "array"
+          },
+          "top": {
+            "title": "Top",
+            "type": "string"
+          },
+          "trace": {
+            "default": true,
+            "title": "Trace",
+            "type": "boolean"
+          },
+          "output_split": {
+            "default": 10000,
+            "minimum": 100,
+            "title": "Output Split",
+            "type": "integer"
+          },
+          "output_split_cfuncs": {
+            "default": 500,
+            "minimum": 10,
+            "title": "Output Split Cfuncs",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "operation",
+          "sources",
+          "top"
+        ],
+        "title": "SimulationParameters",
+        "type": "object"
+      },
+      "StreamoutParameters": {
+        "additionalProperties": false,
+        "properties": {
+          "operation": {
+            "const": "streamout",
+            "title": "Operation",
+            "type": "string"
+          },
+          "top": {
+            "title": "Top",
+            "type": "string"
+          },
+          "layout": {
+            "$ref": "#/$defs/InputRef"
+          },
+          "technology": {
+            "$ref": "#/$defs/InputRef"
+          },
+          "lefs": {
+            "items": {
+              "$ref": "#/$defs/InputRef"
+            },
+            "minItems": 1,
+            "title": "Lefs",
+            "type": "array"
+          },
+          "libraries": {
+            "items": {
+              "$ref": "#/$defs/InputRef"
+            },
+            "minItems": 1,
+            "title": "Libraries",
+            "type": "array"
+          },
+          "dbu": {
+            "exclusiveMinimum": 0,
+            "title": "Dbu",
+            "type": "number"
+          }
+        },
+        "required": [
+          "operation",
+          "top",
+          "layout",
+          "technology",
+          "lefs",
+          "libraries",
+          "dbu"
+        ],
+        "title": "StreamoutParameters",
+        "type": "object"
+      },
+      "Stripe": {
+        "additionalProperties": false,
+        "properties": {
+          "layer": {
+            "title": "Layer",
+            "type": "string"
+          },
+          "width": {
+            "exclusiveMinimum": 0,
+            "title": "Width",
+            "type": "number"
+          },
+          "pitch": {
+            "exclusiveMinimum": 0,
+            "title": "Pitch",
+            "type": "number"
+          },
+          "offset": {
+            "default": 0,
+            "minimum": 0,
+            "title": "Offset",
+            "type": "number"
+          },
+          "followpins": {
+            "default": false,
+            "title": "Followpins",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "layer",
+          "width",
+          "pitch"
+        ],
+        "title": "Stripe",
+        "type": "object"
+      },
+      "SynthesisParameters": {
+        "additionalProperties": false,
+        "properties": {
+          "operation": {
+            "enum": [
+              "synthesize",
+              "elaborate",
+              "check_netlist",
+              "prepare_lvs_reference"
+            ],
+            "title": "Operation",
+            "type": "string"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/$defs/InputRef"
+            },
+            "minItems": 1,
+            "title": "Sources",
+            "type": "array"
+          },
+          "top": {
+            "title": "Top",
+            "type": "string"
+          },
+          "liberty": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/InputRef"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "flatten": {
+            "default": false,
+            "title": "Flatten",
+            "type": "boolean"
+          },
+          "frontend": {
+            "default": "verilog",
+            "enum": [
+              "verilog",
+              "slang"
+            ],
+            "title": "Frontend",
+            "type": "string"
+          },
+          "includes": {
+            "items": {
+              "$ref": "#/$defs/InputRef"
+            },
+            "title": "Includes",
+            "type": "array"
+          },
+          "defines": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Defines",
+            "type": "object"
+          },
+          "top_parameters": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Top Parameters",
+            "type": "object"
+          },
+          "technology_maps": {
+            "items": {
+              "$ref": "#/$defs/InputRef"
+            },
+            "title": "Technology Maps",
+            "type": "array"
+          },
+          "cell_models": {
+            "items": {
+              "$ref": "#/$defs/InputRef"
+            },
+            "title": "Cell Models",
+            "type": "array"
+          },
+          "spice_models": {
+            "items": {
+              "$ref": "#/$defs/InputRef"
+            },
+            "title": "Spice Models",
+            "type": "array"
+          },
+          "mapped": {
+            "default": false,
+            "title": "Mapped",
+            "type": "boolean"
+          },
+          "power_net": {
+            "default": "VDD",
+            "title": "Power Net",
+            "type": "string"
+          },
+          "ground_net": {
+            "default": "VSS",
+            "title": "Ground Net",
+            "type": "string"
+          }
+        },
+        "required": [
+          "operation",
+          "sources",
+          "top"
+        ],
+        "title": "SynthesisParameters",
+        "type": "object"
+      },
+      "TimingCheckParameters": {
+        "additionalProperties": false,
+        "properties": {
+          "database": {
+            "$ref": "#/$defs/InputRef"
+          },
+          "top": {
+            "title": "Top",
+            "type": "string"
+          },
+          "libraries": {
+            "items": {
+              "$ref": "#/$defs/InputRef"
+            },
+            "title": "Libraries",
+            "type": "array"
+          },
+          "constraints": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/InputRef"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "technology_setup": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/InputRef"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "parasitics": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/InputRef"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "operation": {
+            "enum": [
+              "check_constraints",
+              "check_design_rules"
+            ],
+            "title": "Operation",
+            "type": "string"
+          }
+        },
+        "required": [
+          "database",
+          "top",
+          "operation"
+        ],
+        "title": "TimingCheckParameters",
+        "type": "object"
+      },
+      "TimingParameters": {
+        "additionalProperties": false,
+        "properties": {
+          "corner": {
+            "anyOf": [
+              {
+                "pattern": "^[A-Za-z_][A-Za-z0-9_]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Corner"
+          },
+          "min_libraries": {
+            "items": {
+              "$ref": "#/$defs/InputRef"
+            },
+            "title": "Min Libraries",
+            "type": "array"
+          },
+          "operation": {
+            "enum": [
+              "sta",
+              "power"
+            ],
+            "title": "Operation",
+            "type": "string"
+          },
+          "database": {
+            "$ref": "#/$defs/InputRef"
+          },
+          "libraries": {
+            "items": {
+              "$ref": "#/$defs/InputRef"
+            },
+            "minItems": 1,
+            "title": "Libraries",
+            "type": "array"
+          },
+          "constraints": {
+            "$ref": "#/$defs/InputRef"
+          },
+          "parasitics": {
+            "$ref": "#/$defs/InputRef"
+          }
+        },
+        "required": [
+          "operation",
+          "database",
+          "libraries",
+          "constraints",
+          "parasitics"
+        ],
+        "title": "TimingParameters",
+        "type": "object"
+      },
+      "WaveformParameters": {
+        "additionalProperties": false,
+        "properties": {
+          "operation": {
+            "const": "waveform",
+            "title": "Operation",
+            "type": "string"
+          },
+          "waveform": {
+            "$ref": "#/$defs/InputRef"
+          },
+          "format": {
+            "enum": [
+              "vcd",
+              "fst"
+            ],
+            "title": "Format",
+            "type": "string"
+          }
+        },
+        "required": [
+          "operation",
+          "waveform",
+          "format"
+        ],
+        "title": "WaveformParameters",
+        "type": "object"
+      },
+      "WorkflowSpec": {
+        "additionalProperties": false,
+        "properties": {
+          "actions": {
+            "items": {
+              "$ref": "#/$defs/ActionSpec"
+            },
+            "title": "Actions",
+            "type": "array"
+          },
+          "targets": {
+            "additionalProperties": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "title": "Targets",
+            "type": "object"
+          }
+        },
+        "title": "WorkflowSpec",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "name": {
+        "title": "Name",
+        "type": "string"
+      },
+      "top": {
+        "title": "Top",
+        "type": "string"
+      },
+      "inputs": {
+        "additionalProperties": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "description": "Project-relative file paths/globs by category. Allowed keys are the union of the resolved workflow action input_types plus config and script; custom action input_types extend this set. parameters path references must also be captured here; JSON Schema alone cannot enforce this rule.",
+        "title": "Inputs",
+        "type": "object"
+      },
+      "runtime": {
+        "$ref": "#/$defs/RuntimeConfig"
+      },
+      "workflow": {
+        "$ref": "#/$defs/WorkflowSpec"
+      },
+      "identities": {
+        "additionalProperties": {
+          "type": "string"
+        },
+        "title": "Identities",
+        "type": "object"
+      },
+      "actions": {
+        "additionalProperties": {
+          "$ref": "#/$defs/ActionConfig"
+        },
+        "title": "Actions",
+        "type": "object"
+      },
+      "constraints": {
+        "additionalProperties": {
+          "$ref": "#/$defs/Constraint"
+        },
+        "title": "Constraints",
+        "type": "object"
+      },
+      "required_verification": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Required Verification",
+        "type": "array"
+      }
+    },
+    "required": [
+      "name",
+      "top",
+      "inputs",
+      "runtime"
+    ],
+    "title": "Project",
+    "type": "object"
+  },
+  "input_contract": {
+    "default_allowed_categories": [
+      "activity",
+      "config",
+      "drc_rules",
+      "gds",
+      "include",
+      "lef",
+      "liberty",
+      "lvs_rules",
+      "physical",
+      "rtl",
+      "script",
+      "sdc",
+      "streamout",
+      "testbench"
+    ],
+    "category_rule": "Union of resolved workflow action input_types plus config and script. Custom actions may add categories.",
+    "action_rule": "list_actions.allowed_input_categories gives categories accepted by each action, including shared config and script.",
+    "path_rule": "Declare project-relative paths/globs in inputs.<category>, then reference captured files with parameters {path: ...}. Parameters alone do not capture files or bypass validation.",
+    "artifact_rule": "Use {action: ..., artifact: ...} for declared upstream dependencies; do not add generated artifact paths to inputs.",
+    "validation": "Project JSON Schema describes shape; workflow-dependent categories are checked on project load, and captured references on preflight."
+  },
+  "input_reference": "path in captured project OR action + artifact from a declared dependency",
+  "rule_contracts": {
+    "magic": "Matching Magic technology file, or explicitly selected bundled scmos",
+    "netgen": "Optional native Netgen setup Tcl; absent means no device mapping",
+    "klayout.drc": "Ruby rule body or native XML macro; explicit input/report variables",
+    "klayout.lvs": "Ruby extraction body or native XML macro; explicit bindings and native final comparison"
+  },
+  "qualification": "Adapters are tested with pinned tools; no claim of arbitrary version or PDK compatibility"
+}

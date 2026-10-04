@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "id": "chip-pack",
+  "domain": "chip",
+  "sourceVersion": "0.6.1",
+  "status": "source-bootstrap",
+  "runtime": {
+    "entry": "runtime/index.cjs",
+    "toolId": "chip.rtl.verify",
+    "toolVersion": "0.6.1-core.1"
+  },
+  "profiles": [
+    {
+      "id": "eda-full",
+      "platform": "linux/amd64",
+      "recipe": "eda-harness/Dockerfile.tools",
+      "status": "recipe-only"
+    },
+    {
+      "id": "rtl-cpu",
+      "status": "planned"
+    }
+  ]
+}
