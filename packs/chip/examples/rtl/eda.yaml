@@ -1,0 +1,11 @@
+name: remote-counter
+top: counter_tb
+actions:
+  rtl.simulate:
+    parameters:
+      operation: simulate
+      top: counter_tb
+      trace: true
+      sources:
+        - path: counter.sv
+        - path: counter_tb.sv

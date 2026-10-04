@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "pcb-pack",
+  "domain": "pcb",
+  "sourceVersion": "2026.09.28",
+  "status": "maintained-source",
+  "skills": [
+    "skills/pcb-design-e2e/SKILL.md",
+    "skills/pcb-layout-inspect/SKILL.md"
+  ],
+  "profiles": [],
+  "runtime": {
+    "gateway": "bridge/pcb-gateway.py",
+    "hostBridge": "bridge/pcb-runtime.cjs"
+  },
+  "externalDependencies": [
+    "Private PCB-bench actor checkout with registered hashes",
+    "Pinned KiCad native Docker image"
+  ],
+  "remoteStatus": "not-qualified-private-backend"
+}

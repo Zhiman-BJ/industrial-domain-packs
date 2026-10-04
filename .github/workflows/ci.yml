@@ -1,4 +1,4 @@
-name: Chip source checks
+name: Domain source checks
 
 on:
   push:
@@ -13,6 +13,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Locked JavaScript sources and release identity
+        run: npm ci --ignore-scripts && npm run lock:check && npm test
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
@@ -25,4 +30,7 @@ jobs:
       - name: Real stdio MCP discovery
         run: uv run --frozen --directory packs/chip/eda-harness python ../scripts/mcp-smoke.py
       - name: Build committed source archive
-        run: python scripts/package-pack.py chip --output dist
+        run: |
+          for pack in chip godot pcb freecad cad; do
+            python scripts/package-pack.py "$pack" --output dist
+          done

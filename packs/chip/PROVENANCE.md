@@ -9,3 +9,5 @@ Original EDA contributions retain their authorized MIT license in `eda-harness/L
 The import selects source modules, locks, Skill, source tests, the Core adapter, image recipes and small public educational fixtures used by those recipes. It excludes upstream archived logs, execution receipts, prebuilt environments, native binaries and private deployment material. Repository documentation and bootstrap packaging are new original contributions.
 
 Future shared domain changes are maintained in this repository. The bootstrap file hashes are historical provenance; a new release records the current content separately. Existing Harness or remote-service copies are not automatically replaced by this import.
+
+The maintained migration refreshes selected public source to Harness 371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e; see ../../provenance/domain-migration.json. The original bootstrap record is preserved. New shared rtl-cpu entry, recipe and Verifier are identified by content-lock.json.

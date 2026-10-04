@@ -1,0 +1,24 @@
+# syntax=docker/dockerfile:1
+# Verilator's official fixed linux/amd64 image, also used by eda-full.
+FROM verilator/verilator@sha256:4381a83fc2864cc2be91c5acb8ddff688077c73db20304b7f2c38cccd6a965da AS verilator
+FROM ubuntu:24.04@sha256:008173c23f95b170204355c12626cb5a965d779a7e1283b09e9cffbb1bf33ca3
+ARG DEBIAN_FRONTEND=noninteractive
+# g++ and make are necessary at runtime to compile each simulation.
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    apt-get -o Acquire::Retries=3 update && apt-get -o Acquire::Retries=3 install -y --no-install-recommends \
+      g++ make perl ccache libfl2 zlib1g python3 python3-venv ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+COPY --from=verilator /usr/local/bin/verilator* /usr/local/bin/
+COPY --from=verilator /usr/local/share/verilator /usr/local/share/verilator
+COPY packs/chip/eda-harness/src/eda_harness/dependency_locks/runtime.txt /opt/locks/runtime.txt
+RUN python3 -m venv /opt/venv && /opt/venv/bin/pip install --no-cache-dir --require-hashes --only-binary=:all: -r /opt/locks/runtime.txt
+ENV PATH="/opt/venv/bin:${PATH}" HOME=/tmp PYTHONDONTWRITEBYTECODE=1 CCACHE_DISABLE=1
+COPY package.json content-lock.json /opt/domain-packs/
+COPY lib /opt/domain-packs/lib
+COPY packs /opt/domain-packs/packs
+RUN python3 /opt/domain-packs/packs/chip/runtime/native-profile.py /opt/domain-packs/packs/chip/examples/rtl /tmp/smoke \
+    && test -s /tmp/smoke/wave.vcd && rm -rf /tmp/smoke
+WORKDIR /work
+USER 1000:1000
+ENTRYPOINT ["python3", "/opt/domain-packs/packs/chip/runtime/native-profile.py"]
+CMD ["/input", "/work"]

@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "domain": "cad",
+  "capabilities": [
+    {
+      "id": "cad.2d.author",
+      "title": "Author 2D drawings via ezdxf",
+      "domain": "cad",
+      "stages": ["drafting"],
+      "priority": 11,
+      "keywords": ["dxf", "2d", "drawing", "ezdxf", "spec", "dimension", "图纸", "二维", "制图", "标注"],
+      "skills": [
+        {"id": "cad.intent.loop", "summary": "Intent-layer workflow, dimension-neutral: spec as the single source of truth, semantic diff to absorb hand-edits, programmatic acceptance gates, evidence chain, deliverable routing.", "reference": "The shared methodology; tool specifics live in the per-tool skills it routes to."},
+        {"id": "cad.ezdxf.author", "summary": "Direct 2D DXF authoring and verification with ezdxf: dimstyle traps, %%c anchor-matching, codepage loss, semantic dxf_diff, delivery conversion (PDF/DWG).", "reference": "Default route for 2D drawing deliverables; open a CAD app only for a DWG exit or live-session work."}
+      ],
+      "tools": [],
+      "verification": ["Confirm the DXF verifies against the spec"]
+    },
+    {
+      "id": "cad.freecad.operate",
+      "title": "Operate FreeCAD headless",
+      "domain": "cad",
+      "stages": ["drafting"],
+      "priority": 10,
+      "keywords": ["freecad", "2d", "3d", "parametric", "sketch", "step", "fcstd", "solid", "建模", "三维", "参数化", "草图"],
+      "skills": [
+        {"id": "cad.intent.loop", "summary": "Intent-layer workflow, dimension-neutral: spec as the single source of truth, readback-based acceptance gates, evidence chain, deliverable routing.", "reference": "The shared methodology; this capability applies it through FreeCAD."},
+        {"id": "cad.freecad.headless", "summary": "FreeCAD headless via freecadcmd for parametric 2D sketches and 3D solids: build→readback→verify loop, fully-constrained gate, analytic volume checks, Sketcher API traps.", "reference": "Route by deliverable: 2D drawing files go to ezdxf; FreeCAD serves parametric sketches and 3D models (FCStd/STEP). Its DXF paths are weak links — never the acceptance reader."}
+      ],
+      "tools": [],
+      "verification": ["Confirm FCStd/STEP on disk with model-driven checks"]
+    },
+    {
+      "id": "cad.autocad.operate",
+      "title": "Operate AutoCAD drawings",
+      "domain": "cad",
+      "stages": ["drafting"],
+      "priority": 10,
+      "keywords": ["autocad", "cad", "dwg", "dxf", "lisp", "drawing", "drafting", "图纸", "制图", "绘图"],
+      "skills": [
+        {"id": "cad.intent.loop", "summary": "Intent-layer workflow, dimension-neutral: spec as the single source of truth, semantic diff to absorb hand-edits, programmatic acceptance gates, evidence chain.", "reference": "The shared methodology; AutoCAD is the carrier for DWG exits and live-session work."},
+        {"id": "cad.autocad.macos", "summary": "AutoCAD for Mac operating traits: LISP entmake geometry, interactive DIMLINEAR dimensions, GUI-only save dialogs, and the platform's verified dead ends.", "reference": "Scope-limited to AutoCAD on macOS; driving the app requires the computer-use plugin. See the skill file for the platform boundary."}
+      ],
+      "tools": [],
+      "verification": ["Confirm the resulting drawing file on disk"]
+    }
+  ]
+}

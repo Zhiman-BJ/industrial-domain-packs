@@ -10,3 +10,7 @@
 Historical license and source details are retained in [Chip provenance](packs/chip/PROVENANCE.md). Public source redistribution does not relicense third-party software or authorize redistribution of customer inputs, PDKs or licensed assets. A future image publisher must preserve the applicable upstream notices and matching source/build information before distributing binary images.
 
 PCB-bench private actor resources, customer designs and existing deployment data are outside this repository. The public catalog will add a domain only after its actual source and distribution boundary are established.
+
+## Maintained multi-domain migration
+
+Godot source/bridge, PCB public bridge, FreeCAD PR29 runtime, CAD/domain Skills and resource hash validation retain the Harness MIT notice. Exact imports are in provenance/domain-migration.json. PCB private actor is external. Godot, FreeCAD, KiCad, Verilator and their system/image dependencies retain their upstream licenses; this source repository does not bundle their executables. Verilator 5.026 official image is pinned by digest in the shared RTL recipe. No registry distribution of built binary images is part of this migration.

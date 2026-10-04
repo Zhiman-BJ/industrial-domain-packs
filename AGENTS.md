@@ -7,7 +7,7 @@ Read README.md, docs/architecture.md and docs/migration.md before changing modul
 - Keep the existing Agent kernel and scoped Runtime boundary. Raw MCP disclosure does not authorize protected industrial mutations.
 - Local and remote execution share domain semantics. Backend adapters own process/container lifecycle and actual resource limits. A remote workload must not gain a Docker socket, Kubernetes credentials or arbitrary host mounts.
 - Record exact source, dependencies, platform, profile and image identities. Do not replace an immutable release or interpret an old run with a new Verifier.
-- The current bootstrap does not implement a Kubernetes-native domain backend or a qualified rtl-cpu image. Mark proposals and exercised platforms accurately.
+- The shared rtl-cpu entry runs inside an allocated sandbox; preserve exact profile/content identities. Additional domains are source migrations, not qualified remote profiles. Mark exercised platforms accurately.
 - Imported source retains licenses and provenance. Update provenance when ownership or distribution boundaries change. Keep the original bootstrap hash record as historical evidence.
 - Never commit customer inputs, generated engineering runs, credentials, private deployment endpoints, PDK archives, local Python environments or unreviewed binaries.
 - Contract fixtures are not evidence of engineering acceptance. Qualify native success, real failure, cancellation and recovery before declaring an execution profile supported.

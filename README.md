@@ -2,45 +2,53 @@
 
 [简体中文](README.zh-CN.md)
 
-Shared domain implementations and versioned Pack sources for Industrial Agent Harness. Local Docker execution and remote Kubernetes execution will consume the same domain release, including tool definitions, execution code, verification, dependency locks and tool-image identities.
+Maintained public source for Industrial Harness domains. Local and remote consumers pin this repository by an exact Git commit; domain execution, Skills, dependency locks, tool definitions, Verifiers and image recipes are developed here.
 
-**Status: source bootstrap.** The first Pack imports the existing public, MIT-licensed Chip implementation. The shared remote execution backend, RTL-only image, immutable runtime releases and consumer migration are planned. Creating this repository does not switch an existing Harness installation or remote deployment.
+| Pack | Included implementation | Execution boundary |
+| --- | --- | --- |
+| Chip | EDA 0.6.1, 25-tool MCP, canonical RTL adapter, Skills, full EDA recipe and shared `rtl-cpu` recipe | CPU trial exposes `chip.rtl.verify`; raw MCP has a wider standalone surface |
+| Godot | Godot source/runtime inspector, scoped gateway and game Skills | Requires Godot 4; remote native execution is not qualified |
+| PCB | Public gateway/controller, metadata, locks and Skills | Private PCB-bench actor remains external; no private actor source is redistributed |
+| FreeCAD | Committed public PR29 runtime, bounded recipe validator, native code and Skill | Inherited macOS arm64 qualification; Linux/Windows are not qualified |
+| CAD guidance | AutoCAD macOS, ezdxf and intent-loop Skills | Skill-only; no remote execution profile |
 
-## Repository ownership
+The migration imports only committed public source: Harness `371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e` and FreeCAD PR29 `62510b22b47803e0841825ec1c2b34fae48b3b15`. Exact imports are recorded in [provenance](provenance/domain-migration.json). Existing uncommitted work and private PCB actor resources are excluded. Pack-local READMEs and harness-pack.json preserve upstream/bootstrap setup notes, including references to Harness-only scripts and earlier plans. Current availability and consumer instructions are defined by this README, pack.json and docs/migration-validation.md; legacy consumer metadata remains reference material until the Harness consumer transition.
 
-| Repository | Responsibility |
-| --- | --- |
-| **industrial-domain-packs** | Domain MCP, domain execution, canonical tool and verifier adapters, Skills, native-tool recipes and Pack releases |
-| [industrial-agent-harness](https://github.com/Zhiman-BJ/industrial-agent-harness) | Canonical contracts, industrial Runtime, Broker, Agent integration, CLI, Desktop and Viewer framework |
-| industrial-harness-remote | Authentication, snapshots, approval envelopes, bounded scheduling, sandbox lifecycle and transport |
-
-Domain changes are maintained here. Consumers will pin a Pack release rather than maintain handwritten copies. Canonical industrial contracts remain owned by Industrial Agent Harness.
-
-## First Pack
-
-`packs/chip/` contains the EDA Harness 0.6.1 source, 25-tool stdio MCP, Python lockfile, EDA Skill, existing Core RTL adapter and full EDA tool-image recipe. The source comes from public Harness commit `01d8ea2c01bdf3e3be858b1bcee0c29b174ad8c5`; individual imported file hashes are recorded in [bootstrap provenance](provenance/chip-bootstrap.json).
-
-Install the Python source with Python 3.13 and uv, then check the real stdio MCP:
+## Consumers
 
 ```sh
+npm install --ignore-scripts 'https://codeload.github.com/Zhiman-BJ/industrial-domain-packs/tar.gz/<full-reviewed-commit>'
+```
+
+The package `@zhiman-bj/industrial-domain-packs` exports `catalog`, `identity`, `getSandboxProfile()` and integrity checks. `content-lock.json` identifies maintained code and metadata. Pin the full commit in both package.json and package-lock.json. No npm registry publication is required for this Git dependency.
+
+The remote service consumes the trusted `chip-pack/rtl-cpu` profile, including its descriptor, Verifier, native entry, bounded artifact exporter and Dockerfile. It checks the sandbox's content identity before native execution. The native entry calls the same EDA `semantic.prepare` and `semantic.observe` used by local execution; both canonical adapters use `runtime/verifier.cjs`. Image versions and Pack identities are part of capability disclosure and persisted jobs. The local Harness consumer transition remains separate; existing installations do not change automatically.
+
+## Development and validation
+
+```sh
+npm ci --ignore-scripts
+npm test
+npm run lock:check
 uv sync --frozen --directory packs/chip/eda-harness
+uv run --frozen --directory packs/chip/eda-harness pytest -q
 uv run --frozen --directory packs/chip/eda-harness python ../scripts/mcp-smoke.py
+
+docker buildx build --platform linux/amd64 --load \
+  -f packs/chip/images/Dockerfile.rtl-cpu -t industrial-domain-rtl:0.2.0 .
+./validate.sh packs/chip/examples/rtl --image industrial-domain-rtl:0.2.0
 ```
 
-This check discovers tools and reads server information. Engineering execution requires separately prepared native tools and a valid project. The inherited full EDA recipe targets Linux amd64; a shared `rtl-cpu` image and Kubernetes execution backend are the next implementation steps. The raw MCP surface is for standalone EDA use; protected Harness sessions must enter the canonical Runtime and scoped gateway.
+`validate.sh` starts one isolated ephemeral container per task, checks real simulation completion, native verification and VCD structure, and writes `result.json`. See [qualification](docs/migration-validation.md) for exercised paths and limits. Images are validated locally; source CI does not build or publish tool images.
 
-## Source archives
+After deliberate source changes, stage reviewed files under packs/ and lib/ and run `npm run lock`. This changes the release identity. Build consumer and sandbox images from the same pinned package, then drain the old coordinator before switching.
 
-After committing changes, build an archive from the committed Pack files:
+Build a committed **source-only** archive for any Pack with `python3 scripts/package-pack.py chip --output dist` (also godot, pcb, freecad, cad). Archives contain import notices and file hashes; executable images use the complete pinned package as their build context.
 
-```sh
-python3 scripts/package-pack.py chip --output dist
-```
+## Ownership and license
 
-The archive contains a source manifest with the exact Git commit and file hashes; an adjacent SHA-256 file identifies the archive. It excludes untracked files and local Python environments. This bootstrap packaging does not publish or qualify an executable image.
+This repository owns domain code. [Industrial Agent Harness](https://github.com/Zhiman-BJ/industrial-agent-harness) owns canonical contracts, Runtime, Broker, Agent loop, CLI, Desktop and Viewer framework. The private remote service owns authentication, snapshots, grants, bounded scheduling and sandbox lifecycle. Workloads receive no Docker socket or Kubernetes credentials. Process success never substitutes for canonical verification.
 
-See [architecture](docs/architecture.md), [release identity](docs/release-format.md), [migration plan](docs/migration.md), [bootstrap validation](docs/bootstrap-validation.md), and [Chip source notes](packs/chip/README.md).
+Original contributions and imported Harness contributions use MIT; preserve [notices](THIRD_PARTY_NOTICES.md) and `licenses/industrial-agent-harness.MIT`. Native tools retain their own terms. Customer projects, credentials, deployment endpoints, PDKs, private PCB actor source, native binaries and archived runs are outside this public source repository.
 
-## License and imported components
-
-Original contributions use MIT. Imported Chip source retains its original notices and [provenance](packs/chip/PROVENANCE.md). Native tools, PDKs, libraries and binary dependencies retain their own terms; see [third-party notices](THIRD_PARTY_NOTICES.md). This repository contains source, build recipes and small upstream educational fixtures. It does not contain customer projects, deployment credentials, PDK distributions, native binaries or archived execution logs.
+See [architecture](docs/architecture.md), [release identity](docs/release-format.md), and [migration](docs/migration.md).

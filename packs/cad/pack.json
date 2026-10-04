@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "cad-pack",
+  "domain": "cad",
+  "sourceVersion": "0.1.0",
+  "status": "skill-only",
+  "skills": [
+    "skills/cad-autocad-macos/SKILL.md",
+    "skills/cad-ezdxf/SKILL.md",
+    "skills/cad-intent-loop/SKILL.md"
+  ],
+  "profiles": [],
+  "remoteStatus": "no-execution-profile"
+}
