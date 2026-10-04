@@ -26,7 +26,7 @@ docker build --platform linux/amd64 \
   -t eda-harness-tools:source-bootstrap packs/chip/eda-harness
 ```
 
-This command downloads the pinned upstream images. No image has been published or newly qualified by this repository. A shared RTL-only profile and a sandbox process backend are planned in [migration](../../docs/migration.md).
+This command downloads the pinned upstream images. No image has been published or newly qualified by this repository. A shared RTL-only profile and a sandbox process backend are planned in [migration](https://github.com/Zhiman-BJ/industrial-domain-packs/blob/main/docs/migration.md).
 
 `harness-pack.json` preserves the original consumer metadata; its provider source hash describes the historical Harness layout. It is reference metadata until the source paths and content digest are regenerated for this repository's release format. `pack.json` is the source catalog, not an executable qualification record.
 

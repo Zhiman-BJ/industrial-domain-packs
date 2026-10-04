@@ -31,4 +31,4 @@ uv run --frozen --directory packs/chip/eda-harness python ../scripts/mcp-smoke.p
 
 提交源码后可运行 `python3 scripts/package-pack.py chip --output dist` 生成源码归档、逐文件版本清单和归档摘要。打包只读取已提交的 Pack 文件，排除未跟踪文件及本地环境；当前不发布或宣称已资格验证的工具镜像。
 
-架构、版本身份和迁移顺序见 [架构](docs/architecture.md)、[发布格式](docs/release-format.md)、[实施路线](docs/migration.md)。原始代码与第三方软件各自保留许可；本仓不包含客户工程、部署凭据、PDK 分发文件、工具二进制或历史执行日志。
+架构、版本身份和迁移顺序见 [架构](docs/architecture.md)、[发布格式](docs/release-format.md)、[实施路线](docs/migration.md)、[基线验证](docs/bootstrap-validation.md)。原始代码与第三方软件各自保留许可；本仓不包含客户工程、部署凭据、PDK 分发文件、工具二进制或历史执行日志。

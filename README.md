@@ -39,7 +39,7 @@ python3 scripts/package-pack.py chip --output dist
 
 The archive contains a source manifest with the exact Git commit and file hashes; an adjacent SHA-256 file identifies the archive. It excludes untracked files and local Python environments. This bootstrap packaging does not publish or qualify an executable image.
 
-See [architecture](docs/architecture.md), [release identity](docs/release-format.md), [migration plan](docs/migration.md), and [Chip source notes](packs/chip/README.md).
+See [architecture](docs/architecture.md), [release identity](docs/release-format.md), [migration plan](docs/migration.md), [bootstrap validation](docs/bootstrap-validation.md), and [Chip source notes](packs/chip/README.md).
 
 ## License and imported components
 
