@@ -26,6 +26,19 @@ test("host consumers resolve canonical Pack identities and verified maintained r
       validateResources(packs.sourceDirectory(item.id), item.provider);
   }
   const freecad = host.find((item) => item.id === "freecad-pack");
+  const chip = host.find((item) => item.id === "chip-pack");
+  const sourceProject = fs.readFileSync(
+    path.join(packs.sourceDirectory(chip.id), "eda-harness/pyproject.toml"),
+    "utf8",
+  );
+  assert.equal(
+    chip.provider.version,
+    sourceProject.match(/^version = "([^"]+)"/m)[1],
+  );
+  assert.equal(
+    metadata.domains.find((item) => item.id === "chip").version,
+    "0.6.2",
+  );
   assert.equal(freecad.version, "1.1.4-pack.4");
   assert.ok(
     freecad.provider.tools.find((item) => item.id === "cad.freecad.edit"),

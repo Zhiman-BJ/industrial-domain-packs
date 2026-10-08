@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contentSha256": "93a0f07ca988157f79b645fbb8fe48a596b2a0d2814d9fd8b453d51d6edff75a",
+  "contentSha256": "a5e490c558cbe68a803d29204964121a16d3bee9c80e00a8b4fea6d5d1ce323c",
   "files": {
     "lib/consumer.cjs": "a70e74e779f10addc7a57d6a592fb766c78c92768818c07e100dbba93bff7e99",
     "lib/consumer.json": "0881d49ef00c395d010f043425b3a771fed632f78cb472e602361a87abc0bdf9",
@@ -97,7 +97,7 @@
     "packs/chip/examples/rtl/counter.sv": "640cbbdd634cb6c91c133922aa17a363bf76be9288a7565452842347622b6893",
     "packs/chip/examples/rtl/counter_tb.sv": "30574b9c02ac10965a0db9959c8619c6f80140a1dc7f989a9ab5e009c693075a",
     "packs/chip/examples/rtl/eda.yaml": "824ccce8d12446492fd89dc12989d874bf91d5fc89cb1387f9c71beeb4a3ae96",
-    "packs/chip/harness-pack.json": "7eed96a4fd534d458f3dc3aadedcb939801f4814fd28707d2a09fa5d063377bf",
+    "packs/chip/harness-pack.json": "6917dcb2efa7956b23dd51846dd6c6d45541d77c9877fe45c8b033cd903b0245",
     "packs/chip/images/Dockerfile.rtl-cpu": "96f5d25b8b2f4672ec9667ff5ee02cb4fdeb798a06c1d008ac0333ba5d4ac3b1",
     "packs/chip/linux-bootstrap.sh": "8006af4b130d81febd9b5835e594566b09fc80b64dd30c5a60a34010b7855e7b",
     "packs/chip/linux-installer-header.sh": "22a635d04702c059f30f2afd886c359064432f23fbd88777dd27da85ea1e2b8a",
