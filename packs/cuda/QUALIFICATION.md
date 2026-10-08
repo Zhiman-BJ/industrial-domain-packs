@@ -43,6 +43,15 @@ contract gate and complete JavaScript source suite pass. Private task files,
 credentials, host addresses and full native logs remain in the private qualification
 workspace; this public record carries only the exercised scope and pinned hashes.
 
+## Local preparation GPU gate
+
+The added read-only host preflight checks model, stable UUID, VRAM, driver and
+compute capability before allocating native workers. The fixed 4090 host was
+inspected successfully; unsupported model/driver/SM, missing or ambiguous device
+information and explicit multi-GPU selection have source regression coverage.
+Remote-client mode skips local GPU detection. This is an installation admission
+check, not additional native GPU or desktop-installer qualification.
+
 ## Limits
 
 No H200, other GPU/driver, task corpus, generic GPU coordinator profile, desktop

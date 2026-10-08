@@ -39,6 +39,20 @@ access. The host-side backend owns Docker lifecycle and real resource limits.
 worker isolation. Project-supplied commands, images, mounts or GPU IDs are never
 accepted by an MCP tool.
 
+Before local preparation, run `node packs/cuda/scripts/preflight.cjs` to inspect
+GPU model, UUID, VRAM, driver and compute capability. Multiple compatible GPUs
+require an explicit `--gpu GPU-UUID` selection. `allocate.cjs` repeats this check
+before reading recipes, writing allocation files or starting workers. The fixed
+profile accepts RTX 4090 / SM 8.9 / driver 595.71.05 on Linux x64; detection alone
+is not native qualification. A different GPU or driver needs a reviewed profile.
+Do not silently upgrade drivers or downgrade to CPU execution. Remote clients
+use `--remote-client` and require no local NVIDIA GPU.
+
+The installation UI should distinguish local service preparation from connection
+to a remote service, show the detected devices and actionable mismatch status,
+and bind the selected evaluator by stable UUID. The automatic local installer/UI
+is not yet supplied by this developer release.
+
 Create a private configuration with `projectId`, `imageId`, `gpuUuid`, `taskSha256`,
 `allocation`, absolute `upstreamRoot`, absolute `stateDirectory`, absolute Docker
 executable (an administrator's sudo wrapper is supported) and optional loopback

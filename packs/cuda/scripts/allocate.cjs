@@ -4,12 +4,14 @@ const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
 const { execute } = require('../server/backend.cjs');
+const { requireLocalGpu } = require('./preflight.cjs');
 const { upstream, imageLock, sha256 } = require('../runtime/protocol.cjs');
-async function allocate(config) {
+async function allocate(config, { checkGpu = requireLocalGpu } = {}) {
   if (!path.isAbsolute(config.upstreamRoot || '') || !path.isAbsolute(config.stateDirectory || '') ||
       config.imageId !== imageLock.imageId ||
       !/^[a-z0-9][a-z0-9-]{1,62}$/.test(config.allocation || '') ||
       !/^[a-f0-9]{64}$/.test(config.projectId || '')) throw Error('Invalid administrator allocation configuration.');
+  await checkGpu(config);
   const root = fs.realpathSync(config.upstreamRoot), directory = path.dirname(config.stateDirectory);
   const envPath = 'tasks/axpby/environment/';
   for (const file of ['docker-compose.yaml', 'candidate-worker-seccomp.json', 'evaluator-worker-seccomp.json']) {

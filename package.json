@@ -130,6 +130,7 @@
     "packs/cuda/runtime/protocol.cjs",
     "packs/cuda/runtime/verifier.cjs",
     "packs/cuda/scripts/allocate.cjs",
+    "packs/cuda/scripts/preflight.cjs",
     "packs/cuda/scripts/qualify.cjs",
     "packs/cuda/server/backend.cjs",
     "packs/cuda/server/mcp.cjs",
