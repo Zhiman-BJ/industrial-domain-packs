@@ -20,7 +20,7 @@
     ".github/CODEOWNERS": "7fd61685e756c3d8ec60136fcf1bbad9a2afdb27280c2d869f095b94ebcddd8a",
     ".github/workflows/architecture-contract.yml": "7a8618b688b50f86703d5d74ef30225b2f42324222ec4c1c49d3a491df19157c",
     "scripts/check-architecture-contract.cjs": "16fd912ff7a76986a944925da5304d7df82d50a801d7d29f31703f4dd5bcc0ee",
-    "tests/architecture/contract-policy.test.cjs": "2487957f1e9f6665e1b697a2574c55ff106d30038bfa129da4c7c5bb27e7ef18",
+    "tests/architecture/contract-policy.test.cjs": "53f9f062bcd991315c89b7e1a23a5edcec47b2ea55e27b40add7df327eec9982",
     "docs/architecture-contract.md": "9f0d09d955245ac98ad366a3315a3951c349758b5a9e50d0a2691292c73373ba"
   }
 }

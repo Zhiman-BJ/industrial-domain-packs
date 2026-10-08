@@ -186,8 +186,9 @@ test('source and policy paths cannot escape through symlinks or traversal', t =>
   delete f.policy.frozen['../outside'];
   f.write('packages/core/src/file.cjs', '');
   fs.symlinkSync(
-    path.join(f.root, 'package.json'),
-    path.join(f.root, 'packages/core/src/link.cjs'),
+    path.join(f.root, 'packages/core/src'),
+    path.join(f.root, 'linked-source'),
+    process.platform === 'win32' ? 'junction' : 'dir',
   );
   assert.throws(() => f.check(), /symlink/);
 });
