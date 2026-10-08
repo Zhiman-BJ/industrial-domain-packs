@@ -2,183 +2,108 @@
   "schemaVersion": 1,
   "id": "godot-pack",
   "domain": "godot",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "provider": {
     "id": "godot.local",
-    "title": "Godot local game tools",
+    "title": "Godot structural Runtime",
     "domain": "godot",
-    "version": "0.1.1",
-    "transport": "gateway",
-    "backend": "godot-local",
+    "version": "0.2.0",
+    "transport": "runtime",
     "packDirectory": "godot",
-    "sourceFiles": {
-      "src/inspect_scene.gd": "89a4fc583b90af71d697692a87c32c1daff635a4453b6cd354740c9414575201",
-      "src/runtime.cjs": "e6977d490ac5ac85753693a8af4db42fc58ce20f976259fa0d9ff8e220032074"
-    },
+    "packId": "godot-pack",
+    "sourceSha256": "f8dee01fb9ed1a2cedce8ee8216e81a4f6ef2f964bd165bc733e14e3d77a40b9",
     "resourceRoots": [
-      "src"
+      "runtime"
     ],
-    "sourceSha256": "dd60d8f96a999b5386e90bd76d0424cd2075ad8d7aadab293058fd8210be60c1",
+    "sourceFiles": {
+      "runtime/diagnostics.cjs": "2fbc151510d6be8932d9b2456f1709d5e0de57c17ed79525b539c26e1289a18d",
+      "runtime/edit.cjs": "d4e2e8788326e934d242d0785814f50671023cb36f4ee515a25ce7351ae402a1",
+      "runtime/index.cjs": "c87b6294d5fb0790cf0d91958c99dd7d141a987fedb52f9a9939e474e52e2357",
+      "runtime/native-dependency.json": "465561b1cc768ad1bd2f3f6cc3ddb66cb544dd1f81ae237fe8c110eef8989323",
+      "runtime/readback.gd": "d54074f2a851c22f6395da895bc59a430dbe94361f65c32640551865c2b197b7",
+      "runtime/setup-native.cjs": "9c78c10560e0d651fefd3eb8722681aa995047ce2792ce192523a48bd3890457",
+      "runtime/support.cjs": "27c8c2b8b7472677c007a4c7fa6e1d42651a8ef0579fc58c85878a3e986e60cc",
+      "runtime/verifier.cjs": "7a2907a2c90cf8b197eb17f835f569e23e0f6dceef0c057d5aea40898dab1db5"
+    },
     "tools": [
       {
-        "id": "godot.game.project_status",
-        "name": "project_status",
-        "risk": "read-only",
-        "summary": "Read project.godot identity and source hash"
-      },
-      {
-        "id": "godot.game.inspect_scene_source",
-        "name": "inspect_scene_source",
-        "risk": "read-only",
-        "summary": "Read bounded serialized scene nodes and properties"
-      },
-      {
-        "id": "godot.game.inspect_scene_runtime",
-        "name": "inspect_scene_runtime",
+        "id": "godot.scene.edit",
+        "name": "edit",
         "risk": "mutating",
-        "summary": "Instantiate a scene in headless Godot and inspect resolved properties",
+        "summary": "Apply bounded source edits and invalidate prior engineering evidence.",
         "verification": [
-          "Retain the native action receipt; compare observations with task-specific acceptance criteria."
+          "Source integrity only; rerun independent engineering verification."
         ]
       },
       {
-        "id": "godot.game.check_project",
-        "name": "check_project",
+        "id": "godot.scene.verify",
+        "name": "verify",
         "risk": "mutating",
-        "summary": "Run bounded native Godot import and parse check",
+        "summary": "Independent native readback and explicit task-requirement verification.",
         "verification": [
-          "Retain the native action receipt; compare observations with task-specific acceptance criteria."
-        ]
-      },
-      {
-        "id": "godot.game.run_scene",
-        "name": "run_scene",
-        "risk": "mutating",
-        "summary": "Run a scene headlessly for a bounded number of frames",
-        "verification": [
-          "Retain the native action receipt; compare observations with task-specific acceptance criteria."
+          "godot.scene.requirements.v1"
         ]
       }
-    ],
-    "packId": "godot-pack"
+    ]
+  },
+  "runtime": {
+    "entry": "runtime/index.cjs"
   },
   "capabilities": [
     {
-      "id": "godot.game.inspect",
-      "title": "Godot scene inspection",
+      "id": "godot.native.task",
       "domain": "godot",
-      "stages": [
-        "development",
-        "verification"
-      ],
-      "priority": 12,
-      "keywords": [
-        "inspect scene",
-        "scene tree",
-        "project status",
-        "查看场景",
-        "场景属性",
-        "检查场景"
-      ],
-      "skills": [
-        {
-          "id": "godot.game.inspect",
-          "summary": "Inspect source scene structure and project identity.",
-          "reference": "Load the scoped Godot Skill; discover, describe and call only allowed godot.game.* IDs. Native success is not gameplay acceptance."
-        }
-      ],
-      "tools": [
-        {
-          "id": "godot.game.project_status",
-          "name": "project_status",
-          "risk": "read-only",
-          "summary": "Read project.godot identity and source hash"
-        },
-        {
-          "id": "godot.game.inspect_scene_source",
-          "name": "inspect_scene_source",
-          "risk": "read-only",
-          "summary": "Read bounded serialized scene nodes and properties"
-        }
-      ],
-      "verification": [
-        "Source inspection does not establish runtime behavior."
-      ]
-    },
-    {
-      "id": "godot.game.develop",
-      "title": "Godot game development checks",
-      "domain": "godot",
-      "stages": [
-        "development",
-        "verification"
-      ],
-      "priority": 20,
+      "title": "Godot scene requirements",
+      "stages": [],
+      "priority": 100,
       "keywords": [
         "godot",
+        "godot",
         "gdscript",
-        "game scene",
-        "player scene",
-        "ui scene",
-        "animationplayer",
-        "animatedsprite2d",
-        "res://",
-        "游戏场景",
-        "运行场景",
-        "动画",
-        "场景",
-        "sprite"
+        "scene",
+        "game",
+        "animation",
+        "\u6e38\u620f",
+        "\u573a\u666f",
+        "\u52a8\u753b",
+        "edit",
+        "modify",
+        "\u5c3a\u5bf8",
+        "\u4fee\u6539",
+        "\u9a8c\u8bc1"
       ],
       "skills": [
         {
           "id": "godot.game.develop",
-          "summary": "Use bounded native Godot observation and execution checks.",
-          "reference": "Load the scoped Godot Skill; discover, describe and call only allowed godot.game.* IDs. Native success is not gameplay acceptance."
+          "summary": "Bounded professional Actions and independent native verification."
+        },
+        {
+          "id": "godot.game.inspect",
+          "summary": "Read source/current engineering evidence before deciding constraints."
         }
       ],
       "tools": [
         {
-          "id": "godot.game.project_status",
-          "name": "project_status",
-          "risk": "read-only",
-          "summary": "Read project.godot identity and source hash"
-        },
-        {
-          "id": "godot.game.inspect_scene_source",
-          "name": "inspect_scene_source",
-          "risk": "read-only",
-          "summary": "Read bounded serialized scene nodes and properties"
-        },
-        {
-          "id": "godot.game.inspect_scene_runtime",
-          "name": "inspect_scene_runtime",
+          "id": "godot.scene.edit",
+          "name": "edit",
           "risk": "mutating",
-          "summary": "Instantiate a scene in headless Godot and inspect resolved properties",
+          "summary": "Apply bounded source edits and invalidate prior engineering evidence.",
           "verification": [
-            "Retain the native action receipt; compare observations with task-specific acceptance criteria."
+            "Source integrity only; rerun independent engineering verification."
           ]
         },
         {
-          "id": "godot.game.check_project",
-          "name": "check_project",
+          "id": "godot.scene.verify",
+          "name": "verify",
           "risk": "mutating",
-          "summary": "Run bounded native Godot import and parse check",
+          "summary": "Independent native readback and explicit task-requirement verification.",
           "verification": [
-            "Retain the native action receipt; compare observations with task-specific acceptance criteria."
-          ]
-        },
-        {
-          "id": "godot.game.run_scene",
-          "name": "run_scene",
-          "risk": "mutating",
-          "summary": "Run a scene headlessly for a bounded number of frames",
-          "verification": [
-            "Retain the native action receipt; compare observations with task-specific acceptance criteria."
+            "godot.scene.requirements.v1"
           ]
         }
       ],
       "verification": [
-        "Native import and headless run are smoke checks; verify gameplay against task criteria."
+        "godot.scene.requirements.v1"
       ]
     }
   ]

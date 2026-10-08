@@ -1,8 +1,14 @@
 ---
 name: godot-game-develop
-description: Build or repair a Godot game using scoped native checks and explicit acceptance evidence.
+description: Typed text-scene edits and independent Godot import/geometry/frame verification through Industrial Runtime.
 ---
 
-Discover the current `godot.game.*` IDs with `domain_tool_list`; use `domain_tool_describe` to inspect arguments before calling them. Check `project_status` and inspect relevant `.tscn` source. Run `check_project` to import assets and report parse diagnostics before `inspect_scene_runtime`; that operation instantiates a scene and can run its scripts. After edits, rerun `check_project` and use `run_scene` for a bounded headless smoke run. These checks can write project files and require approval under the host policy.
+# Godot structural tasks
 
-Native execution success does not establish gameplay correctness. Compare the observed nodes, dimensions, frame regions and behavior with the task's stated acceptance criteria. For visual or interactive tasks, inspect rendered evidence or run an explicit task-specific check. Record failed or incomplete checks honestly; a timeout has an uncertain side-effect outcome. Project file editing may use the agent's normal authorized file tools; these MCP tools provide focused observation and verification evidence.
+Use industrial_tool_describe / industrial_action_call with `godot.scene.edit` and `godot.scene.verify`. Every professional mutation enters the scoped Domain Runtime. Legacy `godot.game.*` native MCP writes are frozen standalone diagnostics and are not disclosed by Harness.
+
+First release is Godot 4.7.2 on macOS Apple Silicon. Edit an ordinary `.tscn` file with a current `expectedSha256` and changes such as `{section:"node:Box",property:"position",value:{type:"Vector3",value:[1,2,3]}}` or `{section:"resource:Box_1",property:"size",value:{type:"Vector3",value:[2,3,4]}}`. Supports node position, rotation_degrees, scale, visible and BoxMesh size. Use the shared `project.files.apply` Runtime Action for scripts/config/assets; it invalidates engineering acceptance.
+
+After every edit, reinspect and resolve a new scope. Run `godot.scene.verify` with file, frames (1..180) and nonempty explicit expect entries such as `{node:"Box",property:"mesh_size",value:[2,3,4]}`. Native import, separate resolved property/geometry readback and exact frame completion must succeed. All expectations must hold in readback and before/after the run. Script/parse errors, early quit, missing reports, timeout and cancellation cannot pass. The supported gate verifies structural properties; it does not prove arbitrary gameplay, rendering, audio or performance. Native headless/Dummy text operation and offline sandbox diagnostics are retained.
+
+Godot works on an isolated input snapshot; `.godot` cache and generated imports remain in Runtime storage. Hashes bind original scene, scripts/assets and config. Outside project paths, symlinks, hard links and stale scopes are rejected. Install Godot 4.7.2 or set `INDUSTRIAL_HARNESS_GODOT_CMD` to its executable. A native exit or legacy `not_run` receipt is not engineering acceptance.

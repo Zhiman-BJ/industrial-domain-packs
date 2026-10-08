@@ -5,7 +5,7 @@
     {
       "id": "chip",
       "label": "Chip",
-      "emoji": "💠",
+      "emoji": "\ud83d\udca0",
       "version": "0.6.2",
       "summary": "EDA skills, viewers and the Chip MCP service",
       "prerequisites": [
@@ -16,27 +16,33 @@
     {
       "id": "pcb",
       "label": "PCB",
-      "emoji": "🔌",
-      "version": "2026.09.28-pack.1",
-      "summary": "PCB skills and KiCad document viewer",
+      "emoji": "\ud83d\udd0c",
+      "version": "0.1.0-kicad.1",
+      "summary": "Public KiCad rectangular board and footprint edits with DRC and task constraints",
       "prerequisites": [
-        "Private PCB-bench actor and pinned KiCad runtime are required for editing"
+        "Public KiCad 10.0.6: kicad-cli and bundled Python pcbnew"
+      ],
+      "qualifiedBundlePlatforms": [
+        "darwin-arm64"
       ]
     },
     {
       "id": "godot",
       "label": "Godot",
-      "emoji": "🎮",
-      "version": "0.1.1",
-      "summary": "Godot source tools and Web Export viewer",
+      "emoji": "\ud83c\udfae",
+      "version": "0.2.0",
+      "summary": "Scene transforms, BoxMesh geometry and independent Godot structural verification",
       "prerequisites": [
-        "Godot 4 is required for native execution"
+        "Godot 4.7.2 executable"
+      ],
+      "qualifiedBundlePlatforms": [
+        "darwin-arm64"
       ]
     },
     {
       "id": "cad",
       "label": "CAD",
-      "emoji": "📐",
+      "emoji": "\ud83d\udcd0",
       "version": "1.1.4-pack.4",
       "summary": "FreeCAD parametric modelling, geometry verification and OCCT CAD viewer",
       "prerequisites": [
@@ -94,12 +100,7 @@
       "title": "PCB design and repair",
       "enabledByDefault": true,
       "packId": "pcb-pack",
-      "resourcePath": "skills/pcb-design-e2e",
-      "external": {
-        "providerPackId": "pcb-pack",
-        "resourcePath": "skills/pcb-design-e2e",
-        "nativeToolPrefix": "pcb.bench."
-      }
+      "resourcePath": "skills/pcb-design-e2e"
     },
     {
       "id": "godot.game.inspect",
@@ -164,9 +165,9 @@
         "netlist",
         "logic",
         "signal",
-        "网表",
-        "逻辑",
-        "信号"
+        "\u7f51\u8868",
+        "\u903b\u8f91",
+        "\u4fe1\u53f7"
       ],
       "skills": [
         {
@@ -202,9 +203,9 @@
         "simulation",
         "timing",
         "vcd",
-        "波形",
-        "仿真",
-        "时序"
+        "\u6ce2\u5f62",
+        "\u4eff\u771f",
+        "\u65f6\u5e8f"
       ],
       "skills": [
         {
@@ -238,9 +239,9 @@
         "layout",
         "gds",
         "layer",
-        "版图",
-        "物理",
-        "图层"
+        "\u7248\u56fe",
+        "\u7269\u7406",
+        "\u56fe\u5c42"
       ],
       "skills": [
         {
@@ -263,42 +264,6 @@
       ]
     },
     {
-      "id": "pcb.layout.inspect",
-      "title": "Inspect PCB layout",
-      "domain": "pcb",
-      "stages": [
-        "layout"
-      ],
-      "priority": 10,
-      "keywords": [
-        "pcb",
-        "board",
-        "trace",
-        "route",
-        "板",
-        "走线"
-      ],
-      "skills": [
-        {
-          "id": "pcb.layout.inspect",
-          "summary": "Review board geometry and routing context.",
-          "reference": "Open .kicad_pcb and .kicad_sch project artifacts in the read-only KiCad Viewer. Inspect layers, nets and object properties; a rendered view does not prove DRC or ERC."
-        }
-      ],
-      "tools": [
-        {
-          "id": "pcb.board.inspect",
-          "summary": "Read board metadata",
-          "schema": {
-            "artifactId": "string"
-          }
-        }
-      ],
-      "verification": [
-        "Confirm board revision"
-      ]
-    },
-    {
       "id": "cad.2d.author",
       "title": "Author 2D drawings via ezdxf",
       "domain": "cad",
@@ -313,10 +278,10 @@
         "ezdxf",
         "spec",
         "dimension",
-        "图纸",
-        "二维",
-        "制图",
-        "标注"
+        "\u56fe\u7eb8",
+        "\u4e8c\u7ef4",
+        "\u5236\u56fe",
+        "\u6807\u6ce8"
       ],
       "skills": [
         {
@@ -352,10 +317,10 @@
         "step",
         "fcstd",
         "solid",
-        "建模",
-        "三维",
-        "参数化",
-        "草图"
+        "\u5efa\u6a21",
+        "\u4e09\u7ef4",
+        "\u53c2\u6570\u5316",
+        "\u8349\u56fe"
       ],
       "skills": [
         {
@@ -365,8 +330,8 @@
         },
         {
           "id": "cad.freecad.headless",
-          "summary": "FreeCAD headless via freecadcmd for parametric 2D sketches and 3D solids: build→readback→verify loop, fully-constrained gate, analytic volume checks, Sketcher API traps.",
-          "reference": "Route by deliverable: 2D drawing files go to ezdxf; FreeCAD serves parametric sketches and 3D models (FCStd/STEP). Its DXF paths are weak links — never the acceptance reader."
+          "summary": "FreeCAD headless via freecadcmd for parametric 2D sketches and 3D solids: build\u2192readback\u2192verify loop, fully-constrained gate, analytic volume checks, Sketcher API traps.",
+          "reference": "Route by deliverable: 2D drawing files go to ezdxf; FreeCAD serves parametric sketches and 3D models (FCStd/STEP). Its DXF paths are weak links \u2014 never the acceptance reader."
         }
       ],
       "tools": [],
@@ -390,9 +355,9 @@
         "lisp",
         "drawing",
         "drafting",
-        "图纸",
-        "制图",
-        "绘图"
+        "\u56fe\u7eb8",
+        "\u5236\u56fe",
+        "\u7ed8\u56fe"
       ],
       "skills": [
         {

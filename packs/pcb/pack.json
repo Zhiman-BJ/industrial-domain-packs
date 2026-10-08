@@ -3,19 +3,21 @@
   "id": "pcb-pack",
   "domain": "pcb",
   "sourceVersion": "2026.09.28",
-  "status": "maintained-source",
+  "status": "local-runtime",
   "skills": [
     "skills/pcb-design-e2e/SKILL.md",
     "skills/pcb-layout-inspect/SKILL.md"
   ],
   "profiles": [],
   "runtime": {
-    "gateway": "bridge/pcb-gateway.py",
-    "hostBridge": "bridge/pcb-runtime.cjs"
+    "entry": "runtime/index.cjs"
   },
   "externalDependencies": [
-    "Private PCB-bench actor checkout with registered hashes",
-    "Pinned KiCad native Docker image"
+    "Public KiCad 10.0.6: kicad-cli and bundled Python pcbnew"
   ],
-  "remoteStatus": "not-qualified-private-backend"
+  "remoteStatus": "not-qualified",
+  "releaseVersion": "0.1.0-kicad.1",
+  "nativePlatforms": [
+    "darwin-arm64"
+  ]
 }
