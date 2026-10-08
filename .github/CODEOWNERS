@@ -1,0 +1,8 @@
+# Architecture policy owner. Baselines require an explicit architecture decision.
+/AGENTS.md @ZzzPanda
+/architecture/ @ZzzPanda
+/scripts/check-architecture-contract.cjs @ZzzPanda
+/tests/architecture/contract-policy.test.cjs @ZzzPanda
+/.github/workflows/architecture-contract.yml @ZzzPanda
+/.github/CODEOWNERS @ZzzPanda
+/docs/architecture-contract.md @ZzzPanda

@@ -151,9 +151,10 @@
     ".dockerignore"
   ],
   "scripts": {
-    "test": "node --test tests/*.test.cjs",
+    "test": "node scripts/check-architecture-contract.cjs && node --test tests/*.test.cjs tests/architecture/*.test.cjs",
     "lock": "node scripts/content-lock.cjs",
-    "lock:check": "node scripts/content-lock.cjs --check"
+    "lock:check": "node scripts/content-lock.cjs --check",
+    "test:architecture-contract": "node scripts/check-architecture-contract.cjs && node --test tests/architecture/contract-policy.test.cjs"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.30.1",

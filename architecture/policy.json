@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "revision": "IH-ARCH-001",
+  "role": "domain-packs",
+  "canonical": "https://github.com/Zhiman-BJ/industrial-agent-harness/blob/main/doc/architecture-contract.md",
+  "bootstrapSourceCommit": "561eb7054eb1dbcaa73ff6143bfbec7ffab2a2f9",
+  "checkerSource": "Zhiman-BJ/industrial-agent-harness:scripts/check-architecture-contract.cjs",
+  "frozenPrefixes": [],
+  "frozen": {},
+  "domainAtoms": {
+    "lib/index.cjs#chip": 1,
+    "lib/index.cjs#godot": 1,
+    "lib/index.cjs#pcb": 1,
+    "lib/index.cjs#freecad": 1,
+    "lib/index.cjs#cad": 1
+  },
+  "adapterCalls": {},
+  "governanceHashes": {
+    "AGENTS.md": "33218846a9885269af0283dd5accea47419b6cb8ab037ce447d1064e85db1f5f",
+    ".github/CODEOWNERS": "7fd61685e756c3d8ec60136fcf1bbad9a2afdb27280c2d869f095b94ebcddd8a",
+    ".github/workflows/architecture-contract.yml": "7a8618b688b50f86703d5d74ef30225b2f42324222ec4c1c49d3a491df19157c",
+    "scripts/check-architecture-contract.cjs": "16fd912ff7a76986a944925da5304d7df82d50a801d7d29f31703f4dd5bcc0ee",
+    "tests/architecture/contract-policy.test.cjs": "2487957f1e9f6665e1b697a2574c55ff106d30038bfa129da4c7c5bb27e7ef18",
+    "docs/architecture-contract.md": "9f0d09d955245ac98ad366a3315a3951c349758b5a9e50d0a2691292c73373ba"
+  }
+}
