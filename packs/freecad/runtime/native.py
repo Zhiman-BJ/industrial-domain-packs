@@ -17,13 +17,49 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 request = json.load(open(os.path.join(ROOT, 'request.json'), encoding='utf-8'))
 
 def write(name, value):
+    encoded = json.dumps(value, allow_nan=False, indent=2)
+    if name == 'model.cad-sketches.json' and len(encoded.encode('utf-8')) > 1024*1024:
+        raise ValueError('CAD sketch preview exceeds 1 MiB')
     with open(os.path.join(ROOT, name), 'w', encoding='utf-8') as stream:
-        json.dump(value, stream, allow_nan=False, indent=2)
+        stream.write(encoded)
 
 def metrics(shape):
     b = shape.BoundBox
     return dict(valid=not shape.isNull() and shape.isValid(), volume=shape.Volume,
                 solids=len(shape.Solids), faces=len(shape.Faces), bounds=[b.XLength, b.YLength, b.ZLength])
+
+def sketch_preview(doc, source):
+    """Read saved native Sketcher geometry, never infer it from the recipe."""
+    sketches = []
+    total = 0
+    for obj in doc.Objects:
+        if obj.TypeId != 'Sketcher::SketchObject': continue
+        if len(sketches) >= 50 or obj.GeometryCount > 2000 or obj.ConstraintCount > 4000:
+            raise ValueError('CAD sketch preview limit exceeded')
+        total += obj.GeometryCount + obj.ConstraintCount
+        if total > 10000: raise ValueError('CAD sketch preview total limit exceeded')
+        geometry = []
+        for index, g in enumerate(obj.Geometry):
+            item = dict(index=index, construction=bool(obj.getConstruction(index)))
+            if isinstance(g, Part.LineSegment):
+                item.update(kind='line', start=[g.StartPoint.x, g.StartPoint.y], end=[g.EndPoint.x, g.EndPoint.y])
+            elif isinstance(g, Part.Circle):
+                item.update(kind='circle', center=[g.Center.x, g.Center.y], radius=g.Radius)
+            else:
+                item.update(kind='unsupported', type=str(g.TypeId))
+            geometry.append(item)
+        constraints = []
+        for index, c in enumerate(obj.Constraints):
+            constraints.append(dict(index=index, type=c.Type, value=c.Value,
+                                    driving=bool(obj.getDriving(index)) if c.Type in ['Distance', 'DistanceX', 'DistanceY', 'Radius', 'Diameter', 'Angle'] else None,
+                                    first=c.First, firstPos=c.FirstPos, second=c.Second, secondPos=c.SecondPos,
+                                    third=c.Third, thirdPos=c.ThirdPos))
+        placement = obj.getGlobalPlacement()
+        sketches.append(dict(name=obj.Name, label=obj.Label, fullyConstrained=bool(obj.FullyConstrained),
+                             origin=[placement.Base.x, placement.Base.y, placement.Base.z],
+                             rotation=list(placement.Rotation.Q), geometry=geometry, constraints=constraints))
+    with open(source, 'rb') as stream: digest = hashlib.sha256(stream.read()).hexdigest()
+    write('model.cad-sketches.json', dict(schemaVersion=1, units='mm', sourceSha256=digest, sketches=sketches))
 
 def safe_document(file):
     if file.lower().endswith('.fcstd'):
@@ -125,15 +161,19 @@ try:
         raise ValueError('FreeCAD user paths escaped the Action directory')
     if request['operation'] == 'verify':
         doc, result = safe_document(os.path.join(ROOT, 'model.FCStd'))
+        sketch_preview(doc, os.path.join(ROOT, 'model.FCStd'))
         native = metrics(result.Shape)
         shape = Part.Shape()
         shape.read(os.path.join(ROOT, 'model.step'))
         step = metrics(shape)
+        brep_shape = Part.Shape()
+        brep_shape.read(os.path.join(ROOT, 'model.brep'))
+        brep = metrics(brep_shape)
         mesh = Mesh.Mesh(os.path.join(ROOT, 'model.stl'))
         sketches = [dict(name=o.Name, fullyConstrained=bool(o.FullyConstrained)) for o in doc.Objects if o.TypeId == 'Sketcher::SketchObject']
-        write('readback.json', dict(version=version, runtimePaths=runtime_paths, native=native, step=step, mesh=dict(facets=mesh.CountFacets), sketches=sketches))
+        write('readback.json', dict(version=version, runtimePaths=runtime_paths, native=native, step=step, brep=brep, mesh=dict(facets=mesh.CountFacets), sketches=sketches))
     else:
-        if request['operation'] == 'build': doc, result, sketches = build(request['recipe'])
+        if request['operation'] in ['build','edit']: doc, result, sketches = build(request['recipe'])
         else:
             doc, result = safe_document(request['file'])
             sketches = []
@@ -141,6 +181,7 @@ try:
         doc.recompute()
         doc.saveAs(os.path.join(ROOT, 'model.FCStd'))
         result.Shape.exportStep(os.path.join(ROOT, 'model.step'))
+        result.Shape.exportBrep(os.path.join(ROOT, 'model.brep'))
         # Fixed tessellation with bounded complexity; no renderer-side native execution.
         vertices, triangles = result.Shape.tessellate(0.15)
         if len(triangles) > 100000: raise ValueError('CAD mesh exceeds 100000 triangles')

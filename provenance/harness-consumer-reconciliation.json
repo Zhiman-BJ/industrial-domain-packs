@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "2482114e7acece712afe30cafa98fa53949b34e7",
+  "purpose": "Reconcile verified Harness changes before replacing local source copies with an immutable Domain Pack consumer. Original import history remains in domain-migration.json.",
+  "files": [
+    {
+      "source": "domain-packs/chip/eda-harness/src/eda_harness/runtimes/execution.py",
+      "destination": "packs/chip/eda-harness/src/eda_harness/runtimes/execution.py",
+      "previousSourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "sourceSha256": "6ebda3b0a669b38abf5da8a3ee759ab18befac79f7a55903351095aacc6c088d"
+    },
+    {
+      "source": "domain-packs/chip/runtime/bridge.py",
+      "destination": "packs/chip/runtime/bridge.py",
+      "previousSourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "sourceSha256": "3e627610b810042dd4e5ff082d91738f267ab36cab313b8fc2c4ff1b320b13ae"
+    },
+    {
+      "source": "domain-packs/chip/runtime/index.cjs",
+      "destination": "packs/chip/runtime/index.cjs",
+      "previousSourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "sourceSha256": "d9354d7b26df8a40b66a83c06bccc3775340ebf58c4b3cf2ae4fe10a7e9578b7"
+    },
+    {
+      "source": "domain-packs/chip/PROVENANCE.md",
+      "destination": "packs/chip/UPSTREAM_PROVENANCE.md",
+      "previousSourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "sourceSha256": "b840d25c3b7a03a60798c1e0c2df8659a64c62f11d2634d60cb0a497eb6dadd9"
+    },
+    {
+      "source": "packages/domain-skills/packs/chip-pack.json",
+      "destination": "packs/chip/harness-pack.json",
+      "previousSourceCommit": "371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e",
+      "sourceSha256": "3b56a90f5cde308309f22bc365d3c365669d6595fd3d4216208f5ab749d9a496"
+    },
+    {
+      "source": "domain-packs/freecad/README.md",
+      "destination": "packs/freecad/README.md",
+      "previousSourceCommit": "62510b22b47803e0841825ec1c2b34fae48b3b15",
+      "sourceSha256": "c8d376d3115c70a24ced49f2eaabdf2c3a750827b8a2cfe90540255f24e4bf62"
+    },
+    {
+      "source": "domain-packs/freecad/runtime/index.cjs",
+      "destination": "packs/freecad/runtime/index.cjs",
+      "previousSourceCommit": "62510b22b47803e0841825ec1c2b34fae48b3b15",
+      "sourceSha256": "3852041021af251eeeff4d4466e0bfbe2bda046a97daa4bf89a2e4f16b113724"
+    },
+    {
+      "source": "domain-packs/freecad/runtime/native.py",
+      "destination": "packs/freecad/runtime/native.py",
+      "previousSourceCommit": "62510b22b47803e0841825ec1c2b34fae48b3b15",
+      "sourceSha256": "b271d6760f104e0cc877bf9fa4ace304648047a3c138f7e57412373fcc20dab4"
+    },
+    {
+      "source": "domain-packs/freecad/runtime/recipe.cjs",
+      "destination": "packs/freecad/runtime/recipe.cjs",
+      "previousSourceCommit": "62510b22b47803e0841825ec1c2b34fae48b3b15",
+      "sourceSha256": "8d0f0dc69776359a590561c65c9ca51289bdb417294dddf99317438d080670f3"
+    },
+    {
+      "source": "packages/domain-skills/packs/freecad-local.json",
+      "destination": "packs/freecad/harness-pack.json",
+      "previousSourceCommit": "62510b22b47803e0841825ec1c2b34fae48b3b15",
+      "sourceSha256": "896595506037d69541c298af27a2713d288e3dda2ef422e5f7ac23e2334fcdd8"
+    },
+    {
+      "source": "packages/domain-skills/skills/cad-freecad-headless/SKILL.md",
+      "destination": "packs/freecad/skills/cad-freecad-headless/SKILL.md",
+      "previousSourceCommit": "62510b22b47803e0841825ec1c2b34fae48b3b15",
+      "sourceSha256": "2877757001924ecb519ffefc7da8deb2e9680a7a86b5d2f665810d47a9c4209f"
+    }
+  ]
+}

@@ -42,6 +42,17 @@ def execute(root):
             "nativeSteps": [{"action": step["action"], "status": step["status"]} for step in steps]}
 
 
+def environment(root):
+    from eda_harness.core.environment import check_environment
+    result = check_environment(root, target="rtl.simulate")
+    result["execution_location"] = "host_domain_runtime"
+    result["agent_docker_access"] = "intentionally_denied"
+    # A completed observation does not imply readiness or engineering acceptance.
+    return {"executionSucceeded": True, "artifacts": [],
+            "toolVersion": "eda-harness 0.6.1 host preflight",
+            "diagnostics": [json.dumps(result, allow_nan=False)]}
+
+
 if __name__ == "__main__":
     request = json.load(sys.stdin)
     root = Path(request["projectDir"]).resolve(strict=True)
@@ -49,6 +60,12 @@ if __name__ == "__main__":
         from eda_harness.core.service import Harness
         harness = Harness(root)
         result = {"cancelled": [harness.cancel_run(run["id"]) for run in harness._active()]}
+    elif request["operation"] == "environment":
+        result = environment(root)
+    elif request["operation"] == "inspect":
+        result = inspect(root)
+    elif request["operation"] == "execute":
+        result = execute(root)
     else:
-        result = inspect(root) if request["operation"] == "inspect" else execute(root)
+        raise ValueError("Unknown host runtime operation")
     print(json.dumps(result, allow_nan=False))

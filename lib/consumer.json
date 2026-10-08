@@ -1,0 +1,415 @@
+{
+  "schemaVersion": 1,
+  "coreApi": 1,
+  "domains": [
+    {
+      "id": "chip",
+      "label": "Chip",
+      "emoji": "💠",
+      "version": "0.6.2",
+      "summary": "EDA skills, viewers and the Chip MCP service",
+      "prerequisites": [
+        "Python 3.13 for the Chip MCP service",
+        "EDA tools and PDK for industrial execution"
+      ]
+    },
+    {
+      "id": "pcb",
+      "label": "PCB",
+      "emoji": "🔌",
+      "version": "2026.09.28-pack.1",
+      "summary": "PCB skills and KiCad document viewer",
+      "prerequisites": [
+        "Private PCB-bench actor and pinned KiCad runtime are required for editing"
+      ]
+    },
+    {
+      "id": "godot",
+      "label": "Godot",
+      "emoji": "🎮",
+      "version": "0.1.1",
+      "summary": "Godot source tools and Web Export viewer",
+      "prerequisites": [
+        "Godot 4 is required for native execution"
+      ]
+    },
+    {
+      "id": "cad",
+      "label": "CAD",
+      "emoji": "📐",
+      "version": "1.1.4-pack.4",
+      "summary": "FreeCAD parametric modelling, geometry verification and OCCT CAD viewer",
+      "prerequisites": [
+        "FreeCAD 1.1.4 is prepared automatically on Apple Silicon (620 MB download)"
+      ],
+      "qualifiedBundlePlatforms": [
+        "darwin-arm64"
+      ]
+    }
+  ],
+  "skills": [
+    {
+      "id": "chip.netlist.inspect",
+      "domain": "chip",
+      "title": "Inspect RTL netlist",
+      "enabledByDefault": true,
+      "packId": "chip-pack",
+      "resourcePath": "skills/chip-netlist-inspect"
+    },
+    {
+      "id": "chip.waveform.inspect",
+      "domain": "chip",
+      "title": "Inspect simulation waveform",
+      "enabledByDefault": true,
+      "packId": "chip-pack",
+      "resourcePath": "skills/chip-waveform-inspect"
+    },
+    {
+      "id": "chip.layout.inspect",
+      "domain": "chip",
+      "title": "Inspect physical layout",
+      "enabledByDefault": true,
+      "packId": "chip-pack",
+      "resourcePath": "skills/chip-layout-inspect"
+    },
+    {
+      "id": "pcb.layout.inspect",
+      "domain": "pcb",
+      "title": "Inspect PCB layout",
+      "enabledByDefault": true,
+      "packId": "pcb-pack",
+      "resourcePath": "skills/pcb-layout-inspect"
+    },
+    {
+      "id": "chip.eda.operate",
+      "domain": "chip",
+      "title": "Operate Chip Pack EDA Harness",
+      "enabledByDefault": true,
+      "packId": "chip-pack",
+      "resourcePath": "skills/chip-eda-operate"
+    },
+    {
+      "id": "pcb.design.e2e",
+      "domain": "pcb",
+      "title": "PCB design and repair",
+      "enabledByDefault": true,
+      "packId": "pcb-pack",
+      "resourcePath": "skills/pcb-design-e2e",
+      "external": {
+        "providerPackId": "pcb-pack",
+        "resourcePath": "skills/pcb-design-e2e",
+        "nativeToolPrefix": "pcb.bench."
+      }
+    },
+    {
+      "id": "godot.game.inspect",
+      "domain": "godot",
+      "title": "Inspect Godot game scenes",
+      "enabledByDefault": true,
+      "packId": "godot-pack",
+      "resourcePath": "skills/godot-game-inspect"
+    },
+    {
+      "id": "godot.game.develop",
+      "domain": "godot",
+      "title": "Develop and verify Godot games",
+      "enabledByDefault": true,
+      "packId": "godot-pack",
+      "resourcePath": "skills/godot-game-develop"
+    },
+    {
+      "id": "cad.autocad.macos",
+      "domain": "cad",
+      "title": "Operate AutoCAD on macOS",
+      "enabledByDefault": true,
+      "packId": "cad-pack",
+      "resourcePath": "skills/cad-autocad-macos"
+    },
+    {
+      "id": "cad.intent.loop",
+      "domain": "cad",
+      "title": "CAD intent loop (dimension-neutral)",
+      "enabledByDefault": true,
+      "packId": "cad-pack",
+      "resourcePath": "skills/cad-intent-loop"
+    },
+    {
+      "id": "cad.ezdxf.author",
+      "domain": "cad",
+      "title": "Author 2D DXF via ezdxf",
+      "enabledByDefault": true,
+      "packId": "cad-pack",
+      "resourcePath": "skills/cad-ezdxf"
+    },
+    {
+      "id": "cad.freecad.headless",
+      "domain": "cad",
+      "title": "Drive FreeCAD headless",
+      "enabledByDefault": true,
+      "packId": "freecad-pack",
+      "resourcePath": "skills/cad-freecad-headless"
+    }
+  ],
+  "capabilities": [
+    {
+      "id": "chip.rtl.netlist.inspect",
+      "title": "Inspect RTL netlist",
+      "domain": "chip",
+      "stages": [
+        "rtl",
+        "verification"
+      ],
+      "priority": 10,
+      "keywords": [
+        "netlist",
+        "logic",
+        "signal",
+        "网表",
+        "逻辑",
+        "信号"
+      ],
+      "skills": [
+        {
+          "id": "chip.netlist.inspect",
+          "summary": "Read hierarchy, cells and nets before suggesting a change.",
+          "reference": "Use the netlist viewer for Yosys JSON. Trace each finding to a module and signal."
+        }
+      ],
+      "tools": [
+        {
+          "id": "eda.netlist.inspect",
+          "summary": "Read netlist structure",
+          "schema": {
+            "artifactId": "string"
+          }
+        }
+      ],
+      "verification": [
+        "Confirm source netlist hash"
+      ]
+    },
+    {
+      "id": "chip.verification.waveform.inspect",
+      "title": "Inspect simulation waveform",
+      "domain": "chip",
+      "stages": [
+        "rtl",
+        "verification"
+      ],
+      "priority": 9,
+      "keywords": [
+        "waveform",
+        "simulation",
+        "timing",
+        "vcd",
+        "波形",
+        "仿真",
+        "时序"
+      ],
+      "skills": [
+        {
+          "id": "chip.waveform.inspect",
+          "summary": "Inspect named signals and time ranges in simulation output.",
+          "reference": "Use the waveform viewer for VCD/FST/GHW. Relate signal observations to source design and run."
+        }
+      ],
+      "tools": [
+        {
+          "id": "eda.waveform.inspect",
+          "summary": "Read waveform metadata",
+          "schema": {
+            "artifactId": "string"
+          }
+        }
+      ],
+      "verification": [
+        "Confirm simulation run provenance"
+      ]
+    },
+    {
+      "id": "chip.physical.layout.inspect",
+      "title": "Inspect physical layout",
+      "domain": "chip",
+      "stages": [
+        "physical"
+      ],
+      "priority": 10,
+      "keywords": [
+        "layout",
+        "gds",
+        "layer",
+        "版图",
+        "物理",
+        "图层"
+      ],
+      "skills": [
+        {
+          "id": "chip.layout.inspect",
+          "summary": "Inspect cells, layers and geometry using KLayout.",
+          "reference": "Use KLayout rendering APIs to inspect GDS/OAS. A rendered view does not prove DRC or LVS."
+        }
+      ],
+      "tools": [
+        {
+          "id": "eda.layout.inspect",
+          "summary": "Read layout metadata",
+          "schema": {
+            "artifactId": "string"
+          }
+        }
+      ],
+      "verification": [
+        "Record layout content hash"
+      ]
+    },
+    {
+      "id": "pcb.layout.inspect",
+      "title": "Inspect PCB layout",
+      "domain": "pcb",
+      "stages": [
+        "layout"
+      ],
+      "priority": 10,
+      "keywords": [
+        "pcb",
+        "board",
+        "trace",
+        "route",
+        "板",
+        "走线"
+      ],
+      "skills": [
+        {
+          "id": "pcb.layout.inspect",
+          "summary": "Review board geometry and routing context.",
+          "reference": "Open .kicad_pcb and .kicad_sch project artifacts in the read-only KiCad Viewer. Inspect layers, nets and object properties; a rendered view does not prove DRC or ERC."
+        }
+      ],
+      "tools": [
+        {
+          "id": "pcb.board.inspect",
+          "summary": "Read board metadata",
+          "schema": {
+            "artifactId": "string"
+          }
+        }
+      ],
+      "verification": [
+        "Confirm board revision"
+      ]
+    },
+    {
+      "id": "cad.2d.author",
+      "title": "Author 2D drawings via ezdxf",
+      "domain": "cad",
+      "stages": [
+        "drafting"
+      ],
+      "priority": 11,
+      "keywords": [
+        "dxf",
+        "2d",
+        "drawing",
+        "ezdxf",
+        "spec",
+        "dimension",
+        "图纸",
+        "二维",
+        "制图",
+        "标注"
+      ],
+      "skills": [
+        {
+          "id": "cad.intent.loop",
+          "summary": "Intent-layer workflow, dimension-neutral: spec as the single source of truth, semantic diff to absorb hand-edits, programmatic acceptance gates, evidence chain, deliverable routing.",
+          "reference": "The shared methodology; tool specifics live in the per-tool skills it routes to."
+        },
+        {
+          "id": "cad.ezdxf.author",
+          "summary": "Direct 2D DXF authoring and verification with ezdxf: dimstyle traps, %%c anchor-matching, codepage loss, semantic dxf_diff, delivery conversion (PDF/DWG).",
+          "reference": "Default route for 2D drawing deliverables; open a CAD app only for a DWG exit or live-session work."
+        }
+      ],
+      "tools": [],
+      "verification": [
+        "Confirm the DXF verifies against the spec"
+      ]
+    },
+    {
+      "id": "cad.freecad.operate",
+      "title": "Operate FreeCAD headless",
+      "domain": "cad",
+      "stages": [
+        "drafting"
+      ],
+      "priority": 10,
+      "keywords": [
+        "freecad",
+        "2d",
+        "3d",
+        "parametric",
+        "sketch",
+        "step",
+        "fcstd",
+        "solid",
+        "建模",
+        "三维",
+        "参数化",
+        "草图"
+      ],
+      "skills": [
+        {
+          "id": "cad.intent.loop",
+          "summary": "Intent-layer workflow, dimension-neutral: spec as the single source of truth, readback-based acceptance gates, evidence chain, deliverable routing.",
+          "reference": "The shared methodology; this capability applies it through FreeCAD."
+        },
+        {
+          "id": "cad.freecad.headless",
+          "summary": "FreeCAD headless via freecadcmd for parametric 2D sketches and 3D solids: build→readback→verify loop, fully-constrained gate, analytic volume checks, Sketcher API traps.",
+          "reference": "Route by deliverable: 2D drawing files go to ezdxf; FreeCAD serves parametric sketches and 3D models (FCStd/STEP). Its DXF paths are weak links — never the acceptance reader."
+        }
+      ],
+      "tools": [],
+      "verification": [
+        "Confirm FCStd/STEP on disk with model-driven checks"
+      ]
+    },
+    {
+      "id": "cad.autocad.operate",
+      "title": "Operate AutoCAD drawings",
+      "domain": "cad",
+      "stages": [
+        "drafting"
+      ],
+      "priority": 10,
+      "keywords": [
+        "autocad",
+        "cad",
+        "dwg",
+        "dxf",
+        "lisp",
+        "drawing",
+        "drafting",
+        "图纸",
+        "制图",
+        "绘图"
+      ],
+      "skills": [
+        {
+          "id": "cad.intent.loop",
+          "summary": "Intent-layer workflow, dimension-neutral: spec as the single source of truth, semantic diff to absorb hand-edits, programmatic acceptance gates, evidence chain.",
+          "reference": "The shared methodology; AutoCAD is the carrier for DWG exits and live-session work."
+        },
+        {
+          "id": "cad.autocad.macos",
+          "summary": "AutoCAD for Mac operating traits: LISP entmake geometry, interactive DIMLINEAR dimensions, GUI-only save dialogs, and the platform's verified dead ends.",
+          "reference": "Scope-limited to AutoCAD on macOS; driving the app requires the computer-use plugin. See the skill file for the platform boundary."
+        }
+      ],
+      "tools": [],
+      "verification": [
+        "Confirm the resulting drawing file on disk"
+      ]
+    }
+  ]
+}

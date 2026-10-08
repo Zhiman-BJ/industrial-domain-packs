@@ -3,15 +3,19 @@ const os = require('node:os');
 const path = require('node:path');
 const crypto = require('node:crypto');
 const { spawn } = require('node:child_process');
-const { validateRecipe, validateInputs, guides } = require('./recipe.cjs');
+const { validateRecipe, validateInputs, applyChanges, guides } = require('./recipe.cjs');
 const hash = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
-const VERSION = '1.1.4-pack.1';
+const VERSION = '1.1.4-pack.3';
 
-function executable(environment) {
+function executable(environment, managed) {
   const candidates = [
     environment.INDUSTRIAL_HARNESS_FREECAD_CMD,
-    '/Applications/FreeCAD.app/Contents/Resources/bin/freecadcmd',
-    path.join(os.homedir(), 'Applications/FreeCAD.app/Contents/Resources/bin/freecadcmd'),
+    ...(!managed
+      ? [
+          '/Applications/FreeCAD.app/Contents/Resources/bin/freecadcmd',
+          path.join(os.homedir(), 'Applications/FreeCAD.app/Contents/Resources/bin/freecadcmd'),
+        ]
+      : []),
   ].filter(Boolean);
   return candidates.find(file => fs.existsSync(file));
 }
@@ -62,6 +66,40 @@ function inspectInputs(projectDir) {
   }
   visit(projectDir);
   return { stage: null, inputHashes };
+}
+function recipeCompanion(source, projectDir, required) {
+  const file = source.replace(/\.[^.]+$/, '.recipe.json');
+  const manifestFile = source.replace(/\.[^.]+$/, '.cad-preview.json');
+  if (!fs.existsSync(file) || !fs.existsSync(manifestFile)) {
+    if (required)
+      throw Error(
+        'This model has no editable recipe. Rebuild from a project recipe first; imported arbitrary CAD is not parametrically editable.',
+      );
+    return null;
+  }
+  const read = target => {
+    const real = fs.realpathSync(target),
+      relative = path.relative(projectDir, real);
+    if (
+      relative.startsWith('..') ||
+      path.isAbsolute(relative) ||
+      !fs.statSync(real).isFile() ||
+      fs.statSync(real).size > 256 * 1024
+    )
+      throw Error('CAD recipe companion escaped the project or exceeded 256 KiB.');
+    return fs.readFileSync(real);
+  };
+  const manifest = JSON.parse(read(manifestFile));
+  const bytes = read(file);
+  if (
+    manifest.schemaVersion !== 1 ||
+    manifest.hashes?.[path.basename(source)] !== hash(fs.readFileSync(source)) ||
+    manifest.hashes?.[path.basename(file)] !== hash(bytes)
+  )
+    throw Error('CAD editable recipe hashes changed; regenerate the model.');
+  const recipe = JSON.parse(bytes);
+  validateRecipe(recipe);
+  return { recipe, unchanged: () => hash(read(file)) === hash(bytes) };
 }
 function nativeCall(command, directory, operation, request, signal) {
   fs.writeFileSync(path.join(directory, 'request.json'), JSON.stringify({ ...request, operation }));
@@ -178,6 +216,11 @@ function verify({ result, artifacts, readArtifact, action }) {
   const checks = {
     nativeValid: data.native?.valid === true,
     stepValid: data.step?.valid === true,
+    brepValid: data.brep?.valid === true,
+    brepAgreement:
+      near(data.native?.volume, data.brep?.volume) &&
+      data.native?.solids === data.brep?.solids &&
+      data.native?.bounds.every((v, i) => near(v, data.brep?.bounds[i])),
     positiveVolume: data.native?.volume > 0,
     solidPresent: data.native?.solids > 0,
     meshPresent: data.mesh?.facets > 0,
@@ -190,9 +233,12 @@ function verify({ result, artifacts, readArtifact, action }) {
       data.native.bounds.every(
         (v, i) => near(v, data.step.bounds[i]) && near(v, original.bounds[i]),
       ),
-    artifactsPresent: ['model.cad.fcstd', 'model.cad.step', 'model.cad.stl'].every(kind =>
-      artifacts.some(a => a.kind === kind),
-    ),
+    artifactsPresent: [
+      'model.cad.fcstd',
+      'model.cad.step',
+      'model.cad.stl',
+      'display.cad.brep',
+    ].every(kind => artifacts.some(a => a.kind === kind)),
     inputUnchanged: result.inputUnchanged !== false,
   };
   const expected = action.inputs.expect || {};
@@ -205,7 +251,7 @@ function verify({ result, artifacts, readArtifact, action }) {
   return {
     status: passed ? 'passed' : 'failed',
     reason: passed
-      ? 'Separate FreeCAD readback confirms valid solids, constrained sketches and matching FCStd/STEP geometry. ' +
+      ? 'Separate FreeCAD readback confirms valid solids, constrained sketches and matching FCStd/STEP/BREP geometry. ' +
         (Object.keys(expected).length
           ? 'Supplied dimensional expectations passed. '
           : 'No design-specific dimensional expectations were supplied. ') +
@@ -225,14 +271,15 @@ function verify({ result, artifacts, readArtifact, action }) {
     },
   };
 }
-function createRuntimePlugin({ environment = process.env } = {}) {
-  const command = executable(environment);
+function createRuntimePlugin({ environment = process.env, managed = false } = {}) {
+  const command = executable(environment, managed);
   const available = process.platform === 'darwin' && process.arch === 'arm64' && !!command;
   return {
     available,
+    workspaceProtectedPaths: projectDir => [path.join(projectDir, 'cad-output')],
     stateProvider: ({ projectDir }) => inspectInputs(projectDir),
     protectedPaths: [path.resolve(__dirname, '..')],
-    tools: ['build', 'inspect', 'export'].map(operation => ({
+    tools: ['build', 'inspect', 'export', 'edit'].map(operation => ({
       descriptor: {
         schemaVersion: '1',
         id: `cad.freecad.${operation}`,
@@ -245,7 +292,9 @@ function createRuntimePlugin({ environment = process.env } = {}) {
         validateInputs(operation, inputs);
         if (!available)
           throw Error(
-            'Install FreeCAD 1.1.4 for macOS arm64 and set INDUSTRIAL_HARNESS_FREECAD_CMD to its freecadcmd executable.',
+            managed
+              ? 'FreeCAD needs preparation. Open Settings → Domains and repair CAD.'
+              : 'Install FreeCAD 1.1.4 for macOS arm64 and set INDUSTRIAL_HARNESS_FREECAD_CMD to its freecadcmd executable.',
           );
         const outputRoot = path.join(projectDir, 'cad-output');
         if (
@@ -259,6 +308,18 @@ function createRuntimePlugin({ environment = process.env } = {}) {
         const source = operation === 'build' ? null : inputFile(projectDir, inputs.file);
         const sourceBytes = source ? fs.readFileSync(source) : null;
         const sourceHash = source ? hash(sourceBytes) : null;
+        const companion = source ? recipeCompanion(source, projectDir, operation === 'edit') : null;
+        const recipe =
+          operation === 'build'
+            ? inputs.recipe
+            : operation === 'edit'
+              ? applyChanges(companion.recipe, inputs.changes)
+              : companion?.recipe;
+        if (recipe)
+          fs.writeFileSync(
+            path.join(directory, 'model.recipe.json'),
+            JSON.stringify(recipe, null, 2),
+          );
         const stagedSource = source ? path.join(directory, 'input' + path.extname(source)) : null;
         if (source) fs.writeFileSync(stagedSource, sourceBytes);
         fs.writeFileSync(
@@ -269,7 +330,9 @@ function createRuntimePlugin({ environment = process.env } = {}) {
           command,
           directory,
           operation,
-          source ? { file: stagedSource } : { recipe: validateRecipe(inputs.recipe) },
+          operation === 'build' || operation === 'edit'
+            ? { recipe: validateRecipe(recipe) }
+            : { file: stagedSource },
           signal,
         );
         const second =
@@ -284,10 +347,14 @@ function createRuntimePlugin({ environment = process.env } = {}) {
           !signal.aborted;
         if (succeeded) {
           const hashes = Object.fromEntries(
-            ['model.FCStd', 'model.step', 'model.stl'].map(name => [
-              name,
-              hash(fs.readFileSync(path.join(directory, name))),
-            ]),
+            [
+              'model.FCStd',
+              'model.step',
+              'model.stl',
+              'model.brep',
+              'model.cad-sketches.json',
+              ...(recipe ? ['model.recipe.json'] : []),
+            ].map(name => [name, hash(fs.readFileSync(path.join(directory, name)))]),
           );
           fs.writeFileSync(
             path.join(directory, 'model.cad-preview.json'),
@@ -302,17 +369,22 @@ function createRuntimePlugin({ environment = process.env } = {}) {
           'model.FCStd': 'model.cad.fcstd',
           'model.step': 'model.cad.step',
           'model.stl': 'model.cad.stl',
+          'model.brep': 'display.cad.brep',
           'model.cad-preview.json': 'display.cad.manifest',
+          'model.cad-sketches.json': 'display.cad.sketches',
           'build.json': 'report.cad.build',
           'readback.json': 'report.cad.readback',
           'inputs.json': 'input.cad.recipe',
+          'model.recipe.json': 'input.cad.recipe',
           'error.json': 'diagnostic.cad',
         };
         if (stagedSource) kinds[path.basename(stagedSource)] = 'input.cad.model';
         for (const name of [operation + '.log', 'verify.log']) kinds[name] = 'log.tool';
         return {
           executionSucceeded: succeeded,
-          inputUnchanged: !source || hash(fs.readFileSync(source)) === sourceHash,
+          inputUnchanged:
+            (!source || hash(fs.readFileSync(source)) === sourceHash) &&
+            (!companion || companion.unchanged()),
           diagnostics: [
             succeeded
               ? 'FreeCAD build/export and separate readback completed.'

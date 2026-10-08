@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
-  "id": "godot-local",
+  "id": "godot-pack",
   "domain": "godot",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "provider": {
-    "id": "godot.local",
+    "id": "godot-pack.gateway",
     "title": "Godot local game tools",
     "domain": "godot",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "transport": "gateway",
     "backend": "godot-local",
     "packDirectory": "godot",
