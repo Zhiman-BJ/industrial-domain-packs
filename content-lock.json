@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contentSha256": "c480dcf8385c7f70a1e38dab507381aab97a30217743bbfa028ec4fac4084831",
+  "contentSha256": "2743035e71ef101418cf754418110c2530eba8db9ae6a78dc1ba42fef67ba185",
   "files": {
     "lib/consumer.cjs": "4d670732dbf3d5a3da33cac41007573e1f47b514a7165ac1df1748c9c2f960ab",
     "lib/consumer.json": "cef4ebc6b1a4f2ff471df8dd7f56a896a36545179763893ed83e4281428381fe",
@@ -114,8 +114,8 @@
     "packs/chip/skills/chip-netlist-inspect/SKILL.md": "f21784ef368f751503c77adda8e4a901624f5634f481b0d75f84cf665ad8f998",
     "packs/chip/skills/chip-waveform-inspect/SKILL.md": "86262333183443ff322cb5e389d87b7ab9b406b2830b30bb1c0d059f57937c67",
     "packs/cuda/PROVENANCE.md": "835da2b59835bb2b4f84c97b05e28fe14b217b9d27c29bf0cf824825077599ad",
-    "packs/cuda/QUALIFICATION.md": "19de7842c84718abbeef459e505f12925f77d3c20fd33f6ec6572106e3c04291",
-    "packs/cuda/README.md": "0886cab8d292f67cd6be66e4d2d276f3ddb23767ac226e199f3acc0f4ed783fd",
+    "packs/cuda/QUALIFICATION.md": "0c059a5fdcc18e432a1e64c81add0180e4576ac397a521d55b4ee188ceaed1ee",
+    "packs/cuda/README.md": "e58b36bea6bb16fb69db2173350640fb1ea564ae36f8fdf832fb025aefb04aad",
     "packs/cuda/harness-pack.json": "17d6309e7ceb77d385d0436d60aa3aaf71fc3a715b1aac89097d708888eb60c3",
     "packs/cuda/locks/rtx4090-image.json": "cca7222767f24d83a799297410fe849f4ad2b76bc5765725be9786ff76c1f5af",
     "packs/cuda/locks/upstream.json": "4c88d9f18fb6d328d973b4e047f42a11ff7fabb783a11a732ec9245ad905842f",
@@ -123,7 +123,7 @@
     "packs/cuda/runtime/index.cjs": "6b180f2cecec599b96e7144057b7593e376993ce6dafe1976815db54feed6a28",
     "packs/cuda/runtime/protocol.cjs": "1588f7ca7d7dd22dedf4357d5a1aa6ee7bf6d916795616e756c17cf4b1d1474b",
     "packs/cuda/runtime/verifier.cjs": "0146df892c8938e5fc351cafdb122e3bd52f983ff75efeac3ef041583fda5a2f",
-    "packs/cuda/scripts/allocate.cjs": "3dcfd40220effa85abb0956663d2599a832041f898da71245dde8190592b6192",
+    "packs/cuda/scripts/allocate.cjs": "352763c644cb19037efc9aa77c79fd4654e3087f099f966e0b7104f2548d7f60",
     "packs/cuda/scripts/preflight.cjs": "489b28ced6bbe00e887b341f9723b36520040c72573310e853d2fd92b84e83ce",
     "packs/cuda/scripts/qualify.cjs": "9ab325973d9a59da46f5702d0eb002b154d054b7d569449fafcfce870ca8c059",
     "packs/cuda/server/backend.cjs": "6e90d96e490b2e5ed8664f2daaff7176f3f44d9aeea2125a25d082cf9f7fe82a",

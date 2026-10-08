@@ -33,4 +33,4 @@ Chip 本地和沙箱使用同一套 EDA semantic.prepare / semantic.observe；�
 
 0.3.0 提供 `consumerMetadata()`、`hostPacks()`、`sourceDirectory()` 和 `skillResource()`，统一维护宿主清单、能力与 Skill 目录及固定源码资源。Harness 从精确固定的包消费这些声明和源码；维护入口只在本仓库。规范 Pack ID 与已有目录一致。已归并 Harness 后续验收的 FreeCAD 与 Chip 修复，PCB 私有 actor 仍是外部依赖。详见 [消费发行](docs/harness-consumer.md)。
 
-0.4.0 新增 CUDA Pack。两个远程 MCP 使用独立身份与凭据，从宿主可信设置接入；详见[部署与客户端配置](packs/cuda/README.md)。
+0.4.0 新增 CUDA Pack。两个远程 MCP 使用独立身份与凭据，从宿主可信设置接入。本地准备服务前检查 GPU 与 profile，并明确绑定评测卡 UUID；远程客户端无需本机 GPU。详见[部署与客户端配置](packs/cuda/README.md)。

@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { preflight, parseInventory, requireLocalGpu } = require('../packs/cuda/scripts/preflight.cjs');
-const { allocate } = require('../packs/cuda/scripts/allocate.cjs');
+const { allocate, bindEvaluatorGpu } = require('../packs/cuda/scripts/allocate.cjs');
 const { imageLock } = require('../packs/cuda/runtime/protocol.cjs');
 const uuid = 'GPU-11111111-2222-3333-4444-555555555555';
 const row = ({ name = 'NVIDIA GeForce RTX 4090', id = uuid, driver = '595.71.05', sm = '8.9' } = {}) => `${name}, ${id}, ${driver}, ${sm}, 24564, 16, 0\n`;
@@ -41,4 +41,14 @@ test('allocation GPU check occurs before recipe reads, filesystem writes or nati
     checkGpu: async config => { checked = config.gpuUuid === uuid; throw Error('unsupported GPU'); },
   }), /unsupported GPU/);
   assert.equal(checked, true);
+});
+
+test('GPU selection replaces the Evaluator reservation and preserves the GPU-free Compiler', () => {
+  const recipe = { services: { compiler: { environment: { NVIDIA_VISIBLE_DEVICES: 'void' } }, evaluator: { environment: { NVIDIA_VISIBLE_DEVICES: 'old-gpu', TORCH_CUDA_ARCH_LIST: '8.9' }, deploy: { resources: { limits: { memory: '8g' }, reservations: { devices: [{ driver: 'nvidia', device_ids: ['old-gpu'], capabilities: ['gpu'] }] } } } } } };
+  const bound = bindEvaluatorGpu(recipe, uuid);
+  assert.equal(bound.services.evaluator.environment.NVIDIA_VISIBLE_DEVICES, uuid);
+  assert.equal(bound.services.evaluator.deploy.resources.reservations.devices.length, 1);
+  assert.deepEqual(bound.services.evaluator.deploy.resources.reservations.devices[0].device_ids, [uuid]);
+  assert.equal(bound.services.evaluator.deploy.resources.limits.memory, '8g');
+  assert.equal(bound.services.compiler.environment.NVIDIA_VISIBLE_DEVICES, 'void');
 });

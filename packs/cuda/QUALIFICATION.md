@@ -49,6 +49,9 @@ The added read-only host preflight checks model, stable UUID, VRAM, driver and
 compute capability before allocating native workers. The fixed 4090 host was
 inspected successfully; unsupported model/driver/SM, missing or ambiguous device
 information and explicit multi-GPU selection have source regression coverage.
+Real host Compose configuration roundtrips confirmed one selected Evaluator GPU
+reservation, GPU-free CPU workers and preserved isolation/security-profile paths.
+This configuration check started no containers and ran no new GPU benchmark.
 Remote-client mode skips local GPU detection. This is an installation admission
 check, not additional native GPU or desktop-installer qualification.
 

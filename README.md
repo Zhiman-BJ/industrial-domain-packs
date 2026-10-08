@@ -60,4 +60,4 @@ See [architecture](docs/architecture.md), [release identity](docs/release-format
 
 Version 0.3.0 adds `consumerMetadata()`, `hostPacks()`, `sourceDirectory()` and `skillResource()`. The maintained package now owns the host declarations, capability/Skill catalog and verified source resources used by Harness packaging. Canonical Pack IDs are shared with the existing catalog. Harness imports this exact package; it must not maintain a second domain registry or source tree. See [consumer release](docs/harness-consumer.md).
 
-Version 0.4.0 adds the CUDA Pack. Configure both authenticated remote MCP endpoints in trusted host settings; see [deployment and client setup](packs/cuda/README.md).
+Version 0.4.0 adds the CUDA Pack. Configure both authenticated remote MCP endpoints in trusted host settings. Local worker preparation requires a GPU/profile preflight and explicit evaluator UUID; remote clients need no local GPU. See [deployment and client setup](packs/cuda/README.md).

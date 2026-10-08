@@ -42,7 +42,8 @@ accepted by an MCP tool.
 Before local preparation, run `node packs/cuda/scripts/preflight.cjs` to inspect
 GPU model, UUID, VRAM, driver and compute capability. Multiple compatible GPUs
 require an explicit `--gpu GPU-UUID` selection. `allocate.cjs` repeats this check
-before reading recipes, writing allocation files or starting workers. The fixed
+before reading recipes, writing allocation files or starting workers, and binds
+both Evaluator visibility and its single device reservation to that UUID. The fixed
 profile accepts RTX 4090 / SM 8.9 / driver 595.71.05 on Linux x64; detection alone
 is not native qualification. A different GPU or driver needs a reviewed profile.
 Do not silently upgrade drivers or downgrade to CPU execution. Remote clients
@@ -58,7 +59,9 @@ Create a private configuration with `projectId`, `imageId`, `gpuUuid`, `taskSha2
 executable (an administrator's sudo wrapper is supported) and optional loopback
 `port`. `scripts/allocate.cjs INPUT OUTPUT` verifies the locked upstream recipe
 and allocates a fresh uniquely named workspace. Never reuse another deployment's
-allocation. The produced configuration contains immutable container IDs.
+allocation. The produced configuration contains immutable container IDs and the
+resolved Compose file/project directory; the reviewed recipe's relative security
+profiles continue to resolve against the original upstream environment directory.
 
 Run `node packs/cuda/server/mcp.cjs /absolute/config.json --identity` to verify and
 print identities. Run without `--identity` with separate
