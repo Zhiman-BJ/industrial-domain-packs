@@ -9,8 +9,8 @@ Maintained public source for Industrial Harness domains. Local and remote consum
 | Pack | Included implementation | Execution boundary |
 | --- | --- | --- |
 | Chip | EDA 0.6.1, 25-tool MCP, canonical RTL adapter, Skills, full EDA recipe and shared `rtl-cpu` recipe | CPU trial exposes `chip.rtl.verify`; raw MCP has a wider standalone surface |
-| Godot | Godot source/runtime inspector, scoped gateway and game Skills | Requires Godot 4; remote native execution is not qualified |
-| PCB | Public gateway/controller, metadata, locks and Skills | Private PCB-bench actor remains external; no private actor source is redistributed |
+| Godot | Typed scene edits, source StateProvider, independent native import/readback/frame Verifier | macOS Apple Silicon, Godot 4.7.2; bounded structural task |
+| PCB | Public typed KiCad edits, source StateProvider, DRC + native geometry Verifier | macOS Apple Silicon, KiCad 10.0.6; rectangular mounting-board task |
 | FreeCAD | Maintained runtime reconciled with verified Harness fixes, bounded recipe validator, native code and Skill | Inherited macOS arm64 qualification; Linux/Windows are not qualified |
 | CAD guidance | AutoCAD macOS, ezdxf and intent-loop Skills | Skill-only; no remote execution profile |
 
@@ -58,3 +58,5 @@ See [architecture](docs/architecture.md), [release identity](docs/release-format
 ## Harness consumer release
 
 Version 0.3.0 adds `consumerMetadata()`, `hostPacks()`, `sourceDirectory()` and `skillResource()`. The maintained package now owns the host declarations, capability/Skill catalog and verified source resources used by Harness packaging. Canonical Pack IDs are shared with the existing catalog. Harness imports this exact package; it must not maintain a second domain registry or source tree. See [consumer release](docs/harness-consumer.md).
+
+Version 0.4.0 introduces the [PCB/Godot professional Runtime profiles](docs/professional-runtime.md), replacing integrated legacy MCP disclosure with canonical Runtime Actions. Installed Packs use the Harness-injected backend outside development repositories. Native binaries require separate installation; no new remote or other-platform qualification is asserted.

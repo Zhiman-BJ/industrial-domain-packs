@@ -1,0 +1,185 @@
+{
+  "schemaVersion": 1,
+  "id": "godot-pack",
+  "domain": "godot",
+  "version": "0.1.1",
+  "provider": {
+    "id": "godot.local",
+    "title": "Godot local game tools",
+    "domain": "godot",
+    "version": "0.1.1",
+    "transport": "gateway",
+    "backend": "godot-local",
+    "packDirectory": "godot",
+    "sourceFiles": {
+      "src/inspect_scene.gd": "89a4fc583b90af71d697692a87c32c1daff635a4453b6cd354740c9414575201",
+      "src/runtime.cjs": "e6977d490ac5ac85753693a8af4db42fc58ce20f976259fa0d9ff8e220032074"
+    },
+    "resourceRoots": [
+      "src"
+    ],
+    "sourceSha256": "dd60d8f96a999b5386e90bd76d0424cd2075ad8d7aadab293058fd8210be60c1",
+    "tools": [
+      {
+        "id": "godot.game.project_status",
+        "name": "project_status",
+        "risk": "read-only",
+        "summary": "Read project.godot identity and source hash"
+      },
+      {
+        "id": "godot.game.inspect_scene_source",
+        "name": "inspect_scene_source",
+        "risk": "read-only",
+        "summary": "Read bounded serialized scene nodes and properties"
+      },
+      {
+        "id": "godot.game.inspect_scene_runtime",
+        "name": "inspect_scene_runtime",
+        "risk": "mutating",
+        "summary": "Instantiate a scene in headless Godot and inspect resolved properties",
+        "verification": [
+          "Retain the native action receipt; compare observations with task-specific acceptance criteria."
+        ]
+      },
+      {
+        "id": "godot.game.check_project",
+        "name": "check_project",
+        "risk": "mutating",
+        "summary": "Run bounded native Godot import and parse check",
+        "verification": [
+          "Retain the native action receipt; compare observations with task-specific acceptance criteria."
+        ]
+      },
+      {
+        "id": "godot.game.run_scene",
+        "name": "run_scene",
+        "risk": "mutating",
+        "summary": "Run a scene headlessly for a bounded number of frames",
+        "verification": [
+          "Retain the native action receipt; compare observations with task-specific acceptance criteria."
+        ]
+      }
+    ],
+    "packId": "godot-pack"
+  },
+  "capabilities": [
+    {
+      "id": "godot.game.inspect",
+      "title": "Godot scene inspection",
+      "domain": "godot",
+      "stages": [
+        "development",
+        "verification"
+      ],
+      "priority": 12,
+      "keywords": [
+        "inspect scene",
+        "scene tree",
+        "project status",
+        "\u67e5\u770b\u573a\u666f",
+        "\u573a\u666f\u5c5e\u6027",
+        "\u68c0\u67e5\u573a\u666f"
+      ],
+      "skills": [
+        {
+          "id": "godot.game.inspect",
+          "summary": "Inspect source scene structure and project identity.",
+          "reference": "Load the scoped Godot Skill; discover, describe and call only allowed godot.game.* IDs. Native success is not gameplay acceptance."
+        }
+      ],
+      "tools": [
+        {
+          "id": "godot.game.project_status",
+          "name": "project_status",
+          "risk": "read-only",
+          "summary": "Read project.godot identity and source hash"
+        },
+        {
+          "id": "godot.game.inspect_scene_source",
+          "name": "inspect_scene_source",
+          "risk": "read-only",
+          "summary": "Read bounded serialized scene nodes and properties"
+        }
+      ],
+      "verification": [
+        "Source inspection does not establish runtime behavior."
+      ]
+    },
+    {
+      "id": "godot.game.develop",
+      "title": "Godot game development checks",
+      "domain": "godot",
+      "stages": [
+        "development",
+        "verification"
+      ],
+      "priority": 20,
+      "keywords": [
+        "godot",
+        "gdscript",
+        "game scene",
+        "player scene",
+        "ui scene",
+        "animationplayer",
+        "animatedsprite2d",
+        "res://",
+        "\u6e38\u620f\u573a\u666f",
+        "\u8fd0\u884c\u573a\u666f",
+        "\u52a8\u753b",
+        "\u573a\u666f",
+        "sprite"
+      ],
+      "skills": [
+        {
+          "id": "godot.game.develop",
+          "summary": "Use bounded native Godot observation and execution checks.",
+          "reference": "Load the scoped Godot Skill; discover, describe and call only allowed godot.game.* IDs. Native success is not gameplay acceptance."
+        }
+      ],
+      "tools": [
+        {
+          "id": "godot.game.project_status",
+          "name": "project_status",
+          "risk": "read-only",
+          "summary": "Read project.godot identity and source hash"
+        },
+        {
+          "id": "godot.game.inspect_scene_source",
+          "name": "inspect_scene_source",
+          "risk": "read-only",
+          "summary": "Read bounded serialized scene nodes and properties"
+        },
+        {
+          "id": "godot.game.inspect_scene_runtime",
+          "name": "inspect_scene_runtime",
+          "risk": "mutating",
+          "summary": "Instantiate a scene in headless Godot and inspect resolved properties",
+          "verification": [
+            "Retain the native action receipt; compare observations with task-specific acceptance criteria."
+          ]
+        },
+        {
+          "id": "godot.game.check_project",
+          "name": "check_project",
+          "risk": "mutating",
+          "summary": "Run bounded native Godot import and parse check",
+          "verification": [
+            "Retain the native action receipt; compare observations with task-specific acceptance criteria."
+          ]
+        },
+        {
+          "id": "godot.game.run_scene",
+          "name": "run_scene",
+          "risk": "mutating",
+          "summary": "Run a scene headlessly for a bounded number of frames",
+          "verification": [
+            "Retain the native action receipt; compare observations with task-specific acceptance criteria."
+          ]
+        }
+      ],
+      "verification": [
+        "Native import and headless run are smoke checks; verify gameplay against task criteria."
+      ]
+    }
+  ]
+}
