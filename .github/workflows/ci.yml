@@ -31,6 +31,6 @@ jobs:
         run: uv run --frozen --directory packs/chip/eda-harness python ../scripts/mcp-smoke.py
       - name: Build committed source archive
         run: |
-          for pack in chip godot pcb freecad cad; do
+          for pack in chip godot pcb freecad cad cuda; do
             python scripts/package-pack.py "$pack" --output dist
           done

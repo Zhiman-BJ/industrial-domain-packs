@@ -12,6 +12,7 @@ Maintained public source for Industrial Harness domains. Local and remote consum
 | Godot | Godot source/runtime inspector, scoped gateway and game Skills | Requires Godot 4; remote native execution is not qualified |
 | PCB | Public gateway/controller, metadata, locks and Skills | Private PCB-bench actor remains external; no private actor source is redistributed |
 | FreeCAD | Maintained runtime reconciled with verified Harness fixes, bounded recipe validator, native code and Skill | Inherited macOS arm64 qualification; Linux/Windows are not qualified |
+| CUDA | Paired remote Compiler/Evaluator MCP Servers, bounded source client, canonical Verifier and optimization Skill | Fixed AXPBY RTX 4090 profile; private native workers remain external; see [qualification](packs/cuda/QUALIFICATION.md) |
 | CAD guidance | AutoCAD macOS, ezdxf and intent-loop Skills | Skill-only; no remote execution profile |
 
 The migration imports only committed public source: Harness `371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e` and FreeCAD PR29 `62510b22b47803e0841825ec1c2b34fae48b3b15`. Exact imports are recorded in [provenance](provenance/domain-migration.json). Existing uncommitted work and private PCB actor resources are excluded. Pack-local READMEs and harness-pack.json preserve upstream/bootstrap setup notes, including references to Harness-only scripts and earlier plans. Current availability and consumer instructions are defined by this README, pack.json and docs/migration-validation.md; legacy consumer metadata remains reference material until the Harness consumer transition.
@@ -45,7 +46,7 @@ docker buildx build --platform linux/amd64 --load \
 
 After deliberate source changes, stage reviewed files under packs/ and lib/ and run `npm run lock`. This changes the release identity. Build consumer and sandbox images from the same pinned package, then drain the old coordinator before switching.
 
-Build a committed **source-only** archive for any Pack with `python3 scripts/package-pack.py chip --output dist` (also godot, pcb, freecad, cad). Archives contain import notices and file hashes; executable images use the complete pinned package as their build context.
+Build a committed **source-only** archive for any Pack with `python3 scripts/package-pack.py chip --output dist` (also godot, pcb, freecad, cad, cuda). Archives contain import notices and file hashes; executable images use the complete pinned package as their build context.
 
 ## Ownership and license
 
@@ -58,3 +59,5 @@ See [architecture](docs/architecture.md), [release identity](docs/release-format
 ## Harness consumer release
 
 Version 0.3.0 adds `consumerMetadata()`, `hostPacks()`, `sourceDirectory()` and `skillResource()`. The maintained package now owns the host declarations, capability/Skill catalog and verified source resources used by Harness packaging. Canonical Pack IDs are shared with the existing catalog. Harness imports this exact package; it must not maintain a second domain registry or source tree. See [consumer release](docs/harness-consumer.md).
+
+Version 0.4.0 adds the CUDA Pack. Configure both authenticated remote MCP endpoints in trusted host settings; see [deployment and client setup](packs/cuda/README.md).

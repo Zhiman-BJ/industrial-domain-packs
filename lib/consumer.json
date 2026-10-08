@@ -45,6 +45,17 @@
       "qualifiedBundlePlatforms": [
         "darwin-arm64"
       ]
+    },
+    {
+      "id": "cuda",
+      "label": "CUDA",
+      "emoji": "⚡",
+      "version": "0.1.0",
+      "summary": "Remote CUDA Compiler and RTX 4090 Evaluator MCP with kernel optimization Skill",
+      "prerequisites": [
+        "Both authenticated CUDA MCP Servers and a matching fixed reference model"
+      ],
+      "qualifiedBundlePlatforms": []
     }
   ],
   "skills": [
@@ -148,6 +159,14 @@
       "enabledByDefault": true,
       "packId": "freecad-pack",
       "resourcePath": "skills/cad-freecad-headless"
+    },
+    {
+      "id": "cuda.kernel.optimize",
+      "domain": "cuda",
+      "title": "Optimize CUDA kernels with remote MCP",
+      "enabledByDefault": true,
+      "packId": "cuda-pack",
+      "resourcePath": "skills/cuda-kernel-optimize"
     }
   ],
   "capabilities": [
