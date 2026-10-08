@@ -72,6 +72,7 @@ function createRuntimePlugin({ environment = process.env } = {}) {
   }
   return {
     matchesProject: projectDir => fs.existsSync(path.join(projectDir, 'eda.yaml')),
+    workspaceProtectedPaths: projectDir => [path.join(projectDir, '.eda')],
     stateProvider: ({ projectDir }) => call('inspect', projectDir),
     tools: [
       {
@@ -82,6 +83,22 @@ function createRuntimePlugin({ environment = process.env } = {}) {
               'RTL verification uses the declared eda.yaml inputs; this tool accepts no command or script overrides.',
             );
           return call('execute', projectDir, signal);
+        },
+      },
+      {
+        descriptor: {
+          schemaVersion: '1',
+          id: 'chip.environment.check',
+          version: '0.6.1-core.2',
+          risk: 'read-only',
+          verification: [],
+        },
+        execute: ({ projectDir, inputs }) => {
+          if (Object.keys(inputs).length)
+            throw Error(
+              'Host environment checks use the bound eda.yaml; no command or context overrides are accepted.',
+            );
+          return call('environment', projectDir);
         },
       },
     ],
@@ -102,8 +119,30 @@ function createRuntimePlugin({ environment = process.env } = {}) {
             id: 'chip.rtl.verify',
             summary: 'Run declared RTL simulation through the durable runtime.',
           },
+          {
+            id: 'chip.environment.check',
+            summary:
+              'Check the declared RTL tools and Docker on the host Runtime; sandbox Shell/MCP Docker access is intentionally denied. Read environment readiness from diagnostics, not engineering verification.',
+          },
         ],
         verification: ['chip.rtl.assertions'],
+      },
+      {
+        id: 'chip.environment.core.check',
+        title: 'Host RTL environment preflight',
+        domain: 'chip',
+        stages: ['rtl'],
+        priority: 110,
+        keywords: ['environment', 'docker', 'preflight', '环境检查', '工具检查'],
+        skills: [],
+        tools: [
+          {
+            id: 'chip.environment.check',
+            summary:
+              'Read the host Runtime environment for declared RTL inputs; call with inputs: {}. This does not initialize a project or establish engineering acceptance.',
+          },
+        ],
+        verification: [],
       },
     ],
     protectedPaths: [path.resolve(__dirname, '..')],

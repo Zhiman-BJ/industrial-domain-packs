@@ -1,6 +1,6 @@
 {
   "name": "@zhiman-bj/industrial-domain-packs",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Shared Industrial Harness domain implementations and sandbox profiles",
   "license": "MIT",
   "main": "lib/index.cjs",
@@ -8,6 +8,8 @@
     "node": ">=24"
   },
   "files": [
+    "lib/consumer.cjs",
+    "lib/consumer.json",
     "lib/container.cjs",
     "lib/index.cjs",
     "lib/resources.cjs",
@@ -22,6 +24,9 @@
     "packs/chip/PROVENANCE.md",
     "packs/chip/README.md",
     "packs/chip/UPSTREAM_PROVENANCE.md",
+    "packs/chip/bind-kimi.sh",
+    "packs/chip/bridge/runtime.cjs",
+    "packs/chip/chip-harness.sh",
     "packs/chip/eda-harness/Dockerfile.tools",
     "packs/chip/eda-harness/LICENSE",
     "packs/chip/eda-harness/docs/project.schema.json",
@@ -100,6 +105,8 @@
     "packs/chip/examples/rtl/eda.yaml",
     "packs/chip/harness-pack.json",
     "packs/chip/images/Dockerfile.rtl-cpu",
+    "packs/chip/linux-bootstrap.sh",
+    "packs/chip/linux-installer-header.sh",
     "packs/chip/pack.json",
     "packs/chip/runtime/bridge.py",
     "packs/chip/runtime/export.py",

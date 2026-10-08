@@ -1,16 +1,16 @@
 {
   "schemaVersion": 1,
-  "id": "freecad-local",
+  "id": "freecad-pack",
   "domain": "cad",
-  "version": "1.1.4-pack.1",
+  "version": "1.1.4-pack.4",
   "provider": {
     "id": "freecad-local.runtime",
     "title": "FreeCAD 1.1.4 · persistent native tools",
     "domain": "cad",
-    "version": "1.1.4-pack.1",
+    "version": "1.1.4-pack.4",
     "transport": "runtime",
     "packDirectory": "freecad",
-    "sourceSha256": "34fca7a23149f44a8b6a621021c6866900d1a70d244b6f6fab97158755a0958a",
+    "sourceSha256": "4158fe9e76bbc8bebbb2d47a631768a65c723c7f9f6c22b0521baf9eaf3ef8fa",
     "tools": [
       {
         "id": "cad.freecad.build",
@@ -38,16 +38,26 @@
         "verification": [
           "cad.freecad.geometry"
         ]
+      },
+      {
+        "id": "cad.freecad.edit",
+        "name": "edit",
+        "risk": "mutating",
+        "summary": "Modify a hash-bound recipe for an existing generated FCStd/STEP in a new Action; preserve the original model. Changes may update named parameters or dimensions/profile/origin of known feature IDs.",
+        "verification": [
+          "cad.freecad.geometry"
+        ]
       }
     ],
     "resourceRoots": [
       "runtime"
     ],
     "sourceFiles": {
-      "runtime/index.cjs": "c73027521d2d70b449231b1b68be46f8473bcdd433363b7612d7e89c1f380fd4",
-      "runtime/native.py": "db7213e55afe8420d4981c7a2accb45cec89d90660d472860ba1df259880daf4",
-      "runtime/recipe.cjs": "6858090d5af8ff47c4b5c35fcf1546b238bf614831f649cd5c87376157069336"
-    }
+      "runtime/index.cjs": "3852041021af251eeeff4d4466e0bfbe2bda046a97daa4bf89a2e4f16b113724",
+      "runtime/native.py": "b271d6760f104e0cc877bf9fa4ace304648047a3c138f7e57412373fcc20dab4",
+      "runtime/recipe.cjs": "8d0f0dc69776359a590561c65c9ca51289bdb417294dddf99317438d080670f3"
+    },
+    "packId": "freecad-pack"
   },
   "runtime": {
     "entry": "runtime/index.cjs"
@@ -73,7 +83,14 @@
         "草图",
         "拉伸",
         "打孔",
-        "布尔"
+        "布尔",
+        "修改",
+        "形状",
+        "改孔",
+        "尺寸",
+        "modify",
+        "change",
+        "edit"
       ],
       "skills": [
         {
@@ -108,6 +125,15 @@
           "verification": [
             "cad.freecad.geometry"
           ]
+        },
+        {
+          "id": "cad.freecad.edit",
+          "name": "edit",
+          "risk": "mutating",
+          "summary": "Modify a hash-bound recipe for an existing generated FCStd/STEP in a new Action; preserve the original model. Changes may update named parameters or dimensions/profile/origin of known feature IDs.",
+          "verification": [
+            "cad.freecad.geometry"
+          ]
         }
       ],
       "viewers": [
@@ -116,6 +142,31 @@
       "verification": [
         "cad.freecad.geometry"
       ]
+    }
+  ],
+  "runtimeAssets": [
+    {
+      "id": "freecad",
+      "label": "FreeCAD",
+      "version": "1.1.4",
+      "type": "macos-app-dmg",
+      "platform": "darwin-arm64",
+      "url": "https://github.com/FreeCAD/FreeCAD/releases/download/1.1.4/FreeCAD_1.1.4-macOS-arm64-py311.dmg",
+      "sha256": "071343b4abb70492b75c973f41eaf1d2528f9b9c7ea018d22a4f46ae14d27ac0",
+      "size": 649760538,
+      "app": "FreeCAD.app",
+      "executable": "Contents/Resources/bin/freecadcmd",
+      "environment": "INDUSTRIAL_HARNESS_FREECAD_CMD",
+      "versionArgs": [
+        "--keep-deprecated-paths",
+        "--version"
+      ],
+      "versionText": "1.1.4",
+      "profileEnvironment": {
+        "FREECAD_USER_HOME": "home",
+        "FREECAD_USER_DATA": "data",
+        "FREECAD_USER_TEMP": "temp"
+      }
     }
   ]
 }

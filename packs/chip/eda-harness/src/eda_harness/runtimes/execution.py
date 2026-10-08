@@ -4,6 +4,7 @@ import os
 import shutil
 import signal
 import subprocess
+import sys
 import time
 import uuid
 from dataclasses import dataclass, field
@@ -202,6 +203,10 @@ class Runtime:
                 "--workdir",
                 "/work",
             ]
+            # Native Linux bind mounts retain host ownership after capabilities
+            # are dropped. Run as the project owner, including private workdirs.
+            if sys.platform.startswith("linux"):
+                actual.extend(["--user", f"{os.getuid()}:{os.getgid()}"])
             actual.extend(["--entrypoint", argv[0], self.identity["image_id"], *argv[1:]])
         start = time.monotonic()
         container_state, cleanup = {}, {}

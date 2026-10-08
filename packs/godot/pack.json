@@ -16,5 +16,6 @@
   "externalDependencies": [
     "Godot 4 executable"
   ],
-  "remoteStatus": "not-qualified"
+  "remoteStatus": "not-qualified",
+  "releaseVersion": "0.1.1"
 }

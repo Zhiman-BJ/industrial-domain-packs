@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
-  "id": "pcb-bench",
+  "id": "pcb-pack",
   "domain": "pcb",
-  "version": "2026.09.28",
+  "version": "2026.09.28-pack.1",
   "provider": {
     "id": "pcb-bench.tools",
     "title": "PCB Bench · KiCad 10.0.6",
     "domain": "pcb",
-    "version": "2026.09.28",
+    "version": "2026.09.28-pack.1",
     "transport": "gateway",
     "backend": "pcb-bench",
     "packDirectory": "pcb",
@@ -905,7 +905,8 @@
     "resourceRoots": [
       "pcb-agent",
       "skills/pcb-design-e2e"
-    ]
+    ],
+    "packId": "pcb-pack"
   },
   "capabilities": [
     {

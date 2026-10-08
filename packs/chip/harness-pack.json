@@ -2,12 +2,12 @@
   "schemaVersion": 1,
   "id": "chip-pack",
   "domain": "chip",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "provider": {
     "id": "chip-pack.eda",
     "title": "Chip Pack · EDA Harness 0.6.1",
     "domain": "chip",
-    "version": "0.6.1",
+    "version": "0.6.2",
     "transport": "gateway",
     "packDirectory": "chip",
     "directoryEnv": "INDUSTRIAL_HARNESS_CHIP_PACK_DIR",
@@ -194,7 +194,8 @@
         ]
       }
     ],
-    "sourceSha256": "8825d43d9a8a81667ad8f58c29627fccb489b696f7b2b075e829a5d6c450b0ad"
+    "sourceSha256": "95448c85231f7e8abb6ccbfb8facde03e77350fb2a19f84f50a07a3b93e0044d",
+    "packId": "chip-pack"
   },
   "capabilities": [
     {

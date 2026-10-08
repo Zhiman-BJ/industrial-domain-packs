@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
-  "id": "godot-local",
+  "id": "godot-pack",
   "domain": "godot",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "provider": {
     "id": "godot.local",
     "title": "Godot local game tools",
     "domain": "godot",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "transport": "gateway",
     "backend": "godot-local",
     "packDirectory": "godot",
@@ -59,7 +59,8 @@
           "Retain the native action receipt; compare observations with task-specific acceptance criteria."
         ]
       }
-    ]
+    ],
+    "packId": "godot-pack"
   },
   "capabilities": [
     {
