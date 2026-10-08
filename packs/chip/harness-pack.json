@@ -2,12 +2,12 @@
   "schemaVersion": 1,
   "id": "chip-pack",
   "domain": "chip",
-  "version": "0.6.2",
+  "version": "0.6.1",
   "provider": {
     "id": "chip-pack.eda",
-    "title": "Chip Pack · EDA Harness 0.6.1",
+    "title": "Chip Pack \u00b7 EDA Harness 0.6.1",
     "domain": "chip",
-    "version": "0.6.2",
+    "version": "0.6.1",
     "transport": "gateway",
     "packDirectory": "chip",
     "directoryEnv": "INDUSTRIAL_HARNESS_CHIP_PACK_DIR",
@@ -202,23 +202,21 @@
       "id": "chip.eda.inspect",
       "title": "Inspect EDA project and environment",
       "domain": "chip",
-      "stages": [
-        "engineering"
-      ],
+      "stages": ["engineering"],
       "priority": 20,
       "keywords": [
         "eda",
         "chip pack",
         "chippack",
-        "工程状态",
-        "项目状态",
-        "检查环境",
-        "环境检查",
+        "\u5de5\u7a0b\u72b6\u6001",
+        "\u9879\u76ee\u72b6\u6001",
+        "\u68c0\u67e5\u73af\u5883",
+        "\u73af\u5883\u68c0\u67e5",
         "project status",
         "check environment",
         "get_operational_context",
         "get_server_info",
-        "诊断",
+        "\u8bca\u65ad",
         "metrics",
         "acceptance",
         "artifact evidence"
@@ -335,14 +333,12 @@
       "id": "chip.eda.setup",
       "title": "Initialize an EDA project",
       "domain": "chip",
-      "stages": [
-        "engineering"
-      ],
+      "stages": ["engineering"],
       "priority": 20,
       "keywords": [
         "initialize project",
-        "初始化工程",
-        "初始化芯片",
+        "\u521d\u59cb\u5316\u5de5\u7a0b",
+        "\u521d\u59cb\u5316\u82af\u7247",
         "eda setup"
       ],
       "skills": [
@@ -466,29 +462,27 @@
       "id": "chip.eda.run",
       "title": "Run EDA actions",
       "domain": "chip",
-      "stages": [
-        "engineering"
-      ],
+      "stages": ["engineering"],
       "priority": 20,
       "keywords": [
         "run_action",
         "run_until",
         "eda run",
-        "芯片设计",
+        "\u82af\u7247\u8bbe\u8ba1",
         "lint",
         "synthesis",
-        "综合",
-        "仿真任务",
-        "运行仿真",
+        "\u7efc\u5408",
+        "\u4eff\u771f\u4efb\u52a1",
+        "\u8fd0\u884c\u4eff\u771f",
         "simulate",
         "simulation run",
         "formal",
-        "形式验证",
+        "\u5f62\u5f0f\u9a8c\u8bc1",
         "placement",
-        "布线任务",
+        "\u5e03\u7ebf\u4efb\u52a1",
         "cancel run",
-        "恢复运行",
-        "运行任务"
+        "\u6062\u590d\u8fd0\u884c",
+        "\u8fd0\u884c\u4efb\u52a1"
       ],
       "skills": [
         {
@@ -665,20 +659,18 @@
       "id": "chip.eda.history",
       "title": "Manage EDA goals and historical states",
       "domain": "chip",
-      "stages": [
-        "engineering"
-      ],
+      "stages": ["engineering"],
       "priority": 20,
       "keywords": [
         "checkout state",
-        "回退状态",
+        "\u56de\u9000\u72b6\u6001",
         "create_goal",
         "record_decision",
         "compare_states",
-        "实验记录",
-        "工程目标",
+        "\u5b9e\u9a8c\u8bb0\u5f55",
+        "\u5de5\u7a0b\u76ee\u6807",
         "ppa comparison",
-        "比较状态"
+        "\u6bd4\u8f83\u72b6\u6001"
       ],
       "skills": [
         {
@@ -819,14 +811,12 @@
       "id": "chip.eda.viewer",
       "title": "Launch EDA external viewer",
       "domain": "chip",
-      "stages": [
-        "engineering"
-      ],
+      "stages": ["engineering"],
       "priority": 20,
       "keywords": [
         "open_viewer",
         "launch viewer",
-        "打开外部查看器"
+        "\u6253\u5f00\u5916\u90e8\u67e5\u770b\u5668"
       ],
       "skills": [
         {
