@@ -1,0 +1,84 @@
+name: Architecture contract
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  pull_request_target:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    name: Architecture contract
+    if: github.event_name != 'pull_request_target'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Select the trusted architecture revision
+        env:
+          POLICY_BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/architecture-policy"
+          if [ -n "$POLICY_BASE" ] && git cat-file -e "$POLICY_BASE:architecture/policy.json" 2>/dev/null; then
+            git show "$POLICY_BASE:scripts/check-architecture-contract.cjs" > "$RUNNER_TEMP/architecture-policy/check.cjs"
+            git show "$POLICY_BASE:architecture/policy.json" > "$RUNNER_TEMP/architecture-policy/policy.json"
+          else
+            cp scripts/check-architecture-contract.cjs "$RUNNER_TEMP/architecture-policy/check.cjs"
+            cp architecture/policy.json "$RUNNER_TEMP/architecture-policy/policy.json"
+          fi
+      - name: Enforce ownership and non-expanding migration exceptions
+        run: node "$RUNNER_TEMP/architecture-policy/check.cjs" --root "$GITHUB_WORKSPACE" --policy "$RUNNER_TEMP/architecture-policy/policy.json"
+      - name: Verify forbidden changes actually fail
+        run: node --test tests/architecture/contract-policy.test.cjs
+
+  trusted:
+    name: Trusted architecture policy
+    if: github.event_name == 'pull_request_target'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      statuses: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          path: trusted
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.sha }}
+          path: candidate
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Inspect candidate files with base-branch code only
+        id: guard
+        continue-on-error: true
+        run: node trusted/scripts/check-architecture-contract.cjs --root "$GITHUB_WORKSPACE/candidate" --policy "$GITHUB_WORKSPACE/trusted/architecture/policy.json"
+      - name: Bind the policy result to the actual PR commit
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          RESULT: ${{ steps.guard.outcome }}
+        run: |
+          state=failure
+          if [ "$RESULT" = success ]; then state=success; fi
+          gh api "repos/$GITHUB_REPOSITORY/statuses/$HEAD_SHA" \
+            -f state="$state" -f context='Architecture contract' \
+            -f description='Trusted IH-ARCH-001 ownership and migration guard' \
+            -f target_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          test "$state" = success

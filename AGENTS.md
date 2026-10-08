@@ -1,5 +1,9 @@
 # Repository instructions
 
+## Accepted architecture contract: IH-ARCH-001 (2026-10-08)
+
+Read `docs/architecture-contract.md` before implementation; it is the accepted cross-repository ownership boundary. Maintain domain semantics here; do not introduce a Harness application, canonical fact model or agent loop. Harness copies are compatibility consumers, not an alternate maintenance source. Run `npm run test:architecture-contract` and relevant existing gates. Do not widen/rebaseline migration exceptions. Checker/workflow/policy changes require an explicit owner-approved architecture revision and positive/negative evidence.
+
 Read README.md, docs/architecture.md and docs/migration.md before changing module boundaries.
 
 - This is the maintained public source of Domain Packs. Harness and remote-service consumers pin release identities rather than hand-editing source copies.

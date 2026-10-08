@@ -1,5 +1,7 @@
 # Industrial Domain Packs
 
+开发边界：[已接受的架构契约 IH-ARCH-001](docs/architecture-contract.md)。
+
 [English](README.md)
 
 领域实现统一维护在这个公开仓库。本地与远端通过完整 Git commit 固定同一版本，包含执行代码、MCP、Skills、依赖锁、工具定义、验证器和镜像配方。
