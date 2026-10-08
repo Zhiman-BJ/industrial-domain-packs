@@ -1,8 +1,18 @@
 """Public KiCad adapter. No PCB-bench actor or private resources."""
-import json,sys
+import json,sys,os
 from pathlib import Path
+# macOS resolves the login user's home independently of HOME. Explicitly bind
+# KiCad's configuration to this action's writable sandbox before native import.
+work = Path(os.environ['HARNESS_OUTPUT_DIR'])
+config = work / 'kicad-config'
+documents = work / 'kicad-documents'
+config.mkdir(exist_ok=True)
+documents.mkdir(exist_ok=True)
+os.environ['KICAD_CONFIG_HOME'] = str(config)
+os.environ['KICAD_DOCUMENTS_HOME'] = str(documents)
 import wx
 app = wx.App(False)
+wx.Log.SetActiveTarget(wx.LogStderr())
 import pcbnew
 
 def readback(board):

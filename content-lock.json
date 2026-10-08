@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contentSha256": "ac15935c8ccf5a13a61806284bc18e890945f43e26cd84dbfe27ff1d34311842",
+  "contentSha256": "63b2437d3de1fc4cdb0dbb6de2cee5942f567bdb233e3bdae538e1be20bf4fe7",
   "files": {
     "lib/consumer.cjs": "a70e74e779f10addc7a57d6a592fb766c78c92768818c07e100dbba93bff7e99",
     "lib/consumer.json": "f437eb1f37cf0c15f1dd5f1e69f478fd53f61e6bd8ffb3e862175b42a8a60e19",
@@ -150,13 +150,13 @@
     "packs/pcb/bridge/pcb-gateway.py": "aef380f4c7392b7fde35977060c1172047759e34aecf97a7db54eda2d55a5b1c",
     "packs/pcb/bridge/pcb-runtime.cjs": "2ba920c0e2baa23e4a43d05ed4b01699c777777f21ef45c2e017af482e3356f7",
     "packs/pcb/examples/mounting-board/board.kicad_pcb": "a892beb0e25094c3c55cb859a22b9811bb1b6c0615f4856b588660cec846ff9e",
-    "packs/pcb/harness-pack.json": "7aa68af189aa9ffa70e2e32296b5ae0e3d1aa4696e296fe4f393a7e776b791ef",
+    "packs/pcb/harness-pack.json": "f2e2752d1057809d0254f55508504a74bbba4d86f1a94a190e41ecc6d7192cd6",
     "packs/pcb/legacy-harness-pack.json": "64be47af2b24d1a6a059db65e39344d60221f161afa8384e8c2c8f14b6edc95c",
     "packs/pcb/pack.json": "0bd75b297ff7e60bddc83bfdcaa534598c6e6af3e965b238c727db188fab4f0b",
     "packs/pcb/pyproject.toml": "baa7b9c41b2b57b7e19898fa7138828d1d1401b992dd859e6c5a922a1e793951",
     "packs/pcb/runtime/index.cjs": "61b920274243c1d62d69b8912ffd9b88972f9210115bbc286a44e6679e128599",
     "packs/pcb/runtime/native-dependency.json": "990026ffb36aeac47a3a2e935cf00b17a068628a0a46bc1dfe120bbbf3b21c73",
-    "packs/pcb/runtime/native.py": "51751dd87669bd2e939992272a0c2dbfdbba38b7a36c2b19543356c8efc037b2",
+    "packs/pcb/runtime/native.py": "8f1eb5f360ad422910266a93356a3e7609f1f26fd72c0ef96645030c1275d29b",
     "packs/pcb/runtime/setup-native.cjs": "9c78c10560e0d651fefd3eb8722681aa995047ce2792ce192523a48bd3890457",
     "packs/pcb/runtime/support.cjs": "27c8c2b8b7472677c007a4c7fa6e1d42651a8ef0579fc58c85878a3e986e60cc",
     "packs/pcb/runtime/verifier.cjs": "e6e6a2fe501b9b93f2b863b682b9a4fa07c8a08cc2ce88bb9043a66df212eb0d",
