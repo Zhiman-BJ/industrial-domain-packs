@@ -4,7 +4,7 @@
   "domain": "chip",
   "version": "0.6.2",
   "provider": {
-    "id": "chip-pack.runtime",
+    "id": "chip-pack.eda",
     "title": "Chip Pack · EDA Harness 0.6.1",
     "domain": "chip",
     "version": "0.6.2",

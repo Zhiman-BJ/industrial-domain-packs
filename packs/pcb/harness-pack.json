@@ -4,7 +4,7 @@
   "domain": "pcb",
   "version": "2026.09.28-pack.1",
   "provider": {
-    "id": "pcb-pack.gateway",
+    "id": "pcb-bench.tools",
     "title": "PCB Bench · KiCad 10.0.6",
     "domain": "pcb",
     "version": "2026.09.28-pack.1",

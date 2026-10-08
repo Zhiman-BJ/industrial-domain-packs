@@ -4,7 +4,7 @@
   "domain": "godot",
   "version": "0.1.1",
   "provider": {
-    "id": "godot-pack.gateway",
+    "id": "godot.local",
     "title": "Godot local game tools",
     "domain": "godot",
     "version": "0.1.1",
