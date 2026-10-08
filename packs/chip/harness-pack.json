@@ -194,7 +194,8 @@
         ]
       }
     ],
-    "sourceSha256": "95448c85231f7e8abb6ccbfb8facde03e77350fb2a19f84f50a07a3b93e0044d"
+    "sourceSha256": "95448c85231f7e8abb6ccbfb8facde03e77350fb2a19f84f50a07a3b93e0044d",
+    "packId": "chip-pack"
   },
   "capabilities": [
     {

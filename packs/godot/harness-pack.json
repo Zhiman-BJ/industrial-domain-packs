@@ -59,7 +59,8 @@
           "Retain the native action receipt; compare observations with task-specific acceptance criteria."
         ]
       }
-    ]
+    ],
+    "packId": "godot-pack"
   },
   "capabilities": [
     {

@@ -49,3 +49,23 @@ test("consumer metadata cannot mutate the pinned registry through a caller refer
   assert.throws(() => packs.sourceDirectory("unknown-pack"));
   assert.throws(() => packs.skillResource("unknown-skill"));
 });
+
+test("gateway transport implementations belong to the pinned owner release", () => {
+  for (const pack of packs
+    .hostPacks()
+    .filter((item) => item.provider.transport === "gateway")) {
+    const adapter = packs.gatewayAdapter(pack.provider);
+    assert.equal(typeof adapter.providerRuntime, "function");
+    assert.equal(typeof adapter.gatewayConfig, "function");
+    if (adapter.sourceHash)
+      assert.equal(
+        adapter.sourceHash(
+          require("node:path").join(
+            packs.sourceDirectory(pack.id),
+            "eda-harness",
+          ),
+        ),
+        pack.provider.sourceSha256,
+      );
+  }
+});

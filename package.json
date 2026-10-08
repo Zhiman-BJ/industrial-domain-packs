@@ -25,6 +25,7 @@
     "packs/chip/README.md",
     "packs/chip/UPSTREAM_PROVENANCE.md",
     "packs/chip/bind-kimi.sh",
+    "packs/chip/bridge/runtime.cjs",
     "packs/chip/chip-harness.sh",
     "packs/chip/eda-harness/Dockerfile.tools",
     "packs/chip/eda-harness/LICENSE",

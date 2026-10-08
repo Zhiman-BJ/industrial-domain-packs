@@ -1,52 +1,62 @@
-const fs = require('node:fs');
-const path = require('node:path');
-const { spawnSync } = require('node:child_process');
-const { validateResources } = require('../../../lib/resources.cjs');
+const fs = require("node:fs");
+const path = require("node:path");
+const { spawnSync } = require("node:child_process");
+const { validateResources } = require("../../../lib/resources.cjs");
 
 function findPack(provider) {
-  for (let directory = __dirname; ; directory = path.dirname(directory)) {
-    const candidate = path.join(directory, 'packs', provider.packDirectory);
-    if (fs.existsSync(path.join(candidate, 'src', 'runtime.cjs')))
-      return fs.realpathSync(candidate);
-    if (path.dirname(directory) === directory) break;
-  }
-  throw Error(`${provider.title} resources are not installed.`);
+  return provider.installedDirectory || path.resolve(__dirname, "..");
 }
 
 function findBinary(environment) {
   const configured = environment.INDUSTRIAL_HARNESS_GODOT_BIN;
   if (
     configured &&
-    (!path.isAbsolute(configured) || !fs.statSync(configured, { throwIfNoEntry: false })?.isFile())
+    (!path.isAbsolute(configured) ||
+      !fs.statSync(configured, { throwIfNoEntry: false })?.isFile())
   )
-    throw Error('INDUSTRIAL_HARNESS_GODOT_BIN must name an absolute Godot executable.');
+    throw Error(
+      "INDUSTRIAL_HARNESS_GODOT_BIN must name an absolute Godot executable.",
+    );
   if (configured) return fs.realpathSync(configured);
-  for (const directory of (environment.PATH || '').split(path.delimiter)) {
+  for (const directory of (environment.PATH || "").split(path.delimiter)) {
     if (!directory) continue;
-    const candidate = path.join(directory, process.platform === 'win32' ? 'godot.exe' : 'godot');
+    const candidate = path.join(
+      directory,
+      process.platform === "win32" ? "godot.exe" : "godot",
+    );
     if (fs.statSync(candidate, { throwIfNoEntry: false })?.isFile())
       return fs.realpathSync(candidate);
   }
   throw Error(
-    'Godot 4 is required. Set INDUSTRIAL_HARNESS_GODOT_BIN to its absolute executable path.',
+    "Godot 4 is required. Set INDUSTRIAL_HARNESS_GODOT_BIN to its absolute executable path.",
   );
 }
 
 function godotRuntime(provider, environment = process.env) {
   const packDir = validateResources(findPack(provider), provider);
   const binary = findBinary(environment);
-  const versionResult = spawnSync(binary, ['--version'], {
-    encoding: 'utf8',
+  const versionResult = spawnSync(binary, ["--version"], {
+    encoding: "utf8",
     timeout: 5000,
     maxBuffer: 4096,
   });
-  const binaryVersion = (versionResult.stdout || '').trim();
+  const binaryVersion = (versionResult.stdout || "").trim();
   if (versionResult.status !== 0 || !/^4\./.test(binaryVersion))
-    throw Error('Godot local tools require a working Godot 4 executable.');
-  return { packDir, binary, binaryVersion, sourceSha256: provider.sourceSha256 };
+    throw Error("Godot local tools require a working Godot 4 executable.");
+  return {
+    packDir,
+    binary,
+    binaryVersion,
+    sourceSha256: provider.sourceSha256,
+  };
 }
 
-function godotGatewayConfig(directory, provider, project, environment = process.env) {
+function godotGatewayConfig(
+  directory,
+  provider,
+  project,
+  environment = process.env,
+) {
   const runtime = godotRuntime(provider, environment);
   const policyFile = path.join(directory, `mcp-${provider.id}.policy.json`);
   const policy = {
@@ -63,15 +73,20 @@ function godotGatewayConfig(directory, provider, project, environment = process.
     receiptDir: path.join(directory, `mcp-${provider.id}-receipts`),
     cacheDir: path.join(directory, `mcp-${provider.id}-results`),
   };
-  fs.writeFileSync(policyFile, JSON.stringify(policy, null, 2), { mode: 0o600 });
+  fs.writeFileSync(policyFile, JSON.stringify(policy, null, 2), {
+    mode: 0o600,
+  });
   fs.chmodSync(policyFile, 0o600);
   return {
     command: process.execPath,
-    args: [path.join(__dirname, 'godot-gateway.cjs'), policyFile],
+    args: [path.join(__dirname, "godot-gateway.cjs"), policyFile],
     env: {
-      ELECTRON_RUN_AS_NODE: '1',
+      ELECTRON_RUN_AS_NODE: "1",
       ...(environment.INDUSTRIAL_HARNESS_ACTION_DIR
-        ? { INDUSTRIAL_HARNESS_ACTION_DIR: environment.INDUSTRIAL_HARNESS_ACTION_DIR }
+        ? {
+            INDUSTRIAL_HARNESS_ACTION_DIR:
+              environment.INDUSTRIAL_HARNESS_ACTION_DIR,
+          }
         : {}),
     },
   };

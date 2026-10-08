@@ -905,7 +905,8 @@
     "resourceRoots": [
       "pcb-agent",
       "skills/pcb-design-e2e"
-    ]
+    ],
+    "packId": "pcb-pack"
   },
   "capabilities": [
     {

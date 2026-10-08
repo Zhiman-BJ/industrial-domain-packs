@@ -56,7 +56,8 @@
       "runtime/index.cjs": "3852041021af251eeeff4d4466e0bfbe2bda046a97daa4bf89a2e4f16b113724",
       "runtime/native.py": "b271d6760f104e0cc877bf9fa4ace304648047a3c138f7e57412373fcc20dab4",
       "runtime/recipe.cjs": "8d0f0dc69776359a590561c65c9ca51289bdb417294dddf99317438d080670f3"
-    }
+    },
+    "packId": "freecad-pack"
   },
   "runtime": {
     "entry": "runtime/index.cjs"
