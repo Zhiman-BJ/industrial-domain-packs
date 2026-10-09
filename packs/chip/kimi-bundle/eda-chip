@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Domain CLI, also used directly as Kimi's stdio MCP server.
+set -euo pipefail
+root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
+export PYTHONPATH="$root/python-libs"
+export PYTHONNOUSERSITE=1
+exec "$root/python/bin/python3" -m eda_harness.cli "$@"

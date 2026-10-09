@@ -36,3 +36,9 @@ Chip 本地和沙箱使用同一套 EDA semantic.prepare / semantic.observe；�
 0.4.0 新增 CUDA Pack。两个远程 MCP 使用独立身份与凭据，从宿主可信设置接入。本地准备服务前检查 GPU 与 profile，并明确绑定评测卡 UUID；远程客户端无需本机 GPU。详见[部署与客户端配置](packs/cuda/README.md)。
 
 0.4.0 同时提供 [PCB／Godot 专业 Runtime](docs/professional-runtime.md)，集成路径采用 canonical Actions 和独立验证，原有 MCP 仅保留独立诊断。安装后的 Pack 通过 Harness 注入通用执行接口，不依赖开发目录。原生软件需另行安装；没有扩大远端、Linux、Windows 或 Intel Mac 支持声明。
+
+## 独立 Kimi Chip 轨迹采集包
+
+Chip Pack 另提供 [Kimi Code + Chip 衍生发行](packs/chip/kimi-bundle/README.zh-CN.md)：
+干净的上游 CLI 直接接入 MCP 与原生 Skill，用于蒸馏轨迹采集。安装、配方和发行
+全部维护在本仓库，不依赖 Harness 应用，也不增加 Agent 编排。

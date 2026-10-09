@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Kimi Chip bundle entry: configure paths, then execute the unchanged upstream CLI.
+set -euo pipefail
+root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
+export KIMI_CODE_HOME="${KIMI_CODE_HOME:-${XDG_DATA_HOME:-$HOME/.local/share}/kimi-chip}"
+export KIMI_CODE_NO_AUTO_UPDATE=1
+export PATH="$root/bin${KIMI_CHIP_DOCKER_ACCESS_BIN:+:$KIMI_CHIP_DOCKER_ACCESS_BIN}:$PATH"
+exec "$root/upstream/kimi" "$@"

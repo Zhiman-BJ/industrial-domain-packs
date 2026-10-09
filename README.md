@@ -63,3 +63,10 @@ Version 0.3.0 adds `consumerMetadata()`, `hostPacks()`, `sourceDirectory()` and 
 Version 0.4.0 adds the CUDA Pack. Configure both authenticated remote MCP endpoints in trusted host settings. Local worker preparation requires a GPU/profile preflight and explicit evaluator UUID; remote clients need no local GPU. See [deployment and client setup](packs/cuda/README.md).
 
 Version 0.4.0 also introduces the [PCB/Godot professional Runtime profiles](docs/professional-runtime.md), replacing integrated legacy MCP disclosure with canonical Runtime Actions. Installed Packs use the Harness-injected backend outside development repositories. Native binaries require separate installation; no new remote or other-platform qualification is asserted.
+
+## Standalone Kimi Chip collection bundle
+
+The Chip Pack also publishes a [Kimi Code + Chip bundle](packs/chip/kimi-bundle/README.md)
+for native trajectory collection: pristine upstream CLI, direct MCP and native Skill.
+Its installer and release recipe live in this repository; it has no Harness
+application dependency and adds no agent orchestration.
