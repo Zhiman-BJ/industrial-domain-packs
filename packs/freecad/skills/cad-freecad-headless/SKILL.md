@@ -92,3 +92,7 @@ FreeCAD **1.1.4**. The default executable is
 `INDUSTRIAL_HARNESS_FREECAD_CMD` for another trusted installation. The Pack does
 not install or distribute the upstream app. Do not remove system trust settings
 or claim Windows/Linux native execution without qualification.
+
+## Presenting results
+
+The producer declares the model, version-matched preview, exports and diagnostics. Harness registers them automatically, including partial results. Do not assemble file pairs or claim that preview means acceptance. `list_results` returns host-registered group IDs and a selection revision. Use `select_result` only when user intent needs emphasis: keep both model groups for a design comparison; select the report group when the user explicitly requests diagnostics. Selection is optional and never changes verification. Read the actual verification reason before describing checks.

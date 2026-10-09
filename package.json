@@ -1,6 +1,6 @@
 {
   "name": "@zhiman-bj/industrial-domain-packs",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Shared Industrial Harness domain implementations and sandbox profiles",
   "license": "MIT",
   "main": "lib/index.cjs",
@@ -125,6 +125,7 @@
     "packs/freecad/pack.json",
     "packs/freecad/runtime/index.cjs",
     "packs/freecad/runtime/native.py",
+    "packs/freecad/runtime/presentation.cjs",
     "packs/freecad/runtime/recipe.cjs",
     "packs/freecad/skills/cad-freecad-headless/SKILL.md",
     "packs/godot/PROVENANCE.md",
