@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "id": "cuda-pack",
+  "domain": "cuda",
+  "sourceVersion": "0.1.0",
+  "releaseVersion": "0.1.0",
+  "status": "maintained-adapter",
+  "skills": [
+    "skills/cuda-kernel-optimize/SKILL.md"
+  ],
+  "profiles": [],
+  "runtime": {
+    "entry": "runtime/index.cjs"
+  },
+  "mcpServers": [
+    {
+      "id": "cuda-compiler",
+      "role": "compiler",
+      "entry": "server/mcp.cjs",
+      "path": "/compiler/mcp"
+    },
+    {
+      "id": "cuda-evaluator",
+      "role": "evaluator",
+      "entry": "server/mcp.cjs",
+      "path": "/evaluator/mcp"
+    }
+  ],
+  "externalDependencies": [
+    "Private CUDA-Agent-Harbor checkout pinned by locks/upstream.json",
+    "Immutable preallocated RTX 4090 worker image",
+    "Authenticated paired remote MCP endpoints"
+  ],
+  "remoteStatus": "qualified-fixed-native-mcp",
+  "qualification": {
+    "profile": "rtx4090-sm89",
+    "native": "qualified-rtx4090-axpby",
+    "harnessConsumer": "pending-release-pin",
+    "harnessRuntime": "qualified-developer-canonical-path",
+    "record": "QUALIFICATION.md"
+  }
+}

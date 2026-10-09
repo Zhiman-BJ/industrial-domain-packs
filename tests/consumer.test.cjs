@@ -11,6 +11,7 @@ test("host consumers resolve canonical Pack identities and verified maintained r
   assert.deepEqual(metadata.domains.map((item) => item.id).sort(), [
     "cad",
     "chip",
+    "cuda",
     "godot",
     "pcb",
   ]);

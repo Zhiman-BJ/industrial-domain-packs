@@ -11,7 +11,7 @@ const { verifier } = require("../packs/chip/runtime/verifier.cjs");
 test("catalog distinguishes maintained code, private PCB backend and unqualified platforms", () => {
   assert.deepEqual(
     packs.catalog.map((p) => p.id),
-    ["chip-pack", "godot-pack", "pcb-pack", "freecad-pack", "cad-pack"],
+    ["chip-pack", "godot-pack", "pcb-pack", "freecad-pack", "cad-pack", "cuda-pack"],
   );
   assert.equal(
     packs.getPack("pcb-pack").remoteStatus,

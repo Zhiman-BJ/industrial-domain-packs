@@ -17,4 +17,6 @@ The shared profile is small RTL verification on Linux amd64. Remote qualificatio
 
 Remote-mode clients install trusted metadata, Skills and Viewer declarations, plus the thin client. They do not install the Pack's native Python execution environment. Metadata discovery never permits arbitrary executable code to be loaded from an untrusted service.
 
-The package exports a content identity and all five Pack catalog entries. The coordinator selects only enabled, qualified execution profiles. Before native dispatch it reads the sandbox identity and rejects a mismatch. The canonical Chip Verifier is shared by the local plugin and remote adapter; the remote repository contains only transport and workspace adaptation.
+The package exports a content identity and all six Pack catalog entries. The coordinator selects only enabled, qualified execution profiles. Before native dispatch it reads the sandbox identity and rejects a mismatch. The canonical Chip Verifier is shared by the local plugin and remote adapter; the remote repository contains only transport and workspace adaptation.
+
+The CUDA Pack uses paired remote Compiler and Evaluator MCP identities. Its host backend owns an immutable CPU/GPU worker allocation, lifecycle and limits. The source-only client sends bounded candidate files to the Compiler; only private compiler tickets reach the GPU evaluator. Native receipts flow through the Pack Verifier into Harness canonical records. This fixed remote GPU profile is qualified separately from generic coordinator sandbox profiles and desktop bundles.

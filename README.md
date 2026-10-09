@@ -12,6 +12,7 @@ Maintained public source for Industrial Harness domains. Local and remote consum
 | Godot | Typed scene edits, source StateProvider, independent native import/readback/frame Verifier | macOS Apple Silicon, Godot 4.7.2; bounded structural task |
 | PCB | Public typed KiCad edits, source StateProvider, DRC + native geometry Verifier | macOS Apple Silicon, KiCad 10.0.6; rectangular mounting-board task |
 | FreeCAD | Maintained runtime reconciled with verified Harness fixes, bounded recipe validator, native code and Skill | Inherited macOS arm64 qualification; Linux/Windows are not qualified |
+| CUDA | Paired remote Compiler/Evaluator MCP Servers, bounded source client, canonical Verifier and optimization Skill | Fixed AXPBY RTX 4090 profile; private native workers remain external; see [qualification](packs/cuda/QUALIFICATION.md) |
 | CAD guidance | AutoCAD macOS, ezdxf and intent-loop Skills | Skill-only; no remote execution profile |
 
 The migration imports only committed public source: Harness `371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e` and FreeCAD PR29 `62510b22b47803e0841825ec1c2b34fae48b3b15`. Exact imports are recorded in [provenance](provenance/domain-migration.json). Existing uncommitted work and private PCB actor resources are excluded. Pack-local READMEs and harness-pack.json preserve upstream/bootstrap setup notes, including references to Harness-only scripts and earlier plans. Current availability and consumer instructions are defined by this README, pack.json and docs/migration-validation.md; legacy consumer metadata remains reference material until the Harness consumer transition.
@@ -45,7 +46,7 @@ docker buildx build --platform linux/amd64 --load \
 
 After deliberate source changes, stage reviewed files under packs/ and lib/ and run `npm run lock`. This changes the release identity. Build consumer and sandbox images from the same pinned package, then drain the old coordinator before switching.
 
-Build a committed **source-only** archive for any Pack with `python3 scripts/package-pack.py chip --output dist` (also godot, pcb, freecad, cad). Archives contain import notices and file hashes; executable images use the complete pinned package as their build context.
+Build a committed **source-only** archive for any Pack with `python3 scripts/package-pack.py chip --output dist` (also godot, pcb, freecad, cad, cuda). Archives contain import notices and file hashes; executable images use the complete pinned package as their build context.
 
 ## Ownership and license
 
@@ -59,6 +60,8 @@ See [architecture](docs/architecture.md), [release identity](docs/release-format
 
 Version 0.3.0 adds `consumerMetadata()`, `hostPacks()`, `sourceDirectory()` and `skillResource()`. The maintained package now owns the host declarations, capability/Skill catalog and verified source resources used by Harness packaging. Canonical Pack IDs are shared with the existing catalog. Harness imports this exact package; it must not maintain a second domain registry or source tree. See [consumer release](docs/harness-consumer.md).
 
-Version 0.4.0 introduces the [PCB/Godot professional Runtime profiles](docs/professional-runtime.md), replacing integrated legacy MCP disclosure with canonical Runtime Actions. Installed Packs use the Harness-injected backend outside development repositories. Native binaries require separate installation; no new remote or other-platform qualification is asserted.
+Version 0.4.0 adds the CUDA Pack. Configure both authenticated remote MCP endpoints in trusted host settings. Local worker preparation requires a GPU/profile preflight and explicit evaluator UUID; remote clients need no local GPU. See [deployment and client setup](packs/cuda/README.md).
+
+Version 0.4.0 also introduces the [PCB/Godot professional Runtime profiles](docs/professional-runtime.md), replacing integrated legacy MCP disclosure with canonical Runtime Actions. Installed Packs use the Harness-injected backend outside development repositories. Native binaries require separate installation; no new remote or other-platform qualification is asserted.
 
 FreeCAD now declares version-bound result groups for models, previews, exports and diagnostics. Inspect results reference their exact input snapshot; edits explicitly replace the input version only after successful native generation. Harness binds local output names to registered Artifacts. Selection is optional; model geometry acceptance still requires the existing Verifier.

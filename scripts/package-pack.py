@@ -63,7 +63,7 @@ def package(pack, output):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("pack", choices=["chip", "godot", "pcb", "freecad", "cad"])
+    parser.add_argument("pack", choices=["chip", "godot", "pcb", "freecad", "cad", "cuda"])
     parser.add_argument("--output", type=Path, default=ROOT / "dist")
     args = parser.parse_args()
     print(json.dumps(package(args.pack, args.output)))

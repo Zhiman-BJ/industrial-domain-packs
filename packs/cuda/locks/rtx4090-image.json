@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "profile": "rtx4090-sm89",
+  "imageId": "sha256:f40cdcaaa64645e95e7896eedbcb1b8e13c2fcb4830a8000ff37fed44dfdf1be",
+  "runtimePayloadSha256": "701883cc6e550213f1c369355bbec78f45fc7a3428b2b15db57d8bf030b8869c",
+  "cudaAgentCommit": "473025c8af7878e928525138b5cb327d6bcdf9dd",
+  "protectedManifestSha256": "1542495341d86752728acce17a7984ebe3d25d7c7a8cb7d7e34d533eb00b5fd5",
+  "protectedFiles": {
+    "model.py": "f92e69573f45f2043b0d2c63032b554653a8b935dddf71f5d7fb6c3190926ecf",
+    "SKILL.md": "8e1a9f05d28e576c4fa5af9023c4b06b33ca8c1eaae8f3a15871b304403ea95f",
+    "CAPABILITIES.json": "af39c46852ed189514079a4d7fb15ab893d715140d4d43ea03cda98b0bd94f12",
+    "binding.cpp": "43da662b9aedb537a4cb2f04c57d92aeddbe018a9b5f7374ae28ec9bba0b3b62",
+    "binding_registry.h": "a829ca7d5de03049c439f30aa01f7f631c06418c31855cf19a67f23d69349e0f",
+    "utils/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "utils/compile.py": "ad20bc3fc3b436af01c70c9e62d1d417ca01a9afa77b1158b642a7dd0ff29c3c",
+    "utils/compile.sh": "0707712752799cacc79930d3e5256994c13f511ea355e5346490d67e164af3d0",
+    "utils/_gpu_profiling.py": "5e6fdd564262a296bb51a6e5fe86e16c216717a43d453c4cc6104e55000a577b",
+    "utils/_gpu_verification.py": "c47e6b0810766c49e2c68e10374aed2a54224f31fc8a399158c079f4b9e8312f",
+    "utils/profiling.py": "c3f006673ea42e86e722b6528cec0dff3cd8e6a28e43957f5393b8accbdb307c",
+    "utils/native_profiling.py": "7ed739d8fa1fb2e787c923b5e1c4410eba3e9585ff7c63d200572c11b6cea0ff",
+    "utils/verification.py": "ea2d812c684dc8a8e47633e72eac91b58db7a1c226686b6ee641e491d62c0465",
+    "utils/_dispatch_guard.py": "9eba446c8dc8b2e642150bcbe0e7376cd52f883f236c570ba88f1aefeaaa4ff6"
+  }
+}
