@@ -102,7 +102,7 @@ def build(output, cache):
         for name in ("Dockerfile.tools", "LICENSE", "pyproject.toml", "uv.lock"):
             shutil.copy2(eda / name, target_eda / name)
         shutil.copytree(bundle / "skills", stage / "skills")
-        shutil.copy2(chip / "scripts/mcp-smoke.py", stage / "mcp-smoke.py")
+        shutil.copy2(bundle / "mcp-smoke.py", stage / "mcp-smoke.py")
         for name in ("LICENSE", "THIRD_PARTY_NOTICES.md"):
             shutil.copy2(source / name, stage / name)
         shutil.copytree(source / "licenses", stage / "licenses")

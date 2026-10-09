@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contentSha256": "65140bba535baa03ddc291c4a076e0b12126d6abe47e8978a5b20db2d4884f9c",
+  "contentSha256": "af1ae88b5d640032c57a40d608a0f5c33e913325f8f9a515923557b7abf4dbee",
   "files": {
     "lib/consumer.cjs": "4d670732dbf3d5a3da33cac41007573e1f47b514a7165ac1df1748c9c2f960ab",
     "lib/consumer.json": "1015d974a8fd2be1425d9a0598034bf19dede15175e77da4488add1458f47c1d",
@@ -103,11 +103,12 @@
     "packs/chip/kimi-bundle/README.zh-CN.md": "e40954c118fb7ce5882f8b698af9847e3ecbd1d4c622009274ca7b027c9d7200",
     "packs/chip/kimi-bundle/RELEASE.md": "3232e3c1f442586913ee9704dafc03134310b1260f3b5a54d5cea98df417d2b8",
     "packs/chip/kimi-bundle/bootstrap.sh": "46fe9e2f2eb8639d6b9256f14424e2d67e3da52df6f76c81a1911df3b99adac5",
-    "packs/chip/kimi-bundle/build.py": "1b5786d57f0c1f04190df5c6bc67d6d5e0ee3536ad79383cc6f9ff3b82738d98",
+    "packs/chip/kimi-bundle/build.py": "0548993d9d49710c1edda7e7d11dfbc733888b8f8028eed1b8f5eacde0d207b0",
     "packs/chip/kimi-bundle/configure.py": "353912d2d085ce1091405787a66718a2a76aa0ec54a0f0645707687c5c7c4887",
     "packs/chip/kimi-bundle/eda-chip": "bed3920d9d70ba71f1394abe6498aa550453e95cc1f5180fb508708ec87153bf",
     "packs/chip/kimi-bundle/install.sh": "12188d436ef5598ad494ce84f7e83d7f22b3e142fac4672aba15aa8628342ec2",
     "packs/chip/kimi-bundle/kimi-chip": "a5517cb55393c1b12b84f737be4a7897a27e1b302ef16cdd1511919a4a12b405",
+    "packs/chip/kimi-bundle/mcp-smoke.py": "860f7fcf345e9dbff40ca57943f3aff81aa447ad0d3e72a81c801c266a9f7c19",
     "packs/chip/kimi-bundle/qualify.py": "6f8970fbf54a981345b791b6aec60555b8ccd096ba99caa9085297a688fbce7f",
     "packs/chip/kimi-bundle/recipe.json": "df3d5201c877072f0c87f634d1bfc3dc545b26387af71e41d77d9cc5da4923de",
     "packs/chip/kimi-bundle/skills/chip-design/SKILL.md": "3600081e4e5d7247efdea869ae95c80f86ccef9108c07a77f1ed4fcfe7e34c83",

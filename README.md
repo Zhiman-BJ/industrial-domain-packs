@@ -42,7 +42,9 @@ docker buildx build --platform linux/amd64 --load \
 ./validate.sh packs/chip/examples/rtl --image industrial-domain-rtl:0.2.0
 ```
 
-`validate.sh` starts one isolated ephemeral container per task, checks real simulation completion, native verification and VCD structure, and writes `result.json`. See [qualification](docs/migration-validation.md) for exercised paths and limits. Images are validated locally; source CI does not build or publish tool images.
+`validate.sh` starts one isolated ephemeral container per task, checks real simulation completion, native verification and VCD structure, and writes `result.json`. See [qualification](docs/migration-validation.md) for exercised paths and limits. The default source checks do not publish tool images. The standalone Kimi Chip
+bundle has a separate pipeline that builds the full Chip recipe and qualifies the
+installed native CLI/MCP/export path before publishing its runtime archive.
 
 After deliberate source changes, stage reviewed files under packs/ and lib/ and run `npm run lock`. This changes the release identity. Build consumer and sandbox images from the same pinned package, then drain the old coordinator before switching.
 

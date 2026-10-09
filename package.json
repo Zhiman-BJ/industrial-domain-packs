@@ -114,6 +114,7 @@
     "packs/chip/kimi-bundle/eda-chip",
     "packs/chip/kimi-bundle/install.sh",
     "packs/chip/kimi-bundle/kimi-chip",
+    "packs/chip/kimi-bundle/mcp-smoke.py",
     "packs/chip/kimi-bundle/qualify.py",
     "packs/chip/kimi-bundle/recipe.json",
     "packs/chip/kimi-bundle/skills/chip-design/SKILL.md",

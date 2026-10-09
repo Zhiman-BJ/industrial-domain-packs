@@ -21,7 +21,8 @@ remote 直接依赖 npm 包名 @zhiman-bj/industrial-domain-packs 对应的 Git 
 
 Chip 本地和沙箱使用同一套 EDA semantic.prepare / semantic.observe；本地和远端的 canonical 验证器都引用 runtime/verifier.cjs。旧 Harness 安装不会自动切换，Harness 消费端后续单独迁移。
 
-开发、真实 MCP 检查、镜像构建和 validate.sh 使用见英文 README。源码修改后先暂存经过检查的 packs/ 和 lib/ 文件，再执行 npm run lock 更新内容身份。消费者和沙箱必须从同一固定版本构建。源码 CI 不构建或发布工具镜像。
+开发、真实 MCP 检查、镜像构建和 validate.sh 使用见英文 README。源码修改后先暂存经过检查的 packs/ 和 lib/ 文件，再执行 npm run lock 更新内容身份。消费者和沙箱必须从同一固定版本构建。默认源码检查不发布工具镜像；独立 Kimi Chip 发行流水线另行构建完整 Chip 配方，
+验收实际安装的原生 CLI／MCP／轨迹导出后再发布运行包。
 
 [验收记录](docs/migration-validation.md) 区分代码迁入、原生工具执行和远端支持。source-only archive 可覆盖所有六个 Pack，但不是可直接使用的执行镜像；镜像构建使用完整固定版本的包。
 
