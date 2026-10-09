@@ -2,23 +2,23 @@
   "schemaVersion": 1,
   "id": "godot-pack",
   "domain": "godot",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "provider": {
     "id": "godot.local",
     "title": "Godot structural Runtime",
     "domain": "godot",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "transport": "runtime",
     "packDirectory": "godot",
     "packId": "godot-pack",
-    "sourceSha256": "f8dee01fb9ed1a2cedce8ee8216e81a4f6ef2f964bd165bc733e14e3d77a40b9",
+    "sourceSha256": "16b855b2e6cbd6119e7f45184b100e37bc40850203569d97dcb12f8ef43c08e8",
     "resourceRoots": [
       "runtime"
     ],
     "sourceFiles": {
       "runtime/diagnostics.cjs": "2fbc151510d6be8932d9b2456f1709d5e0de57c17ed79525b539c26e1289a18d",
-      "runtime/edit.cjs": "d4e2e8788326e934d242d0785814f50671023cb36f4ee515a25ce7351ae402a1",
-      "runtime/index.cjs": "c87b6294d5fb0790cf0d91958c99dd7d141a987fedb52f9a9939e474e52e2357",
+      "runtime/edit.cjs": "b38cca5a03452e73afa5df1852f5f6a98de61b2c938f1c65836f47cc3bc8ba93",
+      "runtime/index.cjs": "925c259dc7c7ef289e0c0e4528f19450b59c9b264d32e6b5b0482b3d377f897b",
       "runtime/native-dependency.json": "465561b1cc768ad1bd2f3f6cc3ddb66cb544dd1f81ae237fe8c110eef8989323",
       "runtime/readback.gd": "d54074f2a851c22f6395da895bc59a430dbe94361f65c32640551865c2b197b7",
       "runtime/setup-native.cjs": "9c78c10560e0d651fefd3eb8722681aa995047ce2792ce192523a48bd3890457",
