@@ -76,6 +76,145 @@ test("typed scene edits reject arbitrary expressions, unknown/duplicate sections
     }),
   );
 });
+test("scene transform edits reject untyped values before any scene text is produced", () => {
+  const scene = fs.readFileSync(
+    path.join(
+      owner.sourceDirectory("godot-pack"),
+      "examples/structural/main.tscn",
+    ),
+    "utf8",
+  );
+  const at = (property, value) => [
+    { section: "node:Box", property, value },
+  ];
+  assert.throws(() => edit(scene, at("position", false)));
+  assert.throws(() => edit(scene, at("position", 7)));
+  assert.throws(() => edit(scene, at("position", "Vector3(1, 2, 3)")));
+  assert.throws(() => edit(scene, at("rotation_degrees", true)));
+  assert.throws(() => edit(scene, at("scale", 2)));
+  assert.throws(() =>
+    edit(scene, at("position", { type: "Vector2", value: [1, 2] })),
+  );
+  assert.throws(() =>
+    edit(scene, at("position", { type: "Vector3", value: [1, 2] })),
+  );
+  assert.throws(() =>
+    edit(scene, at("position", { type: "Vector3", value: [1, 2, 3], unit: 1 })),
+  );
+});
+test("Node2D-family scenes accept Vector2 transforms and reject 3D values and scalar rotation", () => {
+  const scene = [
+    "[gd_scene format=3]",
+    "",
+    '[node name="Main" type="Node2D"]',
+    "",
+    '[node name="Sprite" type="Sprite2D" parent="."]',
+    "position = Vector2(1, 2)",
+    "",
+  ].join("\n");
+  const updated = edit(scene, [
+    {
+      section: "node:Sprite",
+      property: "position",
+      value: { type: "Vector2", value: [3, 4] },
+    },
+    {
+      section: "node:Sprite",
+      property: "scale",
+      value: { type: "Vector2", value: [2, 2] },
+    },
+  ]);
+  assert.ok(updated.includes("position = Vector2(3, 4)"));
+  assert.ok(updated.includes("scale = Vector2(2, 2)"));
+  assert.throws(() =>
+    edit(scene, [
+      {
+        section: "node:Sprite",
+        property: "position",
+        value: { type: "Vector3", value: [1, 2, 3] },
+      },
+    ]),
+  );
+  assert.throws(() =>
+    edit(scene, [{ section: "node:Sprite", property: "rotation_degrees", value: 45 }]),
+  );
+  assert.throws(() =>
+    edit(scene, [
+      {
+        section: "node:Sprite",
+        property: "rotation_degrees",
+        value: { type: "Vector2", value: [45, 0] },
+      },
+    ]),
+  );
+  const plain = scene.replace('type="Sprite2D"', 'type="Node"');
+  assert.throws(() =>
+    edit(plain, [
+      {
+        section: "node:Sprite",
+        property: "position",
+        value: { type: "Vector2", value: [1, 2] },
+      },
+    ]),
+  );
+});
+test("godot.scene.edit rejects invalid changes without touching the source file", async t => {
+  const crypto = require("node:crypto");
+  const os = require("node:os");
+  const { createRuntimePlugin } = require("../packs/godot/runtime/index.cjs");
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "godot-edit-tool-"));
+  t.after(() => fs.rmSync(directory, { recursive: true, force: true }));
+  const projectDir = path.join(directory, "project");
+  fs.mkdirSync(projectDir);
+  const scenePath = path.join(projectDir, "main.tscn");
+  const original = fs.readFileSync(
+    path.join(
+      owner.sourceDirectory("godot-pack"),
+      "examples/structural/main.tscn",
+    ),
+  );
+  fs.writeFileSync(scenePath, original);
+  let applied = 0;
+  const plugin = createRuntimePlugin({
+    runtimeApi: {
+      executeTask: () => {
+        throw Error("scene edit must not spawn native processes");
+      },
+      runtimeFiles: {
+        projectFile: (dir, relative) => {
+          const file = path.resolve(dir, relative);
+          if (file !== path.resolve(dir) && !file.startsWith(path.resolve(dir) + path.sep))
+            throw Error("Project file escapes its directory.");
+          return file;
+        },
+        readBytes: file => fs.readFileSync(file),
+        runDirectory: (dir, id) => {
+          const run = path.join(dir, ".harness-runs", id);
+          fs.mkdirSync(run, { recursive: true });
+          return run;
+        },
+        applyFiles: (dir, files) => {
+          applied += 1;
+          for (const entry of files)
+            fs.writeFileSync(path.join(dir, entry.path), entry.content);
+        },
+      },
+    },
+  });
+  const tool = plugin.tools.find(
+    item => item.descriptor.id === "godot.scene.edit",
+  );
+  const inputs = {
+    file: "main.tscn",
+    expectedSha256: crypto.createHash("sha256").update(original).digest("hex"),
+    changes: [{ section: "node:Box", property: "position", value: false }],
+  };
+  await assert.rejects(() =>
+    tool.execute({ projectDir, inputs, action: { id: "reject-probe" } }),
+  );
+  assert.equal(applied, 0);
+  assert.ok(fs.readFileSync(scenePath).equals(original));
+});
 test("KiCad typed requirements reject absent dimensions, invalid placements and arbitrary input fields", () => {
   assert.throws(() =>
     validate("verify", { file: "board.kicad_pcb", expect: {} }),

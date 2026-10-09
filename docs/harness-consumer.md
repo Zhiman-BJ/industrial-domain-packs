@@ -25,3 +25,9 @@ Harness must support the generic `macos-app-zip` type, `archiveApp` nested bundl
 This release merges the 0.4.1 managed installation recipes with 0.5.0 FreeCAD result declarations. FreeCAD distribution 1.1.4-pack.7 has the exact pack.5 Runtime/presentation sources and the complete pack.6 native recipe, including measured installed size. Its new distribution identity allows both existing pack.5 and pack.6 installations to upgrade without republishing their content. PCB 0.1.0-kicad.2, Godot 0.2.1, Chip prerequisites, and CUDA remote-service and unavailable desktop-bundle declarations are retained.
 
 Consumers must use one immutable 0.5.1 commit and matching lockfile integrity across CLI and Desktop. Source and presentation tests preserve both behavior sets; they do not replace combined packaged installation, native task and result-presentation acceptance. This release adds no qualified platforms or remote profiles.
+
+## Consumer release 0.5.2
+
+Godot distribution 0.2.2 combines the managed native recipe with the typed scene-edit validation and guide fixes from owner main `8f00a3fd12211bfce3b91a69d0bea2406b6695a6`. Its consumer domain, host/provider and Pack distribution versions agree. The Runtime tool version remains 0.2.1 because those execution sources are unchanged from that reviewed main commit; the distribution version identifies the combined source and installation metadata.
+
+FreeCAD 1.1.4-pack.7, PCB 0.1.0-kicad.2, Chip and CUDA retain their previous Pack bytes and versions. No platform qualification or dependency archive changes. Consumers must pin the new full commit and archive integrity together; old 0.5.1 and Godot 0.2.1 content is not republished under its former identity.
