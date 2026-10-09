@@ -72,3 +72,6 @@ The Chip Pack also publishes a [Kimi Code + Chip bundle](packs/chip/kimi-bundle/
 for native trajectory collection: pristine upstream CLI, direct MCP and native Skill.
 Its installer and release recipe live in this repository; it has no Harness
 application dependency and adds no agent orchestration.
+Already installed native Kimi Code 2.1.1 on Linux amd64? Use the
+[one-command connection entry](packs/chip/kimi-bundle/CONNECT.md) to retain its
+CLI, model configuration and sessions while adding the Chip MCP and Skill.

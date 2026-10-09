@@ -43,3 +43,5 @@ Chip 本地和沙箱使用同一套 EDA semantic.prepare / semantic.observe；�
 Chip Pack 另提供 [Kimi Code + Chip 衍生发行](packs/chip/kimi-bundle/README.zh-CN.md)：
 干净的上游 CLI 直接接入 MCP 与原生 Skill，用于蒸馏轨迹采集。安装、配方和发行
 全部维护在本仓库，不依赖 Harness 应用，也不增加 Agent 编排。
+Linux amd64 上已有原生 Kimi Code 2.1.1 时，可用[一键连接入口](packs/chip/kimi-bundle/CONNECT.zh-CN.md)，
+保留现有 CLI、模型配置和会话，只加入 Chip MCP 与 Skill。

@@ -114,8 +114,10 @@ def build(output, cache):
         for name in ("kimi-chip", "eda-chip"):
             shutil.copy2(bundle / name, stage / "bin" / name)
             (stage / "bin" / name).chmod(0o755)
-        for name in ("install.sh", "configure.py", "README.md", "README.zh-CN.md"):
+        for name in ("install.sh", "configure.py", "README.md", "README.zh-CN.md",
+                     "connect.sh", "connect-configure.py", "CONNECT.md", "CONNECT.zh-CN.md"):
             shutil.copy2(bundle / name, stage / name)
+        shutil.copy2(bundle / "bootstrap.sh", stage / "host-setup.sh")
         manifest = {
             "schemaVersion": 1, "name": "kimi-chip", "releaseTag": tag, "platform": "linux/amd64",
             "sourceCommit": commit, "sourceDirty": False,
@@ -140,6 +142,12 @@ def build(output, cache):
     entry.write_text(bootstrap)
     entry.chmod(0o755)
     entry.with_name(entry.name + ".sha256").write_text(f"{sha(entry)}  {entry.name}\n")
+    connector = (RECIPE_DIR / "connect-bootstrap.sh").read_text().replace("@BUNDLE_SHA256@", digest).replace(
+        "@BUNDLE_URL@", f"https://github.com/Zhiman-BJ/industrial-domain-packs/releases/download/{tag}/{archive.name}").replace("@RELEASE_TAG@", tag)
+    connect_entry = output / "connect-kimi-chip.sh"
+    connect_entry.write_text(connector)
+    connect_entry.chmod(0o755)
+    connect_entry.with_name(connect_entry.name + ".sha256").write_text(f"{sha(connect_entry)}  {connect_entry.name}\n")
     (output / "build-identity.json").write_text(json.dumps({**manifest, "files": None, "archiveSha256": digest}, indent=2) + "\n")
     print(json.dumps({"archive": str(archive), "sha256": digest, "sourceCommit": commit}))
 

@@ -8,6 +8,17 @@ stdio MCP, a native `chip-design` Skill, Python 3.13.16 and hash-locked Python
 dependencies. The default installer prepares the Pack's full Docker tool recipe.
 It uses no Industrial Agent Harness application or orchestration libraries.
 
+## Connect an installed Kimi Code
+
+For an existing native Kimi Code 2.1.1 on Linux amd64, use the
+[connection entry](CONNECT.md). It preserves the installed CLI, model settings
+and sessions, and adds the Chip MCP and Skill to its native home:
+
+```bash
+wget -O connect-kimi-chip.sh https://github.com/Zhiman-BJ/industrial-domain-packs/releases/download/kimi-chip-v0.1.0-preview.1/connect-kimi-chip.sh
+bash connect-kimi-chip.sh
+```
+
 ## Install on Linux x86_64
 
 ```bash
@@ -36,23 +47,45 @@ installing that archive does not fetch a model, npm package or Python package.
 Docker image preparation still needs network access unless `--image` supplies an
 existing image. The complete toolchain and a licensed PDK are separate things.
 
+For an OpenAI-compatible model service instead of native login, write ordinary
+upstream config to `$KIMI_CODE_HOME/config.toml` (default path below). Replace the
+example endpoint, model ID and context size with the service's actual values, and
+set `CHIP_MODEL_API_KEY` in the worker environment:
+
+```toml
+default_model = "chip-model"
+[providers.chip]
+type = "openai"
+base_url = "http://127.0.0.1:8000/v1"
+api_key_env = "CHIP_MODEL_API_KEY"
+[models.chip-model]
+provider = "chip"
+model = "YOUR_MODEL_ID"
+max_context_size = 262144
+capabilities = ["tool_use"]
+```
+
+Declare thinking and other capabilities according to the actual model. No model
+endpoint or credential is supplied by the bundle.
+
 ## Collect and export native trajectories
 
 All arguments go straight to the upstream CLI:
 
 ```bash
 cd /absolute/path/to/project
-kimi-chip --auto -p "$(cat /absolute/task.txt)" --output-format stream-json > turn.jsonl
+kimi-chip -p "$(cat /absolute/task.txt)" --output-format stream-json > turn.jsonl
 kimi-chip session list --json
 kimi-chip --continue -p "Continue the same task" --output-format stream-json > continuation.jsonl
 kimi-chip export SESSION_ID -o trajectory.zip --no-include-global-log
 ```
 
-`--auto` is upstream Never Ask mode; choose it explicitly for unattended collection.
-Without it, native approval behavior applies. The bundle adds no turn timer or
+Upstream `-p` mode uses automatic permission and does not accept `--auto` or
+`--yolo` alongside it. Interactive sessions retain native approval controls. The bundle adds no turn timer or
 step limit. Upstream print mode is unbounded by default; project action resource
 limits and individual MCP request timeouts still apply. Long EDA computation is
 asynchronous: submit once and poll its run ID.
+The upstream repeat breaker remains active; wait between unchanged status queries.
 
 The default native data directory is `~/.local/share/kimi-chip`:
 
@@ -67,7 +100,8 @@ The default native data directory is `~/.local/share/kimi-chip`:
 The native export ZIP retains the session directory. `--output-format stream-json`
 is live output; retain the native session/export as the source trajectory. The
 bundle does not rewrite messages, intercept tool results or synthesize reasoning.
-Archive the install receipt and project configuration alongside each dataset so
+Archive the install receipt, original task, project configuration and the project's
+`.eda` evidence store alongside each dataset so
 that its kernel, tools and inputs remain attributable. Automatic CLI updates are
 disabled using upstream's supported environment setting; update the pinned bundle
 deliberately. An explicit native `upgrade` command is outside the pinned release.

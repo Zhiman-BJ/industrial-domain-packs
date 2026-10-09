@@ -30,8 +30,11 @@ jobs:
           npm run test:architecture-contract
           npm test
           python packs/chip/kimi-bundle/test_configure.py
+          python packs/chip/kimi-bundle/test_connect.py
           bash -n packs/chip/kimi-bundle/bootstrap.sh
           bash -n packs/chip/kimi-bundle/install.sh
+          bash -n packs/chip/kimi-bundle/connect.sh
+          bash -n packs/chip/kimi-bundle/connect-bootstrap.sh
       - name: Build pristine native runtime bundle
         run: python packs/chip/kimi-bundle/build.py
       - name: Build full Chip tool recipe
@@ -46,6 +49,9 @@ jobs:
           python packs/chip/kimi-bundle/qualify.py "$bundle" \
             --image kimi-chip-qualification:${{ github.sha }} --output "$RUNNER_TEMP/kimi-chip-evidence"
           cp "$RUNNER_TEMP/kimi-chip-evidence/verification.json" dist/kimi-chip/verification.json
+          python packs/chip/kimi-bundle/qualify.py "$bundle" --existing-kimi "$bundle/upstream/kimi" \
+            --image kimi-chip-qualification:${{ github.sha }} --output "$RUNNER_TEMP/kimi-chip-connect-evidence"
+          cp "$RUNNER_TEMP/kimi-chip-connect-evidence/verification.json" dist/kimi-chip/verification-existing-kimi.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -72,8 +78,9 @@ jobs:
           set -euo pipefail
           test "$GITHUB_REF_NAME" = "kimi-chip-v$(jq -r .version packs/chip/kimi-bundle/recipe.json)"
           test "$(jq -r .status assets/verification.json)" = PASS
+          test "$(jq -r .status assets/verification-existing-kimi.json)" = PASS
           gh release create "$GITHUB_REF_NAME" \
-            assets/*.tar.gz assets/*.sha256 assets/install-kimi-chip.sh \
-            assets/build-identity.json assets/verification.json --verify-tag --prerelease \
+            assets/*.tar.gz assets/*.sha256 assets/install-kimi-chip.sh assets/connect-kimi-chip.sh \
+            assets/build-identity.json assets/verification*.json --verify-tag --prerelease \
             --title "Kimi Code + Chip ${GITHUB_REF_NAME#kimi-chip-v}" \
             --notes-file packs/chip/kimi-bundle/RELEASE.md

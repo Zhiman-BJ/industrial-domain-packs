@@ -7,6 +7,16 @@ Kimi Code CLI 2.1.1 可执行文件**，配上芯片领域的 25 工具 stdio MC
 `chip-design` Skill、Python 3.13.16 和带哈希锁的依赖。默认安装器准备 Pack 的
 完整 Docker 工具配方。运行不依赖 Industrial Agent Harness 应用或编排代码。
 
+## 已安装 Kimi Code 的一键接入
+
+Linux amd64 上已有原生 Kimi Code 2.1.1 时，使用[连接入口](CONNECT.zh-CN.md)。
+它保留现有 CLI、模型配置和会话，只在原生数据目录加入 Chip MCP 与 Skill：
+
+```bash
+wget -O connect-kimi-chip.sh https://github.com/Zhiman-BJ/industrial-domain-packs/releases/download/kimi-chip-v0.1.0-preview.1/connect-kimi-chip.sh
+bash connect-kimi-chip.sh
+```
+
 ## Linux x86_64 安装
 
 ```bash
@@ -33,22 +43,43 @@ cd /absolute/path/to/project
 依赖。准备 Docker 工具镜像仍需要联网，除非用 `--image` 指定已有镜像。
 工具链就绪不代表已经具备某项工艺的授权 PDK。
 
+使用 OpenAI 兼容服务时，可以跳过原生登录，直接编辑
+`$KIMI_CODE_HOME/config.toml`（默认目录见下文）。将示例地址、模型 ID、上下文
+大小替换为服务真实值，并在 worker 环境设置 `CHIP_MODEL_API_KEY`：
+
+```toml
+default_model = "chip-model"
+[providers.chip]
+type = "openai"
+base_url = "http://127.0.0.1:8000/v1"
+api_key_env = "CHIP_MODEL_API_KEY"
+[models.chip-model]
+provider = "chip"
+model = "YOUR_MODEL_ID"
+max_context_size = 262144
+capabilities = ["tool_use"]
+```
+
+思考及其他能力按实际模型声明；包本身不内置模型服务地址或凭据。
+
 ## 采集与导出原生轨迹
 
 所有运行参数直接传给原生 CLI：
 
 ```bash
 cd /absolute/path/to/project
-kimi-chip --auto -p "$(cat /absolute/task.txt)" --output-format stream-json > turn.jsonl
+kimi-chip -p "$(cat /absolute/task.txt)" --output-format stream-json > turn.jsonl
 kimi-chip session list --json
 kimi-chip --continue -p "Continue the same task" --output-format stream-json > continuation.jsonl
 kimi-chip export SESSION_ID -o trajectory.zip --no-include-global-log
 ```
 
-`--auto` 是上游的 Never Ask 模式，无人值守采集时显式选用；否则沿用原生审批。
+`-p` 是上游自动执行的批量模式，不能同时传 `--auto` 或 `--yolo`；交互会话
+沿用原生审批控制。
 包本身不加单轮时长或步数上限，上游批量模式默认无上限。项目动作的资源限制和
 单个 MCP 请求超时仍生效；长 EDA 任务提交后按 run ID 查询，不让一个 MCP 请求
 等待整个计算结束。
+上游重复调用保护保持开启；状态未变时，应间隔等待后再查询。
 
 默认原生数据目录为 `~/.local/share/kimi-chip`：
 
@@ -62,7 +93,7 @@ kimi-chip export SESSION_ID -o trajectory.zip --no-include-global-log
 
 原生导出 ZIP 保留会话目录。`stream-json` 是实时输出，源轨迹以原生会话／导出
 为准。本包不改写消息、拦截工具返回或合成思考记录。数据集同时保存安装记录、
-原始任务和工程配置，便于追溯内核、工具和输入版本。通过上游支持的环境变量
+原始任务、工程配置及项目 `.eda` 证据库，便于追溯内核、工具和输入版本。通过上游支持的环境变量
 关闭自动升级；需要升级时明确更换固定发行包。显式执行原生 `upgrade` 会离开
 该固定版本。
 

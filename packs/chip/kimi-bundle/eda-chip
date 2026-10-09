@@ -4,4 +4,8 @@ set -euo pipefail
 root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
 export PYTHONPATH="$root/python-libs"
 export PYTHONNOUSERSITE=1
+unset PYTHONHOME
+if [[ -n "${KIMI_CHIP_DOCKER_ACCESS_BIN:-}" ]]; then
+  export PATH="$KIMI_CHIP_DOCKER_ACCESS_BIN:$PATH"
+fi
 exec "$root/python/bin/python3" -m eda_harness.cli "$@"

@@ -27,7 +27,8 @@ fail() { printf 'Installation failed: %s\n' "$*" >&2; exit 1; }
 [[ "$prefix" != / && "$prefix" != "$HOME" && "$prefix" != "$kimi_home" && "$prefix" != "$bin_dir" ]] || fail 'Choose a dedicated bundle directory.'
 [[ ! -L "$prefix" && ! -L "$kimi_home" && ! -L "$bin_dir" ]] || fail 'Installation directories must not be symbolic links.'
 if "$skip_image" && [[ -n "$image" ]]; then fail '--image and --skip-image cannot be combined.'; fi
-mkdir -p -- "$kimi_home" "$(dirname -- "$prefix")"
+mkdir -p -m 700 -- "$kimi_home"
+mkdir -p -- "$(dirname -- "$prefix")"
 exec 9>"$kimi_home/.bundle-install.lock"
 flock -n 9 || fail 'Another installer is updating this Kimi home.'
 "$source_dir/python/bin/python3" "$source_dir/configure.py" verify "$source_dir"
@@ -70,4 +71,4 @@ fi
 printf '\nInstalled: %s/kimi-chip\n' "$bin_dir"
 printf 'Native config and trajectories: %s\n' "$kimi_home"
 printf 'Sign in: %s/kimi-chip login\n' "$bin_dir"
-printf 'Run from your project directory. Native batch flags: --auto -p "TASK" --output-format stream-json\n'
+printf 'Run from your project directory. Native batch flags: -p "TASK" --output-format stream-json\n'

@@ -37,6 +37,13 @@ tools. Inspect `workspace_status` after changes. Submit formal computation with
 appropriate delay. Do not hold an MCP request open for the full computation or
 submit duplicate work after a transport timeout. `run_until` builds prerequisites
 from a frozen snapshot; `run_action` requires valid dependency evidence.
+Use native `Bash` waits between status queries (for example `sleep 10` or longer
+for slow flows), or work on other requested tasks. Rapid identical polls produce
+no new engineering work and can trigger Kimi's native repeat breaker. Keep that
+guard intact; adjust waiting and polling to the actual computation.
+Before a long computation, inspect `runtime.resources` in `eda.yaml` and choose
+CPU, memory, build jobs and `timeout_seconds` appropriate to the task. The Pack's
+default action deadline is 600 seconds, separate from the unbounded Kimi turn.
 
 Use `create_goal` for the task's metric constraints, units and required verification.
 For percentage improvements, retain a measured baseline. Compare experiments with
@@ -50,7 +57,7 @@ pass. Claim completion only when the configured goal's current-input acceptance 
 `PASS`. A timing result does not establish hold closure, DRC/LVS, equivalence or
 foundry signoff. Never omit requested checks to make an experiment appear complete.
 
-Check `get_tool_capabilities` before selecting operation parameters. For generated
+Check `tool_capabilities` before selecting operation parameters. For generated
 Verilator builds, set `build_jobs: 1`; CPU quotas do not cap make workers. Inspect
 execution and tool logs after crashes, OOM or proof failures. If cleanup is pending,
 restore the execution environment and call `recover_runs` before retrying. Use the
