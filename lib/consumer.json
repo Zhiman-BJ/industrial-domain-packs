@@ -30,7 +30,7 @@
       "id": "godot",
       "label": "Godot",
       "emoji": "\ud83c\udfae",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "summary": "Scene transforms, BoxMesh geometry and independent Godot structural verification",
       "prerequisites": [
         "Godot 4.7.2 executable"
