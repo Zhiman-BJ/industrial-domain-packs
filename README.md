@@ -63,3 +63,7 @@ Version 0.3.0 adds `consumerMetadata()`, `hostPacks()`, `sourceDirectory()` and 
 Version 0.4.0 adds the CUDA Pack. Configure both authenticated remote MCP endpoints in trusted host settings. Local worker preparation requires a GPU/profile preflight and explicit evaluator UUID; remote clients need no local GPU. See [deployment and client setup](packs/cuda/README.md).
 
 Version 0.4.0 also introduces the [PCB/Godot professional Runtime profiles](docs/professional-runtime.md), replacing integrated legacy MCP disclosure with canonical Runtime Actions. Installed Packs use the Harness-injected backend outside development repositories. Native binaries require separate installation; no new remote or other-platform qualification is asserted.
+
+FreeCAD now declares version-bound result groups for models, previews, exports and diagnostics. Inspect results reference their exact input snapshot; edits explicitly replace the input version only after successful native generation. Harness binds local output names to registered Artifacts. Selection is optional; model geometry acceptance still requires the existing Verifier.
+
+[All-domain result declarations and expansion plan](docs/result-presentation-plan.md), with [schema-checked examples](docs/result-presentation-examples.json), cover the five domains and six Packs. This is preparation: other Pack producers, snapshot-version binding and CUDA consumer adoption remain to be implemented and qualified.

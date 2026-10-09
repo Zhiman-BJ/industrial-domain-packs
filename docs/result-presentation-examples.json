@@ -1,0 +1,1158 @@
+{
+  "status": "proposal-not-runtime-configuration",
+  "date": "2026-10-09",
+  "ownerBaseline": "224798c16a7f53f6b4418078419ac248a336a201",
+  "harnessBaseline": "f8dff905de14890bbe4010d0215613e74aac3210",
+  "harnessConsumedOwner": "e6556e41cd34aa87b32d64391b48084ce7003f29",
+  "domainIds": [
+    "chip",
+    "pcb",
+    "godot",
+    "cad",
+    "cuda"
+  ],
+  "packIds": [
+    "chip-pack",
+    "pcb-pack",
+    "godot-pack",
+    "freecad-pack",
+    "cad-pack",
+    "cuda-pack"
+  ],
+  "notes": [
+    "Every presentation body uses existing Harness ToolPresentationSchema version 1. This review catalog is not a new runtime contract.",
+    "Zero hashes and $variables are documentation placeholders; no example is evidence of a native run.",
+    "Examples show success-path output roles. Implementations must omit absent files and avoid successful replacement on failure/cancellation.",
+    "Schema-valid target relationships do not imply runtime matching already works; see each prerequisite and the snapshot-path blocker in the plan."
+  ],
+  "examples": [
+    {
+      "id": "freecad-build",
+      "domain": "cad",
+      "packId": "freecad-pack",
+      "operations": [
+        "cad.freecad.build"
+      ],
+      "status": "implemented-full-success-example",
+      "sourceFiles": [
+        "packs/freecad/runtime/presentation.cjs",
+        "packs/freecad/runtime/index.cjs"
+      ],
+      "prerequisites": [],
+      "exampleArtifacts": [
+        {
+          "localId": "model.FCStd",
+          "file": "cad-output/$action/model.FCStd"
+        },
+        {
+          "localId": "model.step",
+          "file": "cad-output/$action/model.step"
+        },
+        {
+          "localId": "model.stl",
+          "file": "cad-output/$action/model.stl"
+        },
+        {
+          "localId": "model.brep",
+          "file": "cad-output/$action/model.brep"
+        },
+        {
+          "localId": "model.cad-preview.json",
+          "file": "cad-output/$action/model.cad-preview.json"
+        },
+        {
+          "localId": "model.cad-sketches.json",
+          "file": "cad-output/$action/model.cad-sketches.json"
+        },
+        {
+          "localId": "model.recipe.json",
+          "file": "cad-output/$action/model.recipe.json"
+        },
+        {
+          "localId": "build.json",
+          "file": "cad-output/$action/build.json"
+        },
+        {
+          "localId": "readback.json",
+          "file": "cad-output/$action/readback.json"
+        },
+        {
+          "localId": "verify.log",
+          "file": "cad-output/$action/verify.log"
+        },
+        {
+          "localId": "build.log",
+          "file": "cad-output/$action/build.log"
+        }
+      ],
+      "presentation": {
+        "schemaVersion": "1",
+        "groups": [
+          {
+            "key": "model",
+            "title": "CAD model",
+            "primary": "model.FCStd",
+            "preview": "model.FCStd",
+            "attachments": [
+              "model.step",
+              "model.stl",
+              "build.json",
+              "readback.json",
+              "build.log",
+              "verify.log"
+            ],
+            "companions": [
+              "model.brep",
+              "model.cad-preview.json",
+              "model.cad-sketches.json",
+              "model.recipe.json"
+            ]
+          },
+          {
+            "key": "report",
+            "title": "CAD diagnostics",
+            "primary": "readback.json",
+            "attachments": [
+              "build.json",
+              "build.log",
+              "verify.log"
+            ],
+            "companions": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "freecad-edit",
+      "domain": "cad",
+      "packId": "freecad-pack",
+      "operations": [
+        "cad.freecad.edit"
+      ],
+      "status": "implemented-full-success-example",
+      "sourceFiles": [
+        "packs/freecad/runtime/presentation.cjs",
+        "packs/freecad/runtime/index.cjs"
+      ],
+      "prerequisites": [],
+      "exampleArtifacts": [
+        {
+          "localId": "model.FCStd",
+          "file": "cad-output/$action/model.FCStd"
+        },
+        {
+          "localId": "model.step",
+          "file": "cad-output/$action/model.step"
+        },
+        {
+          "localId": "model.stl",
+          "file": "cad-output/$action/model.stl"
+        },
+        {
+          "localId": "model.brep",
+          "file": "cad-output/$action/model.brep"
+        },
+        {
+          "localId": "model.cad-preview.json",
+          "file": "cad-output/$action/model.cad-preview.json"
+        },
+        {
+          "localId": "model.cad-sketches.json",
+          "file": "cad-output/$action/model.cad-sketches.json"
+        },
+        {
+          "localId": "model.recipe.json",
+          "file": "cad-output/$action/model.recipe.json"
+        },
+        {
+          "localId": "build.json",
+          "file": "cad-output/$action/build.json"
+        },
+        {
+          "localId": "readback.json",
+          "file": "cad-output/$action/readback.json"
+        },
+        {
+          "localId": "verify.log",
+          "file": "cad-output/$action/verify.log"
+        },
+        {
+          "localId": "edit.log",
+          "file": "cad-output/$action/edit.log"
+        },
+        {
+          "localId": "source",
+          "file": "cad-output/$action/input.FCStd"
+        }
+      ],
+      "presentation": {
+        "schemaVersion": "1",
+        "groups": [
+          {
+            "key": "model",
+            "title": "Modified model",
+            "primary": "model.FCStd",
+            "preview": "model.FCStd",
+            "attachments": [
+              "model.step",
+              "model.stl",
+              "build.json",
+              "readback.json",
+              "edit.log",
+              "verify.log"
+            ],
+            "companions": [
+              "model.brep",
+              "model.cad-preview.json",
+              "model.cad-sketches.json",
+              "model.recipe.json"
+            ],
+            "supersedesInput": {
+              "relativePath": "cad-output/$prior/model.FCStd",
+              "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+            }
+          },
+          {
+            "key": "report",
+            "title": "CAD diagnostics",
+            "primary": "readback.json",
+            "attachments": [
+              "build.json",
+              "edit.log",
+              "verify.log"
+            ],
+            "companions": []
+          }
+        ],
+        "inputs": [
+          {
+            "output": "source",
+            "relativePath": "cad-output/$prior/model.FCStd"
+          }
+        ]
+      }
+    },
+    {
+      "id": "freecad-inspect",
+      "domain": "cad",
+      "packId": "freecad-pack",
+      "operations": [
+        "cad.freecad.inspect"
+      ],
+      "status": "implemented-full-success-example",
+      "sourceFiles": [
+        "packs/freecad/runtime/presentation.cjs",
+        "packs/freecad/runtime/index.cjs"
+      ],
+      "prerequisites": [],
+      "exampleArtifacts": [
+        {
+          "localId": "source",
+          "file": "cad-output/$action/input.FCStd"
+        },
+        {
+          "localId": "readback.json",
+          "file": "cad-output/$action/readback.json"
+        },
+        {
+          "localId": "inspect.log",
+          "file": "cad-output/$action/inspect.log"
+        },
+        {
+          "localId": "verify.log",
+          "file": "cad-output/$action/verify.log"
+        }
+      ],
+      "presentation": {
+        "schemaVersion": "1",
+        "groups": [
+          {
+            "key": "report",
+            "title": "Geometry inspection",
+            "primary": "readback.json",
+            "attachments": [
+              "inspect.log",
+              "verify.log"
+            ],
+            "companions": []
+          }
+        ],
+        "inputs": [
+          {
+            "output": "source",
+            "relativePath": "cad-output/$prior/model.FCStd"
+          }
+        ],
+        "checks": [
+          {
+            "input": {
+              "relativePath": "cad-output/$prior/model.FCStd",
+              "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+            },
+            "outputs": [
+              "readback.json",
+              "inspect.log",
+              "verify.log"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "cad-dxf-delivery",
+      "domain": "cad",
+      "packId": "cad-pack",
+      "operations": [],
+      "status": "draft",
+      "sourceFiles": [
+        "packs/cad/pack.json",
+        "packs/cad/skills/cad-intent-loop/SKILL.md",
+        "packs/cad/skills/cad-ezdxf/SKILL.md",
+        "packs/cad/skills/cad-autocad-macos/SKILL.md"
+      ],
+      "prerequisites": [
+        "No existing Runtime producer; define bounded production/readback entry and actual tool IDs.",
+        "Only attach PDF/spec/readback actually produced by the operation; no implicit graphic preview."
+      ],
+      "exampleArtifacts": [
+        {
+          "localId": "drawing",
+          "file": "$run/drawing.dxf"
+        },
+        {
+          "localId": "spec",
+          "file": "$run/spec.json"
+        },
+        {
+          "localId": "readback",
+          "file": "$run/readback.json"
+        },
+        {
+          "localId": "verification-log",
+          "file": "$run/verify.log"
+        },
+        {
+          "localId": "pdf",
+          "file": "$run/drawing.pdf"
+        }
+      ],
+      "presentation": {
+        "schemaVersion": "1",
+        "groups": [
+          {
+            "key": "drawing",
+            "title": "Drawing snapshot",
+            "primary": "drawing",
+            "attachments": [
+              "spec",
+              "readback",
+              "verification-log",
+              "pdf"
+            ],
+            "companions": []
+          },
+          {
+            "key": "report",
+            "title": "Drawing readback",
+            "primary": "readback",
+            "attachments": [
+              "verification-log"
+            ],
+            "companions": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "cad-dwg-delivery",
+      "domain": "cad",
+      "packId": "cad-pack",
+      "operations": [],
+      "status": "draft",
+      "sourceFiles": [
+        "packs/cad/pack.json",
+        "packs/cad/skills/cad-intent-loop/SKILL.md",
+        "packs/cad/skills/cad-ezdxf/SKILL.md",
+        "packs/cad/skills/cad-autocad-macos/SKILL.md"
+      ],
+      "prerequisites": [
+        "No existing Runtime producer; define bounded production/readback entry and actual tool IDs.",
+        "Only attach PDF/spec/readback actually produced by the operation; no implicit graphic preview."
+      ],
+      "exampleArtifacts": [
+        {
+          "localId": "drawing",
+          "file": "$run/drawing.dwg"
+        },
+        {
+          "localId": "spec",
+          "file": "$run/spec.json"
+        },
+        {
+          "localId": "readback",
+          "file": "$run/readback.json"
+        },
+        {
+          "localId": "verification-log",
+          "file": "$run/verify.log"
+        },
+        {
+          "localId": "pdf",
+          "file": "$run/drawing.pdf"
+        }
+      ],
+      "presentation": {
+        "schemaVersion": "1",
+        "groups": [
+          {
+            "key": "drawing",
+            "title": "Drawing snapshot",
+            "primary": "drawing",
+            "attachments": [
+              "spec",
+              "readback",
+              "verification-log",
+              "pdf"
+            ],
+            "companions": []
+          },
+          {
+            "key": "report",
+            "title": "Drawing readback",
+            "primary": "readback",
+            "attachments": [
+              "verification-log"
+            ],
+            "companions": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "pcb-edit",
+      "domain": "pcb",
+      "packId": "pcb-pack",
+      "operations": [
+        "pcb.kicad.edit"
+      ],
+      "status": "draft",
+      "sourceFiles": [
+        "packs/pcb/runtime/index.cjs",
+        "packs/pcb/runtime/support.cjs"
+      ],
+      "prerequisites": [
+        "Add stable localId to actual outputs.",
+        "Explicit working-file/snapshot identity binding is required for supersedesInput to resolve.",
+        "KiCad Registry auto-preview remains disabled until native UI acceptance."
+      ],
+      "exampleArtifacts": [
+        {
+          "localId": "board",
+          "file": "$run/work/board.kicad_pcb"
+        },
+        {
+          "localId": "source",
+          "file": "$run/input/$board"
+        },
+        {
+          "localId": "inputs",
+          "file": "$run/inputs.json"
+        },
+        {
+          "localId": "request",
+          "file": "$run/work/request.json"
+        },
+        {
+          "localId": "edit-receipt",
+          "file": "$run/edit.json"
+        },
+        {
+          "localId": "edit-log",
+          "file": "$run/edit.log"
+        }
+      ],
+      "presentation": {
+        "schemaVersion": "1",
+        "groups": [
+          {
+            "key": "board",
+            "title": "Edited board",
+            "primary": "board",
+            "preview": "board",
+            "attachments": [
+              "source",
+              "inputs",
+              "request",
+              "edit-receipt",
+              "edit-log"
+            ],
+            "companions": [],
+            "supersedesInput": {
+              "relativePath": "board.kicad_pcb",
+              "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "pcb-verify",
+      "domain": "pcb",
+      "packId": "pcb-pack",
+      "operations": [
+        "pcb.kicad.verify"
+      ],
+      "status": "draft",
+      "sourceFiles": [
+        "packs/pcb/runtime/index.cjs",
+        "packs/pcb/runtime/verifier.cjs"
+      ],
+      "prerequisites": [
+        "Source alias must bind to the exact existing board result snapshot; current schema-1 matching cannot resolve this path difference.",
+        "Add native phase receipts to attachments when present."
+      ],
+      "exampleArtifacts": [
+        {
+          "localId": "source",
+          "file": "$run/input/$board"
+        },
+        {
+          "localId": "drc",
+          "file": "$run/work/drc.json"
+        },
+        {
+          "localId": "readback",
+          "file": "$run/work/readback.json"
+        },
+        {
+          "localId": "drc-log",
+          "file": "$run/drc.log"
+        },
+        {
+          "localId": "readback-log",
+          "file": "$run/readback.log"
+        }
+      ],
+      "presentation": {
+        "schemaVersion": "1",
+        "groups": [
+          {
+            "key": "report",
+            "title": "Board DRC and requirements",
+            "primary": "drc",
+            "attachments": [
+              "readback",
+              "drc-log",
+              "readback-log"
+            ],
+            "companions": []
+          }
+        ],
+        "inputs": [
+          {
+            "output": "source",
+            "relativePath": "board.kicad_pcb"
+          }
+        ],
+        "checks": [
+          {
+            "input": {
+              "relativePath": "board.kicad_pcb",
+              "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+            },
+            "outputs": [
+              "drc",
+              "readback",
+              "drc-log",
+              "readback-log"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "godot-edit",
+      "domain": "godot",
+      "packId": "godot-pack",
+      "operations": [
+        "godot.scene.edit"
+      ],
+      "status": "draft",
+      "sourceFiles": [
+        "packs/godot/runtime/index.cjs",
+        "packs/godot/runtime/support.cjs"
+      ],
+      "prerequisites": [
+        "Add stable localId and explicit working-file/snapshot identity binding.",
+        "Bind referenced resources to versioned snapshots before rich preview; no automatic live-project dependency reads.",
+        "Registry auto-preview remains disabled until read-only acceptance."
+      ],
+      "exampleArtifacts": [
+        {
+          "localId": "scene",
+          "file": "$run/after.tscn"
+        },
+        {
+          "localId": "before",
+          "file": "$run/before.tscn"
+        }
+      ],
+      "presentation": {
+        "schemaVersion": "1",
+        "groups": [
+          {
+            "key": "scene",
+            "title": "Edited scene",
+            "primary": "scene",
+            "preview": "scene",
+            "attachments": [
+              "before"
+            ],
+            "companions": [],
+            "supersedesInput": {
+              "relativePath": "main.tscn",
+              "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "godot-verify",
+      "domain": "godot",
+      "packId": "godot-pack",
+      "operations": [
+        "godot.scene.verify"
+      ],
+      "status": "draft",
+      "sourceFiles": [
+        "packs/godot/runtime/index.cjs",
+        "packs/godot/runtime/verifier.cjs"
+      ],
+      "prerequisites": [
+        "Source alias must bind to the exact existing scene result snapshot.",
+        "Add native phase receipts/project manifest when present; no HTML/WASM output exists in this producer."
+      ],
+      "exampleArtifacts": [
+        {
+          "localId": "source",
+          "file": "$run/input/$scene"
+        },
+        {
+          "localId": "readback",
+          "file": "$run/work/readback.json"
+        },
+        {
+          "localId": "frames",
+          "file": "$run/work/frames.json"
+        },
+        {
+          "localId": "import-log",
+          "file": "$run/import.log"
+        },
+        {
+          "localId": "readback-log",
+          "file": "$run/readback.log"
+        },
+        {
+          "localId": "frames-log",
+          "file": "$run/frames.log"
+        }
+      ],
+      "presentation": {
+        "schemaVersion": "1",
+        "groups": [
+          {
+            "key": "report",
+            "title": "Scene verification",
+            "primary": "readback",
+            "attachments": [
+              "frames",
+              "import-log",
+              "readback-log",
+              "frames-log"
+            ],
+            "companions": []
+          }
+        ],
+        "inputs": [
+          {
+            "output": "source",
+            "relativePath": "main.tscn"
+          }
+        ],
+        "checks": [
+          {
+            "input": {
+              "relativePath": "main.tscn",
+              "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+            },
+            "outputs": [
+              "readback",
+              "frames",
+              "import-log",
+              "readback-log",
+              "frames-log"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "chip-rtl",
+      "domain": "chip",
+      "packId": "chip-pack",
+      "operations": [
+        "chip.rtl.verify"
+      ],
+      "status": "draft",
+      "sourceFiles": [
+        "packs/chip/runtime/bridge.py",
+        "packs/chip/runtime/index.cjs",
+        "packs/chip/runtime/native-profile.py",
+        "packs/chip/runtime/export.py",
+        "packs/chip/eda-harness/src/eda_harness/plugins/semantic.py"
+      ],
+      "prerequisites": [
+        "Use native step/action identity; preserve every parallel simulation separately.",
+        "Stage named immutable files from native CAS blobs; never rank CAS array order.",
+        "Sandbox profile uses report.json rather than simulation.txt; generate the declaration from that explicit profile map.",
+        "Propagate localId/presentation through the actual sandbox consumer; Viewer auto-preview remains gated."
+      ],
+      "exampleArtifacts": [
+        {
+          "localId": "waveform",
+          "file": "$run/wave.vcd"
+        },
+        {
+          "localId": "simulation-report",
+          "file": "$run/simulation.txt"
+        },
+        {
+          "localId": "tool-log",
+          "file": "$run/tool.log"
+        }
+      ],
+      "presentation": {
+        "schemaVersion": "1",
+        "groups": [
+          {
+            "key": "simulation",
+            "title": "RTL simulation",
+            "primary": "waveform",
+            "preview": "waveform",
+            "attachments": [
+              "simulation-report",
+              "tool-log"
+            ],
+            "companions": []
+          },
+          {
+            "key": "report",
+            "title": "Simulation evidence",
+            "primary": "simulation-report",
+            "attachments": [
+              "tool-log"
+            ],
+            "companions": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "chip-netlist",
+      "domain": "chip",
+      "packId": "chip-pack",
+      "operations": [],
+      "status": "draft-legacy-eda-not-canonical",
+      "sourceFiles": [
+        "packs/chip/eda-harness/src/eda_harness/plugins/semantic.py",
+        "packs/chip/eda-harness/src/eda_harness/plugins/advanced.py"
+      ],
+      "prerequisites": [
+        "Add scoped canonical Runtime path; wider EDA MCP availability alone does not register canonical results.",
+        "Bind each actual native action/output type; no inferred replacement or equivalence verdict."
+      ],
+      "exampleArtifacts": [
+        {
+          "localId": "netlist-json",
+          "file": "$run/netlist.json"
+        },
+        {
+          "localId": "netlist-verilog",
+          "file": "$run/netlist.v"
+        },
+        {
+          "localId": "report",
+          "file": "$run/netlist-check.txt"
+        },
+        {
+          "localId": "tool-log",
+          "file": "$run/tool.log"
+        }
+      ],
+      "presentation": {
+        "schemaVersion": "1",
+        "groups": [
+          {
+            "key": "netlist",
+            "title": "Synthesized netlist",
+            "primary": "netlist-json",
+            "preview": "netlist-json",
+            "attachments": [
+              "netlist-verilog",
+              "report",
+              "tool-log"
+            ],
+            "companions": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "chip-streamout",
+      "domain": "chip",
+      "packId": "chip-pack",
+      "operations": [],
+      "status": "draft-legacy-eda-not-canonical",
+      "sourceFiles": [
+        "packs/chip/eda-harness/src/eda_harness/plugins/semantic.py"
+      ],
+      "prerequisites": [
+        "Map actual prepared output names to these proposed localIds in a scoped Runtime producer.",
+        "ODB/DEF are not GDS; do not route them to a GDS Viewer."
+      ],
+      "exampleArtifacts": [
+        {
+          "localId": "layout",
+          "file": "$run/layout.gds"
+        },
+        {
+          "localId": "report",
+          "file": "$run/streamout.json"
+        },
+        {
+          "localId": "tool-log",
+          "file": "$run/tool.log"
+        }
+      ],
+      "presentation": {
+        "schemaVersion": "1",
+        "groups": [
+          {
+            "key": "layout",
+            "title": "Streamed layout",
+            "primary": "layout",
+            "preview": "layout",
+            "attachments": [
+              "report",
+              "tool-log"
+            ],
+            "companions": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "cuda-compile",
+      "domain": "cuda",
+      "packId": "cuda-pack",
+      "operations": [
+        "cuda.candidate.compile"
+      ],
+      "status": "draft",
+      "sourceFiles": [
+        "packs/cuda/runtime/index.cjs",
+        "packs/cuda/runtime/protocol.cjs",
+        "packs/cuda/runtime/verifier.cjs"
+      ],
+      "prerequisites": [
+        "Persist exact submitted source files and canonical manifest; currently only receipt exists.",
+        "Match manifest byte digest to the remote sourceSha256 and retain project/ticket identity.",
+        "Kernel attachments are the bounded actual list, not a directory scan/ranking policy."
+      ],
+      "exampleArtifacts": [
+        {
+          "localId": "candidate-manifest",
+          "file": ".cuda/actions/$action/source-manifest.json"
+        },
+        {
+          "localId": "candidate-main",
+          "file": ".cuda/actions/$action/source/model_new.py"
+        },
+        {
+          "localId": "kernel-0",
+          "file": ".cuda/actions/$action/source/kernels/example.cu"
+        },
+        {
+          "localId": "compile-receipt",
+          "file": ".cuda/actions/$action/receipt.json"
+        }
+      ],
+      "presentation": {
+        "schemaVersion": "1",
+        "groups": [
+          {
+            "key": "candidate",
+            "title": "CUDA candidate source",
+            "primary": "candidate-manifest",
+            "preview": "candidate-manifest",
+            "attachments": [
+              "candidate-main",
+              "kernel-0",
+              "compile-receipt"
+            ],
+            "companions": []
+          },
+          {
+            "key": "report",
+            "title": "CUDA compilation",
+            "primary": "compile-receipt",
+            "attachments": [],
+            "companions": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "cuda-baseline",
+      "domain": "cuda",
+      "packId": "cuda-pack",
+      "operations": [
+        "cuda.baseline.profile"
+      ],
+      "status": "draft",
+      "sourceFiles": [
+        "packs/cuda/runtime/index.cjs",
+        "packs/cuda/runtime/verifier.cjs"
+      ],
+      "prerequisites": [
+        "Add stable localId; baseline is independent and never checks/replaces a candidate."
+      ],
+      "exampleArtifacts": [
+        {
+          "localId": "receipt",
+          "file": ".cuda/actions/$action/receipt.json"
+        }
+      ],
+      "presentation": {
+        "schemaVersion": "1",
+        "groups": [
+          {
+            "key": "baseline",
+            "title": "Reference baseline profile",
+            "primary": "receipt",
+            "preview": "receipt",
+            "attachments": [],
+            "companions": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "cuda-verify",
+      "domain": "cuda",
+      "packId": "cuda-pack",
+      "operations": [
+        "cuda.candidate.verify"
+      ],
+      "status": "draft",
+      "sourceFiles": [
+        "packs/cuda/runtime/index.cjs",
+        "packs/cuda/runtime/verifier.cjs"
+      ],
+      "prerequisites": [
+        "Persist compile manifest and verify exact ticket/project/source identity before binding.",
+        "Current receipt-only runtime has no source-manifest input artifact.",
+        "Compiler/correctness/profile verdicts remain separate canonical facts."
+      ],
+      "exampleArtifacts": [
+        {
+          "localId": "receipt",
+          "file": ".cuda/actions/$action/receipt.json"
+        },
+        {
+          "localId": "source-manifest",
+          "file": ".cuda/actions/$action/input/source-manifest.json"
+        }
+      ],
+      "presentation": {
+        "schemaVersion": "1",
+        "groups": [
+          {
+            "key": "report",
+            "title": "CUDA correctness",
+            "primary": "receipt",
+            "preview": "receipt",
+            "attachments": [],
+            "companions": []
+          }
+        ],
+        "inputs": [
+          {
+            "output": "source-manifest",
+            "relativePath": ".cuda/actions/$compile/source-manifest.json"
+          }
+        ],
+        "checks": [
+          {
+            "input": {
+              "relativePath": ".cuda/actions/$compile/source-manifest.json",
+              "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+            },
+            "outputs": [
+              "receipt"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "cuda-profile",
+      "domain": "cuda",
+      "packId": "cuda-pack",
+      "operations": [
+        "cuda.candidate.profile"
+      ],
+      "status": "draft",
+      "sourceFiles": [
+        "packs/cuda/runtime/index.cjs",
+        "packs/cuda/runtime/verifier.cjs"
+      ],
+      "prerequisites": [
+        "Persist compile manifest and verify exact ticket/project/source identity before binding.",
+        "Current receipt-only runtime has no source-manifest input artifact.",
+        "Compiler/correctness/profile verdicts remain separate canonical facts."
+      ],
+      "exampleArtifacts": [
+        {
+          "localId": "receipt",
+          "file": ".cuda/actions/$action/receipt.json"
+        },
+        {
+          "localId": "source-manifest",
+          "file": ".cuda/actions/$action/input/source-manifest.json"
+        }
+      ],
+      "presentation": {
+        "schemaVersion": "1",
+        "groups": [
+          {
+            "key": "report",
+            "title": "CUDA performance",
+            "primary": "receipt",
+            "preview": "receipt",
+            "attachments": [],
+            "companions": []
+          }
+        ],
+        "inputs": [
+          {
+            "output": "source-manifest",
+            "relativePath": ".cuda/actions/$compile/source-manifest.json"
+          }
+        ],
+        "checks": [
+          {
+            "input": {
+              "relativePath": ".cuda/actions/$compile/source-manifest.json",
+              "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+            },
+            "outputs": [
+              "receipt"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "cuda-cancel",
+      "domain": "cuda",
+      "packId": "cuda-pack",
+      "operations": [
+        "cuda.candidate.compile",
+        "cuda.candidate.verify",
+        "cuda.candidate.profile",
+        "cuda.baseline.profile"
+      ],
+      "status": "draft",
+      "sourceFiles": [
+        "packs/cuda/runtime/index.cjs"
+      ],
+      "prerequisites": [
+        "Add stable localId; preserve actual cleanup status and no success/replacement claim."
+      ],
+      "exampleArtifacts": [
+        {
+          "localId": "cancellation",
+          "file": ".cuda/actions/$action/cancellation.json"
+        }
+      ],
+      "presentation": {
+        "schemaVersion": "1",
+        "groups": [
+          {
+            "key": "cancellation",
+            "title": "CUDA cancellation evidence",
+            "primary": "cancellation",
+            "attachments": [],
+            "companions": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "no-file-observation",
+      "domain": "*",
+      "packId": null,
+      "operations": [
+        "chip.environment.check",
+        "cuda.compiler.check",
+        "cuda.evaluator.check"
+      ],
+      "status": "draft",
+      "sourceFiles": [
+        "packs/chip/runtime/bridge.py",
+        "packs/cuda/runtime/index.cjs"
+      ],
+      "prerequisites": [
+        "No generated file means no invented report Artifact; preserve existing diagnostics."
+      ],
+      "exampleArtifacts": [],
+      "presentation": {
+        "schemaVersion": "1",
+        "groups": []
+      }
+    },
+    {
+      "id": "ordinary-file",
+      "domain": "*",
+      "packId": null,
+      "operations": [
+        "project.files.apply"
+      ],
+      "status": "implemented-generic-success-example",
+      "sourceFiles": [],
+      "prerequisites": [],
+      "exampleArtifacts": [
+        {
+          "localId": "file-0",
+          "file": "notes.txt"
+        }
+      ],
+      "presentation": {
+        "schemaVersion": "1",
+        "groups": [
+          {
+            "key": "file-0",
+            "title": "notes.txt",
+            "primary": "file-0",
+            "preview": "file-0",
+            "attachments": [],
+            "companions": []
+          }
+        ]
+      }
+    }
+  ]
+}
