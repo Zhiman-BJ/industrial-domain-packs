@@ -9,8 +9,8 @@
 | Pack | 已迁入内容 | 当前边界 |
 | --- | --- | --- |
 | Chip | EDA 0.6.1、25 个 MCP 工具、Core RTL 适配器、Skills、完整 EDA 与 rtl-cpu 镜像配方 | CPU 体验服务开放 chip.rtl.verify；其余 EDA 工具仍按本地依赖使用 |
-| Godot | 场景源码与运行时检查、受限 gateway、游戏 Skills | 需要 Godot 4；尚未完成远端原生验收 |
-| PCB | 公开 gateway/controller、元数据、依赖锁、Skills | 私有 PCB-bench actor 继续作为外部依赖，不公开其源码 |
+| Godot | 类型化场景修改、真实 StateProvider、原生导入／回读／逐帧独立验证器 | macOS Apple Silicon，Godot 4.7.2；有限结构任务 |
+| PCB | 公开 KiCad 类型化修改、真实 StateProvider、DRC 与原生几何验证器 | macOS Apple Silicon，KiCad 10.0.6；矩形安装板任务 |
 | FreeCAD | 公开 PR29 已提交的 runtime、参数化模型校验器、原生代码、Skill | 沿用 macOS arm64 验收记录；Linux/Windows 未验收 |
 | CUDA | Compiler / Evaluator 两个远程 MCP、源码客户端、canonical 验证器与优化 Skill | 固定 RTX 4090 AXPBY；私有原生执行依赖保持外置，见[验收记录](packs/cuda/QUALIFICATION.md) |
 | CAD guidance | AutoCAD macOS、ezdxf、intent-loop Skills | 仅 Skills，没有远端执行 profile |
@@ -34,3 +34,5 @@ Chip 本地和沙箱使用同一套 EDA semantic.prepare / semantic.observe；�
 0.3.0 提供 `consumerMetadata()`、`hostPacks()`、`sourceDirectory()` 和 `skillResource()`，统一维护宿主清单、能力与 Skill 目录及固定源码资源。Harness 从精确固定的包消费这些声明和源码；维护入口只在本仓库。规范 Pack ID 与已有目录一致。已归并 Harness 后续验收的 FreeCAD 与 Chip 修复，PCB 私有 actor 仍是外部依赖。详见 [消费发行](docs/harness-consumer.md)。
 
 0.4.0 新增 CUDA Pack。两个远程 MCP 使用独立身份与凭据，从宿主可信设置接入。本地准备服务前检查 GPU 与 profile，并明确绑定评测卡 UUID；远程客户端无需本机 GPU。详见[部署与客户端配置](packs/cuda/README.md)。
+
+0.4.0 同时提供 [PCB／Godot 专业 Runtime](docs/professional-runtime.md)，集成路径采用 canonical Actions 和独立验证，原有 MCP 仅保留独立诊断。安装后的 Pack 通过 Harness 注入通用执行接口，不依赖开发目录。原生软件需另行安装；没有扩大远端、Linux、Windows 或 Intel Mac 支持声明。

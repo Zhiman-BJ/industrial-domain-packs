@@ -1,0 +1,10 @@
+{
+  "version": "4.7.2",
+  "url": "https://github.com/godotengine/godot-builds/releases/download/4.7.2-stable/Godot_v4.7.2-stable_macos.universal.zip",
+  "sha256": "c58a24e31d720be9d62f60cb5627c4e695fb72f21b0cfe1bc9ccaa9a3b3ba63e",
+  "archive": "godot.zip",
+  "kind": "zip",
+  "bundle": "Godot.app",
+  "command": "Godot.app/Contents/MacOS/Godot",
+  "variable": "INDUSTRIAL_HARNESS_GODOT_CMD"
+}

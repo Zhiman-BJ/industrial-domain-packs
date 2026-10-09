@@ -14,3 +14,7 @@
 - KiCad、标准库、solver 与其各自许可证继续由上游镜像/版本锁负责；本桥接不会重新声明这些第三方许可证。
 
 The public bridge, locks and metadata are now maintained here. See ../../provenance/domain-migration.json for exact imports. The private actor remains external; its registered hashes do not redistribute its source. Preserve ../../licenses/industrial-agent-harness.MIT.
+
+## Public professional runtime contribution (2026-10-08)
+
+The new runtime/, typed tools, Verifiers and examples are original public MIT contributions maintained in this repository. They use separately installed official native executables under their original licenses. The mechanical board and structural scene examples are self-authored source inputs, contain no customer data, private actor code, licensed artwork or third-party assets. Exact maintained source hashes are in content-lock.json and harness-pack.json. Legacy import provenance remains historical evidence; it does not describe the new public acceptance path. See ../../docs/professional-runtime.md for qualified scope and native dependency archive locks.

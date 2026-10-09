@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://logic.gd" id="1_script"]
+
+[sub_resource type="BoxMesh" id="Box_1"]
+size = Vector3(2, 3, 4)
+
+[node name="Main" type="Node3D"]
+script = ExtResource("1_script")
+
+[node name="Box" type="MeshInstance3D" parent="."]
+position = Vector3(1, 2, 3)
+mesh = SubResource("Box_1")

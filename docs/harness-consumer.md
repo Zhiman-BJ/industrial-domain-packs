@@ -9,3 +9,7 @@ The release reconciles committed Harness 2482114 changes using original import c
 New distribution versions are Chip 0.6.2, FreeCAD 1.1.4-pack.4, Godot 0.1.1 and PCB 2026.09.28-pack.1. Native software versions are unchanged. PCB actor hashes and image identity identify private external dependencies, not redistributed actor code. Sandbox profile exports remain compatible with existing pinned remote consumers. No additional remote/native platform qualification is asserted by source tests.
 
 The Chip distribution remains 0.6.2, while its host MCP declaration identifies the embedded EDA Python package as 0.6.1. The gateway validates that native identity against its locked environment; a distribution version must not substitute for the tool version. Consumer tests compare the declaration with the maintained Python project metadata.
+
+## Consumer release 0.4.0
+
+PCB 0.1.0-kicad.1 and Godot 0.2.0 replace integrated legacy MCP declarations with typed Runtime tools and explicit native requirements Verifiers. The installed factory now requires the trusted `runtimeApi` supplied by Harness. Consumer dependency pins and integrity must be updated together; older consumers cannot claim this installed professional path. See [profiles and limitations](professional-runtime.md).

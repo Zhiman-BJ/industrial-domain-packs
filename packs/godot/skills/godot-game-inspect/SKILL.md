@@ -1,6 +1,6 @@
 ---
 name: godot-game-inspect
-description: Inspect a Godot project or scene with scoped, read-only game tools.
+description: Inspect current Godot source and independently verify bounded scene properties.
 ---
 
-Start with `domain_tool_list`. Describe the allowed `godot.game.*` tool before its first call. Use `project_status` for the engine/project identity and `inspect_scene_source` for serialized scene nodes and properties. Both are source observations: inherited values, instantiated script effects and actual play behavior require native checks. Quote the scene path and source hash when reporting findings. If these tools are absent, explain that this task's Broker scope did not disclose them.
+Use `industrial_tool_describe` and `project.files.read` for current scene paths and source hashes. Source values do not prove resolved native values or frame behavior. Describe `godot.scene.verify`, then call it through `industrial_action_call` with the current expectedStateId, an explicit scene file, 1..180 frames and nonempty node/property expectations. Report the canonical Verification and evidence hashes. A preview, model statement or successful process exit never establishes acceptance. After source changes rerun verification; historical successful evidence remains attributed to its original inputs.

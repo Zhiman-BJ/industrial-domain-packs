@@ -15,7 +15,7 @@ test("catalog distinguishes maintained code, private PCB backend and unqualified
   );
   assert.equal(
     packs.getPack("pcb-pack").remoteStatus,
-    "not-qualified-private-backend",
+    "not-qualified",
   );
   assert.equal(
     packs.getPack("freecad-pack").qualification.linux,

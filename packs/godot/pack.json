@@ -3,19 +3,21 @@
   "id": "godot-pack",
   "domain": "godot",
   "sourceVersion": "0.1.0",
-  "status": "maintained-source",
+  "status": "local-runtime",
   "skills": [
     "skills/godot-game-develop/SKILL.md",
     "skills/godot-game-inspect/SKILL.md"
   ],
   "profiles": [],
   "runtime": {
-    "entry": "src/runtime.cjs",
-    "gateway": "bridge/godot-gateway.cjs"
+    "entry": "runtime/index.cjs"
   },
   "externalDependencies": [
-    "Godot 4 executable"
+    "Godot 4.7.2 executable"
   ],
   "remoteStatus": "not-qualified",
-  "releaseVersion": "0.1.1"
+  "releaseVersion": "0.2.0",
+  "nativePlatforms": [
+    "darwin-arm64"
+  ]
 }
