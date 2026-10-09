@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "freecad-pack",
   "domain": "cad",
-  "sourceVersion": "1.1.4-pack.3",
+  "sourceVersion": "1.1.4-pack.5",
   "status": "maintained-source",
   "skills": [
     "skills/cad-freecad-headless/SKILL.md"
@@ -20,5 +20,5 @@
     "windows": "not-qualified"
   },
   "remoteStatus": "not-qualified",
-  "releaseVersion": "1.1.4-pack.6"
+  "releaseVersion": "1.1.4-pack.7"
 }

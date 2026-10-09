@@ -38,3 +38,9 @@ Chip 本地和沙箱使用同一套 EDA semantic.prepare / semantic.observe；�
 0.4.0 同时提供 [PCB／Godot 专业 Runtime](docs/professional-runtime.md)，集成路径采用 canonical Actions 和独立验证，原有 MCP 仅保留独立诊断。安装后的 Pack 通过 Harness 注入通用执行接口，不依赖开发目录。没有扩大远端、Linux、Windows 或 Intel Mac 支持声明。
 
 0.4.1 为兼容的 Harness Pack Manager 声明官方 KiCad、Godot 和 FreeCAD 托管下载，范围为 macOS Apple Silicon。下载与安装大小、版本探测及 KiCad 的两个可执行文件映射由本仓维护；使用托管安装时无需用户运行命令或配置环境变量。Chip 仍需外部工具链，CUDA 仍需管理员提供远程服务。详见[安装元数据与边界](docs/native-installation.md)。已有公众安装器须更新消费版本和通用安装层，并完成验收，才会获得这些配方。
+
+FreeCAD 现声明模型、对应版本的预览、导出和诊断成果组。检查关联实际输入快照；修改仅在原生生成成功后显式替代输入版本。Harness 将局部输出名绑定到已登记 Artifact。成果选择按需调用，几何验收仍由原有 Verifier 决定。
+
+[全领域成果声明与扩展计划](docs/result-presentation-plan.md)和[契约校验样例](docs/result-presentation-examples.json)覆盖五个领域、六个 Pack。本次是接入准备；其他 Pack 的生产声明、快照版本关联及 CUDA 消费升级仍待实施和验收。
+
+0.5.1 合并托管安装配方与 0.5.0 成果声明。FreeCAD 发行版本 1.1.4-pack.7 保留 pack.6 的完整安装配方和 pack.5 的成果呈现源码，已发布旧版本的内容保持不变。PCB、Godot 版本与平台资格范围不变。消费者须更新不可变版本固定值，并验证合并后的应用。

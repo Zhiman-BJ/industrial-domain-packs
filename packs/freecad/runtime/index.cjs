@@ -5,7 +5,8 @@ const crypto = require('node:crypto');
 const { spawn } = require('node:child_process');
 const { validateRecipe, validateInputs, applyChanges, guides } = require('./recipe.cjs');
 const hash = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
-const VERSION = '1.1.4-pack.3';
+const VERSION = '1.1.4-pack.5';
+const { presentation } = require('./presentation.cjs');
 
 function executable(environment, managed) {
   const candidates = [
@@ -380,7 +381,17 @@ function createRuntimePlugin({ environment = process.env, managed = false } = {}
         };
         if (stagedSource) kinds[path.basename(stagedSource)] = 'input.cad.model';
         for (const name of [operation + '.log', 'verify.log']) kinds[name] = 'log.tool';
+        const artifacts = Object.entries(kinds)
+          .filter(([name]) => {
+            const stat = fs.lstatSync(path.join(directory, name), { throwIfNoEntry: false });
+            return stat?.isFile() && !stat.isSymbolicLink();
+          })
+          .map(([name, kind]) => ({
+            localId: stagedSource && name === path.basename(stagedSource) ? 'source' : name,
+            file: path.relative(projectDir, path.join(directory, name)).split(path.sep).join('/'), kind,
+          }));
         return {
+          presentation: presentation({ operation, artifacts, sourcePath: source ? path.relative(projectDir, source).split(path.sep).join('/') : null, sourceHash, succeeded }),
           executionSucceeded: succeeded,
           inputUnchanged:
             (!source || hash(fs.readFileSync(source)) === sourceHash) &&
@@ -391,12 +402,7 @@ function createRuntimePlugin({ environment = process.env, managed = false } = {}
               : 'FreeCAD failed, timed out or was cancelled; no acceptance claim. ' +
                 (second?.diagnostic || first.diagnostic),
           ],
-          artifacts: Object.entries(kinds)
-            .filter(([name]) => fs.existsSync(path.join(directory, name)))
-            .map(([name, kind]) => ({
-              file: path.relative(projectDir, path.join(directory, name)),
-              kind,
-            })),
+          artifacts,
         };
       },
     })),
