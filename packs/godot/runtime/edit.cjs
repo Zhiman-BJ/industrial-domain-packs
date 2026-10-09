@@ -1,16 +1,20 @@
 const { exact, number } = require("./support.cjs");
-function value(text) {
-  if (typeof text === "boolean") return String(text);
-  if (typeof text === "number") return String(number(text));
-  exact(text, ["type", "value"]);
-  const sizes = { Vector2: 2, Vector3: 3 };
+function dimension(type) {
+  if (typeof type !== "string") return null;
+  if (type.endsWith("3D")) return 3;
+  if (type.endsWith("2D")) return 2;
+  return null;
+}
+function vector(value, type) {
+  exact(value, ["type", "value"]);
+  const size = type === "Vector3" ? 3 : 2;
   if (
-    !sizes[text.type] ||
-    !Array.isArray(text.value) ||
-    text.value.length !== sizes[text.type]
+    value.type !== type ||
+    !Array.isArray(value.value) ||
+    value.value.length !== size
   )
-    throw Error("Use a typed Vector2 or Vector3 value.");
-  return text.type + "(" + text.value.map(number).join(", ") + ")";
+    throw Error("Use a typed " + type + " value.");
+  return type + "(" + value.value.map(number).join(", ") + ")";
 }
 function edit(source, changes) {
   if (!Array.isArray(changes) || !changes.length || changes.length > 32)
@@ -65,7 +69,29 @@ function edit(source, changes) {
       throw Error(
         "size edits require a BoxMesh subresource; transforms require a node.",
       );
-    const replacement = change.property + " = " + value(change.value);
+    let replacement;
+    if (change.property === "visible") {
+      replacement = "visible = " + change.value;
+    } else if (change.property === "size") {
+      replacement = "size = " + vector(change.value, "Vector3");
+    } else {
+      const header = sections[matches[0]].split("\n")[0];
+      const type = header.match(/\btype="(\w+)"/)?.[1];
+      const size = dimension(type);
+      if (!size)
+        throw Error(
+          "Transforms require a Node2D or Node3D family node type, not " +
+            type +
+            ".",
+        );
+      if (change.property === "rotation_degrees" && size === 2)
+        throw Error(
+          "Node2D rotation_degrees is outside the supported scene edit surface.",
+        );
+      const expected = size === 3 ? "Vector3" : "Vector2";
+      replacement =
+        change.property + " = " + vector(change.value, expected);
+    }
     const index = matches[0],
       lines = sections[index].split("\n"),
       existing = lines.findIndex((x) => x.startsWith(change.property + " = "));
