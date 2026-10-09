@@ -12,7 +12,7 @@
     "entry": "runtime/index.cjs"
   },
   "externalDependencies": [
-    "FreeCAD 1.1.4 executable"
+    "Official FreeCAD 1.1.4 app; prepared by a compatible Harness Pack Manager on macOS Apple Silicon"
   ],
   "qualification": {
     "inherited": "macOS arm64 Harness 2482114 verified source; new consumer packaging requires its own acceptance",
@@ -20,5 +20,5 @@
     "windows": "not-qualified"
   },
   "remoteStatus": "not-qualified",
-  "releaseVersion": "1.1.4-pack.4"
+  "releaseVersion": "1.1.4-pack.6"
 }

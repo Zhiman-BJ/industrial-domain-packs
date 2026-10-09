@@ -13,10 +13,10 @@
     "entry": "runtime/index.cjs"
   },
   "externalDependencies": [
-    "Godot 4.7.2 executable"
+    "Official Godot 4.7.2 app; prepared by a compatible Harness Pack Manager on macOS Apple Silicon"
   ],
   "remoteStatus": "not-qualified",
-  "releaseVersion": "0.2.0",
+  "releaseVersion": "0.2.1",
   "nativePlatforms": [
     "darwin-arm64"
   ]

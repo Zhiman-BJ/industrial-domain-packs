@@ -1,6 +1,6 @@
 # PCB and Godot professional Runtime profiles
 
-The public profile is macOS Apple Silicon only, exercised with KiCad 10.0.6 and Godot 4.7.2 official stable. Windows, Linux, Intel macOS and remote execution remain unqualified. Native executables are external dependencies, not bundled Pack resources. The dependency preparation scripts verify exact official archive SHA-256 values without requiring administrator rights, Apple Developer credentials or installer publication.
+The public profile is macOS Apple Silicon only, exercised with KiCad 10.0.6 and Godot 4.7.2 official stable. Windows, Linux, Intel macOS and remote execution remain unqualified. Native executables are external downloads, not bundled Pack resources. Consumer release 0.4.1 declares official downloads, sizes and executable environment mappings for the shared Harness Pack Manager; see [native installation](native-installation.md). The developer preparation scripts remain available without requiring administrator rights, Apple Developer credentials or installer publication.
 
 Harness injects its generic trusted `runtimeApi` (`executeTask`, `runtimeFiles`) into the installed plugin factory. The Pack does not resolve Core through a development checkout. Harness owns canonical Run, Action, Artifact, State, Verification and Checkpoint persistence, scoped authorization, protected execution and cancellation. The owner Pack owns source observation, typed edits, native command preparation, report interpretation and versioned Verifiers. Kimi Code stays pinned at 2.1.1 and retains its native loop, sessions, compaction and subtasks.
 
@@ -24,13 +24,15 @@ The self-authored `examples/structural` uses a Node3D, BoxMesh and referenced GD
 
 ## Preparing native dependencies
 
-From the owner package (or an installed Pack's `domain-packs/<domain>` directory):
+For a compatible Harness with managed dependency support, select the PCB or Godot Pack in the installation screen. The shared installer uses the maintained `runtimeAssets` declaration to download, verify, prepare, probe and supply the executable paths; no user environment configuration is required. Pack preparation is not engineering acceptance.
+
+For standalone developer preparation, from the owner package (or an installed Pack's `domain-packs/<domain>` directory):
 
 ```sh
 node packs/pcb/runtime/setup-native.cjs /absolute/new/kicad-runtime
 node packs/godot/runtime/setup-native.cjs /absolute/new/godot-runtime
 ```
 
-Each prints environment variables and saves provenance. Set `INDUSTRIAL_HARNESS_KICAD_CLI`, `INDUSTRIAL_HARNESS_KICAD_PYTHON` and `INDUSTRIAL_HARNESS_GODOT_CMD` accordingly. Default paths are `/Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli`, the same bundle's Python 3.9 executable, and `/Applications/Godot.app/Contents/MacOS/Godot`. GUI installation is optional; Pack installation alone does not install these dependencies or prove engineering acceptance. The native backend grants read-only access to the explicit dependency bundles, maintained scripts and public SSL configuration. It rejects dependency roots that would expose the original project or an enclosing directory.
+Each developer script prints environment variables and saves provenance. Set `INDUSTRIAL_HARNESS_KICAD_CLI`, `INDUSTRIAL_HARNESS_KICAD_PYTHON` and `INDUSTRIAL_HARNESS_GODOT_CMD` accordingly only for that standalone path. Default paths are `/Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli`, the same bundle's Python 3.9 executable, and `/Applications/Godot.app/Contents/MacOS/Godot`. GUI installation is optional. Older Harness consumers require this separate preparation. The native backend grants read-only access to the explicit dependency bundles, maintained scripts and public SSL configuration. It rejects dependency roots that would expose the original project or an enclosing directory.
 
 Projects are bounded to 128 MiB, 16 MiB per input/output, 10,000 scan entries and depth 24. Symlinks, hardlinks, escaping paths, stale/cross-project scopes and undeclared tools fail closed. The reserved top-level `runtime-identity` input namespace cannot be shadowed. Native actions use a 1..120000 ms timeout per phase (default 60000); multi-phase verification may take several phase budgets. Input snapshots are immutable, writable native caches/output stay under the action run directory, and network access is denied.

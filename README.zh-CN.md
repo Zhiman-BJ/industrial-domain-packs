@@ -35,4 +35,6 @@ Chip 本地和沙箱使用同一套 EDA semantic.prepare / semantic.observe；�
 
 0.4.0 新增 CUDA Pack。两个远程 MCP 使用独立身份与凭据，从宿主可信设置接入。本地准备服务前检查 GPU 与 profile，并明确绑定评测卡 UUID；远程客户端无需本机 GPU。详见[部署与客户端配置](packs/cuda/README.md)。
 
-0.4.0 同时提供 [PCB／Godot 专业 Runtime](docs/professional-runtime.md)，集成路径采用 canonical Actions 和独立验证，原有 MCP 仅保留独立诊断。安装后的 Pack 通过 Harness 注入通用执行接口，不依赖开发目录。原生软件需另行安装；没有扩大远端、Linux、Windows 或 Intel Mac 支持声明。
+0.4.0 同时提供 [PCB／Godot 专业 Runtime](docs/professional-runtime.md)，集成路径采用 canonical Actions 和独立验证，原有 MCP 仅保留独立诊断。安装后的 Pack 通过 Harness 注入通用执行接口，不依赖开发目录。没有扩大远端、Linux、Windows 或 Intel Mac 支持声明。
+
+0.4.1 为兼容的 Harness Pack Manager 声明官方 KiCad、Godot 和 FreeCAD 托管下载，范围为 macOS Apple Silicon。下载与安装大小、版本探测及 KiCad 的两个可执行文件映射由本仓维护；使用托管安装时无需用户运行命令或配置环境变量。Chip 仍需外部工具链，CUDA 仍需管理员提供远程服务。详见[安装元数据与边界](docs/native-installation.md)。已有公众安装器须更新消费版本和通用安装层，并完成验收，才会获得这些配方。

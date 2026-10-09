@@ -2,12 +2,12 @@
   "schemaVersion": 1,
   "id": "freecad-pack",
   "domain": "cad",
-  "version": "1.1.4-pack.4",
+  "version": "1.1.4-pack.6",
   "provider": {
     "id": "freecad-local.runtime",
     "title": "FreeCAD 1.1.4 · persistent native tools",
     "domain": "cad",
-    "version": "1.1.4-pack.4",
+    "version": "1.1.4-pack.6",
     "transport": "runtime",
     "packDirectory": "freecad",
     "sourceSha256": "4158fe9e76bbc8bebbb2d47a631768a65c723c7f9f6c22b0521baf9eaf3ef8fa",
@@ -166,7 +166,8 @@
         "FREECAD_USER_HOME": "home",
         "FREECAD_USER_DATA": "data",
         "FREECAD_USER_TEMP": "temp"
-      }
+      },
+      "installedSize": 2625114576
     }
   ]
 }

@@ -2,12 +2,12 @@
   "schemaVersion": 1,
   "id": "pcb-pack",
   "domain": "pcb",
-  "version": "0.1.0-kicad.1",
+  "version": "0.1.0-kicad.2",
   "provider": {
     "id": "pcb-bench.tools",
     "title": "Public KiCad board Runtime",
     "domain": "pcb",
-    "version": "0.1.0-kicad.1",
+    "version": "0.1.0-kicad.2",
     "transport": "runtime",
     "packDirectory": "pcb",
     "packId": "pcb-pack",
@@ -106,6 +106,30 @@
       "verification": [
         "pcb.kicad.requirements.v1"
       ]
+    }
+  ],
+  "runtimeAssets": [
+    {
+      "id": "kicad",
+      "label": "KiCad",
+      "version": "10.0.6",
+      "type": "macos-app-dmg",
+      "platform": "darwin-arm64",
+      "url": "https://github.com/KiCad/kicad-source-mirror/releases/download/10.0.6/kicad-unified-universal-10.0.6.dmg",
+      "sha256": "ef4dcd4278c46d3efcd28c8db273d5957d68efda028f6bf79b4811fc5302dc68",
+      "size": 1404303659,
+      "installedSize": 5104942382,
+      "app": "KiCad.app",
+      "archiveApp": "KiCad/KiCad.app",
+      "executable": "Contents/MacOS/kicad-cli",
+      "environment": "INDUSTRIAL_HARNESS_KICAD_CLI",
+      "versionArgs": [
+        "--version"
+      ],
+      "versionText": "10.0.6",
+      "environmentExecutables": {
+        "INDUSTRIAL_HARNESS_KICAD_PYTHON": "Contents/Frameworks/Python.framework/Versions/3.9/bin/python3.9"
+      }
     }
   ]
 }
