@@ -11,14 +11,14 @@
     "transport": "runtime",
     "packDirectory": "godot",
     "packId": "godot-pack",
-    "sourceSha256": "16b855b2e6cbd6119e7f45184b100e37bc40850203569d97dcb12f8ef43c08e8",
+    "sourceSha256": "da5ac7d58f309913dc6834226ccbeb80d075b58f7fd9a954adb96875097be180",
     "resourceRoots": [
       "runtime"
     ],
     "sourceFiles": {
       "runtime/diagnostics.cjs": "2fbc151510d6be8932d9b2456f1709d5e0de57c17ed79525b539c26e1289a18d",
       "runtime/edit.cjs": "b38cca5a03452e73afa5df1852f5f6a98de61b2c938f1c65836f47cc3bc8ba93",
-      "runtime/index.cjs": "925c259dc7c7ef289e0c0e4528f19450b59c9b264d32e6b5b0482b3d377f897b",
+      "runtime/index.cjs": "51f3923dd36d9b7aad925dbc0c9ea1d309587e694dd627d5d2722ba612e85f21",
       "runtime/native-dependency.json": "465561b1cc768ad1bd2f3f6cc3ddb66cb544dd1f81ae237fe8c110eef8989323",
       "runtime/readback.gd": "d54074f2a851c22f6395da895bc59a430dbe94361f65c32640551865c2b197b7",
       "runtime/setup-native.cjs": "9c78c10560e0d651fefd3eb8722681aa995047ce2792ce192523a48bd3890457",

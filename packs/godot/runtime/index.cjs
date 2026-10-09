@@ -36,7 +36,7 @@ const guides = {
       ],
     },
     description:
-      "Apply typed node transforms/visibility or BoxMesh size to a text scene after a source-hash check. Transform vectors must match the node family: Vector3 on 3D nodes, Vector2 on 2D nodes; untyped or mismatched values are rejected before the scene changes. Preserves before/after artifacts and invalidates acceptance. Run godot.scene.verify with explicit expectations afterwards.",
+      "Apply typed node transforms/visibility or BoxMesh size to a text scene after a source-hash check. Transform vectors must match the node family: Vector3 on 3D nodes, Vector2 on 2D nodes; untyped or mismatched values are refused before the scene changes. Preserves before/after artifacts and invalidates acceptance. Run godot.scene.verify with explicit expectations afterwards.",
   },
   "godot.scene.verify": {
     inputs: {
