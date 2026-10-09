@@ -21,7 +21,8 @@ remote 直接依赖 npm 包名 @zhiman-bj/industrial-domain-packs 对应的 Git 
 
 Chip 本地和沙箱使用同一套 EDA semantic.prepare / semantic.observe；本地和远端的 canonical 验证器都引用 runtime/verifier.cjs。旧 Harness 安装不会自动切换，Harness 消费端后续单独迁移。
 
-开发、真实 MCP 检查、镜像构建和 validate.sh 使用见英文 README。源码修改后先暂存经过检查的 packs/ 和 lib/ 文件，再执行 npm run lock 更新内容身份。消费者和沙箱必须从同一固定版本构建。源码 CI 不构建或发布工具镜像。
+开发、真实 MCP 检查、镜像构建和 validate.sh 使用见英文 README。源码修改后先暂存经过检查的 packs/ 和 lib/ 文件，再执行 npm run lock 更新内容身份。消费者和沙箱必须从同一固定版本构建。默认源码检查不发布工具镜像；独立 Kimi Chip 发行流水线另行构建完整 Chip 配方，
+验收实际安装的原生 CLI／MCP／轨迹导出后再发布运行包。
 
 [验收记录](docs/migration-validation.md) 区分代码迁入、原生工具执行和远端支持。source-only archive 可覆盖所有六个 Pack，但不是可直接使用的执行镜像；镜像构建使用完整固定版本的包。
 
@@ -36,3 +37,11 @@ Chip 本地和沙箱使用同一套 EDA semantic.prepare / semantic.observe；�
 0.4.0 新增 CUDA Pack。两个远程 MCP 使用独立身份与凭据，从宿主可信设置接入。本地准备服务前检查 GPU 与 profile，并明确绑定评测卡 UUID；远程客户端无需本机 GPU。详见[部署与客户端配置](packs/cuda/README.md)。
 
 0.4.0 同时提供 [PCB／Godot 专业 Runtime](docs/professional-runtime.md)，集成路径采用 canonical Actions 和独立验证，原有 MCP 仅保留独立诊断。安装后的 Pack 通过 Harness 注入通用执行接口，不依赖开发目录。原生软件需另行安装；没有扩大远端、Linux、Windows 或 Intel Mac 支持声明。
+
+## 独立 Kimi Chip 轨迹采集包
+
+Chip Pack 另提供 [Kimi Code + Chip 衍生发行](packs/chip/kimi-bundle/README.zh-CN.md)：
+干净的上游 CLI 直接接入 MCP 与原生 Skill，用于蒸馏轨迹采集。安装、配方和发行
+全部维护在本仓库，不依赖 Harness 应用，也不增加 Agent 编排。
+Linux amd64 上已有原生 Kimi Code 2.1.1 时，可用[一键连接入口](packs/chip/kimi-bundle/CONNECT.zh-CN.md)，
+保留现有 CLI、模型配置和会话，只加入 Chip MCP 与 Skill。

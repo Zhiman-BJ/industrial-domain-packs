@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "name": "kimi-chip",
+  "version": "0.1.0-preview.1",
+  "platform": "linux/amd64",
+  "kimi": {
+    "version": "2.1.1",
+    "sourceCommit": "f67e6398fb3210ad8ace970e2dfd5bcc984ed61f",
+    "url": "https://github.com/MoonshotAI/kimi-code/releases/download/%40moonshot-ai/kimi-code%402.1.1/kimi-code-linux-x64.tar.gz",
+    "sha256": "b66cc3787bc9dfa6a06761305dc8878f98e7a24f79fa4494c00714229a1486e8",
+    "binarySha256": "66f47536e40b02bb1d577cdd324768f73d39b8b9472e0ca140e73d8e225cd7de",
+    "licenseSha256": "23cc68e17992e0b512ae2e80afc5787d7d8e0fbfbdb4fff54ec0245508fa400e"
+  },
+  "python": {
+    "version": "3.13.16",
+    "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20261003/cpython-3.13.16%2B20261003-x86_64-unknown-linux-gnu-install_only_stripped.tar.gz",
+    "sha256": "4595c5589fff7bf0cb158d9a88a797e0d791fa33830770fcb7bf3f4b104feeae"
+  },
+  "uv": {
+    "version": "0.11.6",
+    "url": "https://github.com/astral-sh/uv/releases/download/0.11.6/uv-x86_64-unknown-linux-gnu.tar.gz",
+    "sha256": "0c6bab77a67a445dc849ed5e8ee8d3cb333b6e2eba863643ce1e228075f27943"
+  }
+}

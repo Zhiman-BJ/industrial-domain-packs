@@ -42,7 +42,9 @@ docker buildx build --platform linux/amd64 --load \
 ./validate.sh packs/chip/examples/rtl --image industrial-domain-rtl:0.2.0
 ```
 
-`validate.sh` starts one isolated ephemeral container per task, checks real simulation completion, native verification and VCD structure, and writes `result.json`. See [qualification](docs/migration-validation.md) for exercised paths and limits. Images are validated locally; source CI does not build or publish tool images.
+`validate.sh` starts one isolated ephemeral container per task, checks real simulation completion, native verification and VCD structure, and writes `result.json`. See [qualification](docs/migration-validation.md) for exercised paths and limits. The default source checks do not publish tool images. The standalone Kimi Chip
+bundle has a separate pipeline that builds the full Chip recipe and qualifies the
+installed native CLI/MCP/export path before publishing its runtime archive.
 
 After deliberate source changes, stage reviewed files under packs/ and lib/ and run `npm run lock`. This changes the release identity. Build consumer and sandbox images from the same pinned package, then drain the old coordinator before switching.
 
@@ -63,3 +65,13 @@ Version 0.3.0 adds `consumerMetadata()`, `hostPacks()`, `sourceDirectory()` and 
 Version 0.4.0 adds the CUDA Pack. Configure both authenticated remote MCP endpoints in trusted host settings. Local worker preparation requires a GPU/profile preflight and explicit evaluator UUID; remote clients need no local GPU. See [deployment and client setup](packs/cuda/README.md).
 
 Version 0.4.0 also introduces the [PCB/Godot professional Runtime profiles](docs/professional-runtime.md), replacing integrated legacy MCP disclosure with canonical Runtime Actions. Installed Packs use the Harness-injected backend outside development repositories. Native binaries require separate installation; no new remote or other-platform qualification is asserted.
+
+## Standalone Kimi Chip collection bundle
+
+The Chip Pack also publishes a [Kimi Code + Chip bundle](packs/chip/kimi-bundle/README.md)
+for native trajectory collection: pristine upstream CLI, direct MCP and native Skill.
+Its installer and release recipe live in this repository; it has no Harness
+application dependency and adds no agent orchestration.
+Already installed native Kimi Code 2.1.1 on Linux amd64? Use the
+[one-command connection entry](packs/chip/kimi-bundle/CONNECT.md) to retain its
+CLI, model configuration and sessions while adding the Chip MCP and Skill.

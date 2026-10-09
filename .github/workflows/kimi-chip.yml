@@ -1,0 +1,86 @@
+name: Kimi Chip bundle
+
+on:
+  pull_request:
+    paths:
+      - 'packs/chip/**'
+      - '.github/workflows/kimi-chip.yml'
+  push:
+    tags: ['kimi-chip-v*']
+
+permissions:
+  contents: read
+
+jobs:
+  qualify:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Source identity, architecture and installer regressions
+        run: |
+          npm ci --ignore-scripts
+          npm run lock:check
+          npm run test:architecture-contract
+          npm test
+          python packs/chip/kimi-bundle/test_configure.py
+          python packs/chip/kimi-bundle/test_connect.py
+          bash -n packs/chip/kimi-bundle/bootstrap.sh
+          bash -n packs/chip/kimi-bundle/install.sh
+          bash -n packs/chip/kimi-bundle/connect.sh
+          bash -n packs/chip/kimi-bundle/connect-bootstrap.sh
+      - name: Build pristine native runtime bundle
+        run: python packs/chip/kimi-bundle/build.py
+      - name: Build full Chip tool recipe
+        run: |
+          docker build --platform linux/amd64 -f packs/chip/eda-harness/Dockerfile.tools \
+            -t kimi-chip-qualification:${{ github.sha }} packs/chip/eda-harness > dist/kimi-chip/image-build.log 2>&1
+      - name: Qualify installed native CLI, MCP, Skill, RTL and trajectory export
+        run: |
+          mkdir -p "$RUNNER_TEMP/kimi-chip-unpacked"
+          tar -xzf dist/kimi-chip/kimi-chip-*-linux-x64.tar.gz -C "$RUNNER_TEMP/kimi-chip-unpacked"
+          bundle=$(find "$RUNNER_TEMP/kimi-chip-unpacked" -mindepth 1 -maxdepth 1 -type d)
+          python packs/chip/kimi-bundle/qualify.py "$bundle" \
+            --image kimi-chip-qualification:${{ github.sha }} --output "$RUNNER_TEMP/kimi-chip-evidence"
+          cp "$RUNNER_TEMP/kimi-chip-evidence/verification.json" dist/kimi-chip/verification.json
+          python packs/chip/kimi-bundle/qualify.py "$bundle" --existing-kimi "$bundle/upstream/kimi" \
+            --image kimi-chip-qualification:${{ github.sha }} --output "$RUNNER_TEMP/kimi-chip-connect-evidence"
+          cp "$RUNNER_TEMP/kimi-chip-connect-evidence/verification.json" dist/kimi-chip/verification-existing-kimi.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: kimi-chip-linux-x64
+          path: dist/kimi-chip/
+          retention-days: 14
+
+  publish:
+    if: startsWith(github.ref, 'refs/tags/kimi-chip-v')
+    needs: qualify
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: kimi-chip-linux-x64
+          path: assets
+      - name: Publish qualified standalone Pack derivative
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = "kimi-chip-v$(jq -r .version packs/chip/kimi-bundle/recipe.json)"
+          test "$(jq -r .status assets/verification.json)" = PASS
+          test "$(jq -r .status assets/verification-existing-kimi.json)" = PASS
+          gh release create "$GITHUB_REF_NAME" \
+            assets/*.tar.gz assets/*.sha256 assets/install-kimi-chip.sh assets/connect-kimi-chip.sh \
+            assets/build-identity.json assets/verification*.json --verify-tag --prerelease \
+            --title "Kimi Code + Chip ${GITHUB_REF_NAME#kimi-chip-v}" \
+            --notes-file packs/chip/kimi-bundle/RELEASE.md
