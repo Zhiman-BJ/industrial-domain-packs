@@ -38,3 +38,5 @@ Chip 本地和沙箱使用同一套 EDA semantic.prepare / semantic.observe；�
 0.4.0 同时提供 [PCB／Godot 专业 Runtime](docs/professional-runtime.md)，集成路径采用 canonical Actions 和独立验证，原有 MCP 仅保留独立诊断。安装后的 Pack 通过 Harness 注入通用执行接口，不依赖开发目录。原生软件需另行安装；没有扩大远端、Linux、Windows 或 Intel Mac 支持声明。
 
 FreeCAD 现声明模型、对应版本的预览、导出和诊断成果组。检查关联实际输入快照；修改仅在原生生成成功后显式替代输入版本。Harness 将局部输出名绑定到已登记 Artifact。成果选择按需调用，几何验收仍由原有 Verifier 决定。
+
+[全领域成果声明与扩展计划](docs/result-presentation-plan.md)和[契约校验样例](docs/result-presentation-examples.json)覆盖五个领域、六个 Pack。本次是接入准备；其他 Pack 的生产声明、快照版本关联及 CUDA 消费升级仍待实施和验收。
