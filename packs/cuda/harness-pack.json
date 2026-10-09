@@ -1,0 +1,165 @@
+{
+  "schemaVersion": 1,
+  "id": "cuda-pack",
+  "domain": "cuda",
+  "version": "0.1.0",
+  "provider": {
+    "id": "cuda-remote.runtime",
+    "title": "CUDA Compiler + RTX 4090 Evaluator MCP",
+    "domain": "cuda",
+    "version": "0.1.0",
+    "transport": "runtime",
+    "packDirectory": "cuda",
+    "packId": "cuda-pack",
+    "resourceRoots": [
+      "runtime",
+      "server",
+      "locks"
+    ],
+    "sourceFiles": {
+      "locks/rtx4090-image.json": "cca7222767f24d83a799297410fe849f4ad2b76bc5765725be9786ff76c1f5af",
+      "locks/upstream.json": "4c88d9f18fb6d328d973b4e047f42a11ff7fabb783a11a732ec9245ad905842f",
+      "runtime/index.cjs": "6b180f2cecec599b96e7144057b7593e376993ce6dafe1976815db54feed6a28",
+      "runtime/protocol.cjs": "1588f7ca7d7dd22dedf4357d5a1aa6ee7bf6d916795616e756c17cf4b1d1474b",
+      "runtime/verifier.cjs": "0146df892c8938e5fc351cafdb122e3bd52f983ff75efeac3ef041583fda5a2f",
+      "server/backend.cjs": "6e90d96e490b2e5ed8664f2daaff7176f3f44d9aeea2125a25d082cf9f7fe82a",
+      "server/mcp.cjs": "71115d4de7957cb0abe270b0d3ce02f20288d35e5ab626c73f69546da472505e",
+      "server/native.py": "d075ea76a09099865cbd6e56003513be6c2e67ad6cb55dc03f4268d630a41388",
+      "server/store.cjs": "f8a737cefba4c80a6089792219b968b8af22eae7e4010886e8eb9dece2052152"
+    },
+    "sourceSha256": "ec1e6f9ee99446a6dae75d4ecbe6491274f62c3a01eebb6f96fb71f358501a28",
+    "tools": [
+      {
+        "id": "cuda.compiler.check",
+        "name": "cuda_compiler_check",
+        "risk": "read-only",
+        "summary": "Read the pinned CPU compiler identity and readiness."
+      },
+      {
+        "id": "cuda.candidate.compile",
+        "name": "cuda_candidate_compile",
+        "risk": "mutating",
+        "summary": "Compile source on the isolated CPU worker and issue a project-bound ticket.",
+        "verification": [
+          "cuda.candidate.evidence"
+        ]
+      },
+      {
+        "id": "cuda.evaluator.check",
+        "name": "cuda_evaluator_check",
+        "risk": "read-only",
+        "summary": "Read the pinned RTX 4090 evaluator identity and readiness."
+      },
+      {
+        "id": "cuda.baseline.profile",
+        "name": "cuda_baseline_profile",
+        "risk": "mutating",
+        "summary": "Profile the immutable reference model on the isolated GPU before editing.",
+        "verification": [
+          "cuda.candidate.evidence"
+        ]
+      },
+      {
+        "id": "cuda.candidate.verify",
+        "name": "cuda_candidate_verify",
+        "risk": "mutating",
+        "summary": "Verify a trusted compiler ticket on the isolated GPU.",
+        "verification": [
+          "cuda.candidate.evidence"
+        ]
+      },
+      {
+        "id": "cuda.candidate.profile",
+        "name": "cuda_candidate_profile",
+        "risk": "mutating",
+        "summary": "Verify a trusted compiler ticket then measure against torch.compile on the GPU.",
+        "verification": [
+          "cuda.candidate.evidence"
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "entry": "runtime/index.cjs"
+  },
+  "capabilities": [
+    {
+      "id": "cuda.kernel.optimize",
+      "domain": "cuda",
+      "title": "CUDA kernel compilation, verification and profiling",
+      "stages": [
+        "kernel"
+      ],
+      "priority": 100,
+      "keywords": [
+        "cuda",
+        "gpu",
+        "kernel",
+        "axpby",
+        "torch.compile",
+        "CUDA优化",
+        "算子优化",
+        "性能评测"
+      ],
+      "skills": [
+        {
+          "id": "cuda.kernel.optimize",
+          "summary": "Use the paired remote Compiler/Evaluator MCP Servers and exact candidate evidence."
+        }
+      ],
+      "tools": [
+        {
+          "id": "cuda.compiler.check",
+          "name": "cuda_compiler_check",
+          "risk": "read-only",
+          "summary": "Read the pinned CPU compiler identity and readiness."
+        },
+        {
+          "id": "cuda.candidate.compile",
+          "name": "cuda_candidate_compile",
+          "risk": "mutating",
+          "summary": "Compile source on the isolated CPU worker and issue a project-bound ticket.",
+          "verification": [
+            "cuda.candidate.evidence"
+          ]
+        },
+        {
+          "id": "cuda.evaluator.check",
+          "name": "cuda_evaluator_check",
+          "risk": "read-only",
+          "summary": "Read the pinned RTX 4090 evaluator identity and readiness."
+        },
+        {
+          "id": "cuda.baseline.profile",
+          "name": "cuda_baseline_profile",
+          "risk": "mutating",
+          "summary": "Profile the immutable reference model on the isolated GPU before editing.",
+          "verification": [
+            "cuda.candidate.evidence"
+          ]
+        },
+        {
+          "id": "cuda.candidate.verify",
+          "name": "cuda_candidate_verify",
+          "risk": "mutating",
+          "summary": "Verify a trusted compiler ticket on the isolated GPU.",
+          "verification": [
+            "cuda.candidate.evidence"
+          ]
+        },
+        {
+          "id": "cuda.candidate.profile",
+          "name": "cuda_candidate_profile",
+          "risk": "mutating",
+          "summary": "Verify a trusted compiler ticket then measure against torch.compile on the GPU.",
+          "verification": [
+            "cuda.candidate.evidence"
+          ]
+        }
+      ],
+      "verification": [
+        "cuda.candidate.evidence"
+      ]
+    }
+  ]
+}

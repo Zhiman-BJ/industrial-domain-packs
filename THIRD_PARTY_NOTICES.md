@@ -14,3 +14,7 @@ PCB-bench private actor resources, customer designs and existing deployment data
 ## Maintained multi-domain migration
 
 Godot source/bridge, PCB public bridge, FreeCAD PR29 runtime, CAD/domain Skills and resource hash validation retain the Harness MIT notice. Exact imports are in provenance/domain-migration.json. PCB private actor is external. Godot, FreeCAD, KiCad, Verilator and their system/image dependencies retain their upstream licenses; this source repository does not bundle their executables. Verilator 5.026 official image is pinned by digest in the shared RTL recipe. No registry distribution of built binary images is part of this migration.
+
+## CUDA adapter
+
+The CUDA MCP transport, runtime client, Verifier and Skill are original MIT contributions. CUDA-Agent-Harbor is a private external execution dependency; no upstream implementation or task corpus is redistributed. Its source and worker image identities are recorded under `packs/cuda/locks/`. Native dependencies retain their own terms.
