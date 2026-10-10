@@ -15,10 +15,10 @@
   },
   "externalDependencies": [
     "Official KiCad 10.0.6 app (kicad-cli and bundled pcbnew Python); prepared by a compatible Harness Pack Manager on macOS Apple Silicon",
-    "Optional pcb.bench.* container profile: Docker with the pinned PCB-bench image and an authorized PCB-bench checkout (INDUSTRIAL_HARNESS_PCB_BENCH_DIR)"
+    "Optional pcb.bench.* container profile: Docker with the image built from the vendored actor sources (packs/pcb/Dockerfile.local-dev) and the gateway Python environment (uv sync --frozen --no-dev)"
   ],
   "remoteStatus": "not-qualified",
-  "releaseVersion": "0.2.0-bench.1",
+  "releaseVersion": "0.2.0-bench.2",
   "nativePlatforms": [
     "darwin-arm64"
   ]

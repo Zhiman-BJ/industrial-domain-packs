@@ -103,7 +103,7 @@ test("seven stage capabilities mirror the snapshot groups and provider tools", (
   );
 });
 
-test("vendored skill files match the pinned upstream hashes", () => {
+test("vendored actor and skill files match the pinned upstream hashes", () => {
   const expected = Object.entries(snapshot.sourceFiles)
     .filter(([file]) => file.startsWith("skills/pcb-design-e2e/"))
     .map(([file]) => file.slice("skills/pcb-design-e2e/".length))
@@ -112,15 +112,13 @@ test("vendored skill files match the pinned upstream hashes", () => {
   assert.ok(expected.includes("SKILL.md"));
   assert.equal(expected.filter((n) => n.startsWith("references/")).length, 9);
   assert.equal(expected.filter((n) => n.startsWith("assets/")).length, 1);
-  for (const name of expected) {
-    const bytes = fs.readFileSync(
-      path.join(packDirectory, "skills/pcb-design-e2e", name),
-    );
-    assert.equal(
-      hash(bytes),
-      snapshot.sourceFiles["skills/pcb-design-e2e/" + name],
-      name,
-    );
+  const actor = Object.keys(snapshot.sourceFiles).filter((file) =>
+    file.startsWith("pcb-agent/"),
+  );
+  assert.equal(actor.length, 101);
+  for (const file of Object.keys(snapshot.sourceFiles)) {
+    const bytes = fs.readFileSync(path.join(packDirectory, file));
+    assert.equal(hash(bytes), snapshot.sourceFiles[file], file);
   }
   const nativeSkill = fs.readFileSync(
     path.join(packDirectory, "skills/pcb-kicad-native/SKILL.md"),
@@ -190,14 +188,22 @@ test("runtime plugin exposes placeholder bench tools that fail with setup guidan
   );
   const assessed = plugin.verifiers["pcb.bench.receipts.v1"]();
   assert.equal(assessed.status, "not_run");
-  assert.ok(addTrack.guide.description.includes("INDUSTRIAL_HARNESS_PCB_BENCH_DIR"));
+  assert.ok(addTrack.guide.description.includes("Dockerfile.local-dev"));
+  const { createRuntimePlugin: freshPlugin } = require("../packs/pcb/runtime/index.cjs");
+  const bare = freshPlugin({
+    environment: { INDUSTRIAL_HARNESS_PCB_GATEWAY_PYTHON: "/nonexistent/python" },
+    runtimeApi: { executeTask: () => {}, runtimeFiles: () => {} },
+  });
+  const bareTrack = bare.tools.find(
+    (t) => t.descriptor.id === "pcb.bench.add_track",
+  );
   await assert.rejects(
-    addTrack.execute({ projectDir: "/tmp", inputs: {}, action: {}, signal: new AbortController().signal }),
-    /INDUSTRIAL_HARNESS_PCB_BENCH_DIR/,
+    bareTrack.execute({ projectDir: "/tmp", inputs: {}, action: {}, signal: new AbortController().signal }),
+    /uv sync --frozen --no-dev/,
   );
 });
 
-test("published file whitelist carries the vendored skill tree", () => {
+test("published file whitelist carries the vendored skill tree and actor", () => {
   const pkg = JSON.parse(
     fs.readFileSync(path.join(__dirname, "..", "package.json"), "utf8"),
   );
@@ -207,6 +213,11 @@ test("published file whitelist carries the vendored skill tree", () => {
     "packs/pcb/skills/pcb-design-e2e/assets/constraints.example.yaml",
     "packs/pcb/skills/pcb-design-e2e/references/tools.md",
     "packs/pcb/skills/pcb-design-e2e/references/verification.md",
+    "packs/pcb/pcb-agent/tools/workspace.py",
+    "packs/pcb/pcb-agent/tools/agent_session.py",
+    "packs/pcb/pcb-agent/tools/kimi_mcp.py",
   ];
   for (const entry of expected) assert.ok(pkg.files.includes(entry), entry);
+  const vendored = pkg.files.filter((entry) => entry.startsWith("packs/pcb/pcb-agent/"));
+  assert.equal(vendored.length, 101);
 });

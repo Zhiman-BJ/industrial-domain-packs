@@ -14,3 +14,5 @@ data/
 *.log
 node_modules/
 tmp/
+# vendored PCB-bench actor data (tools/data) ships with the pack
+!packs/pcb/pcb-agent/tools/data/

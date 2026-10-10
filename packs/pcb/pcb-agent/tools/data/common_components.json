@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "purpose": "Independent representative engineering sample, not market-share-weighted and not derived from benchmark references",
+  "symbols": {
+    "passives": ["Device:R", "Device:C", "Device:L", "Device:C_Polarized", "Device:Crystal", "Device:Ferrite_Bead", "Device:Fuse", "Device:LED"],
+    "discrete": ["Transistor_FET:2N7002", "Transistor_FET:AO3400A", "Transistor_FET:IRLML6344", "Transistor_BJT:BC847", "Transistor_BJT:2N3904", "Diode:1N4148", "Diode:SS14"],
+    "analog": ["Amplifier_Operational:LM358", "Amplifier_Operational:MCP6002-xP", "Comparator:LM393", "Amplifier_Operational:TL072"],
+    "mcu": ["MCU_ST_STM32F1:STM32F103C8Tx", "MCU_ST_STM32F4:STM32F407VETx", "MCU_RaspberryPi:RP2040", "MCU_Microchip_ATmega:ATmega328P-AU", "MCU_Espressif:ESP32-S3-WROOM-1", "MCU_Nordic:nRF52840"],
+    "power": ["Regulator_Linear:AMS1117-3.3", "Regulator_Linear:AP2112K-3.3", "Regulator_Switching:LM2596S-5", "Regulator_Switching:MP1584EN", "Battery_Management:MCP73831-2-OT"],
+    "interfaces": ["Interface_USB:CH340C", "Interface_USB:FT232RL", "Interface_UART:MAX3232", "Interface_CAN_LIN:MCP2515-xSO", "Interface_CAN_LIN:TJA1050", "Interface_Expansion:MCP23017_SO", "Power_Protection:USBLC6-2SC6", "Interface_Ethernet:LAN8720A"],
+    "sensors_memory": ["Sensor_Motion:MPU-6050", "Sensor_Temperature:DS18B20", "Sensor_Pressure:BMP280", "Memory_Flash:W25Q128JVS", "Memory_EEPROM:24LC256", "Sensor_Humidity:SHT31-DIS"],
+    "connectors": ["Connector:Conn_01x02_Pin", "Connector:Conn_01x08_Pin", "Connector_Generic:Conn_02x20_Odd_Even", "Connector:USB_C_Receptacle_USB2.0_16P", "Connector:USB_B_Micro", "Connector:Micro_SD_Card", "Connector:RJ45", "Connector:Barrel_Jack"]
+  },
+  "footprints": {
+    "passive_packages": ["Resistor_SMD:R_0402_1005Metric", "Resistor_SMD:R_0603_1608Metric", "Resistor_SMD:R_0805_2012Metric", "Capacitor_SMD:C_0402_1005Metric", "Capacitor_SMD:C_0603_1608Metric", "Capacitor_SMD:C_0805_2012Metric", "Inductor_SMD:L_0805_2012Metric", "Diode_SMD:D_SOD-323", "Diode_SMD:D_SMA"],
+    "ic_packages": ["Package_SO:SOIC-8_3.9x4.9mm_P1.27mm", "Package_SO:TSSOP-20_4.4x6.5mm_P0.65mm", "Package_QFP:LQFP-48_7x7mm_P0.5mm", "Package_QFP:LQFP-100_14x14mm_P0.5mm", "Package_TO_SOT_SMD:SOT-23", "Package_TO_SOT_SMD:SOT-23-6", "Package_TO_SOT_SMD:SOT-223-3_TabPin2"],
+    "connector_packages": ["Connector_PinHeader_2.54mm:PinHeader_1x08_P2.54mm_Vertical", "Connector_PinHeader_2.54mm:PinHeader_2x20_P2.54mm_Vertical", "Connector_USB:USB_C_Receptacle_GCT_USB4105-xx-A_16P_TopMnt_Horizontal", "Connector_USB:USB_Micro-B_Amphenol_10118194_Horizontal", "Connector_JST:JST_SH_BM04B-SRSS-TB_1x04-1MP_P1.00mm_Vertical"]
+  }
+}

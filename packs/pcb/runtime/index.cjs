@@ -20,13 +20,16 @@ const {
 } = s;
 const { ID, verify } = require("./verifier.cjs");
 const benchSnapshot = require("./bench-upstream.json");
-const VERSION = "0.2.0-bench.1";
+const VERSION = "0.2.0-bench.2";
 const BENCH_PROFILE =
   "Executes inside the pinned PCB-bench Linux container (image " +
   benchSnapshot.imageTag +
   ", upstream commit " +
   benchSnapshot.sourceCommit.slice(0, 12) +
-  "). Local prerequisites: an authorized PCB-bench checkout in INDUSTRIAL_HARNESS_PCB_BENCH_DIR, Docker with the pinned image, and the gateway Python environment (uv sync --frozen --no-dev inside packs/pcb).";
+  "). The actor sources ship inside this pack; prepare the container image " +
+  "(docker build --platform linux/amd64 -f Dockerfile.local-dev -t industrial-pcb-bench <packDir>, " +
+  "then set INDUSTRIAL_HARNESS_PCB_DEV_IMAGE_ID) and the gateway Python environment " +
+  "(uv sync --frozen --no-dev inside packs/pcb).";
 const guides = {
   "pcb.kicad.edit": {
     inputs: {
@@ -145,7 +148,8 @@ function dependencies(environment) {
     ],
   };
 }
-const benchTools = benchSnapshot.tools.map((tool) => ({
+const benchTools = (environment) =>
+  benchSnapshot.tools.map((tool) => ({
   descriptor: {
     schemaVersion: "1",
     id: tool.id,
@@ -157,8 +161,24 @@ const benchTools = benchSnapshot.tools.map((tool) => ({
   guide: {
     description: tool.summary + " " + BENCH_PROFILE,
   },
-  execute: async () => {
-    throw Error("pcb.bench container execution is not wired in this build. " + BENCH_PROFILE);
+  execute: async ({ projectDir, inputs, signal }) => {
+    const { gatewaySession } = require("./bench-gateway.cjs");
+    const session = await gatewaySession({ projectDir, environment });
+    const payload = await session.callTool(
+      "domain_tool_call",
+      { toolId: tool.id, arguments: inputs ?? {} },
+      signal,
+    );
+    // The full observation payload rides in diagnostics: bench observations
+    // (paged requirements, board collections, receipts) are the model-facing
+    // result of this action. callTool throws on gateway/native errors, so
+    // reaching here means the transport accepted the call.
+    return {
+      executionSucceeded: true,
+      diagnostics: [JSON.stringify(payload)],
+      artifacts: [],
+      toolVersion: VERSION,
+    };
   },
 }));
 function createRuntimePlugin({ environment = process.env, runtimeApi } = {}) {
@@ -310,7 +330,7 @@ function createRuntimePlugin({ environment = process.env, runtimeApi } = {}) {
         };
       },
     })),
-      ...benchTools,
+      ...benchTools(environment),
     ],
     verifiers: {
       [ID]: verify,

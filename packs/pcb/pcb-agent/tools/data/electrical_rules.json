@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "revision": "2026-09-09",
+  "scope": "Generic structural and declared electrical constraints; no factory capability limits",
+  "sources": [
+    {"id": "kicad-eeschema", "url": "https://docs.kicad.org/9.0/en/eeschema/eeschema.html", "scope": "symbol pin types, no-connect markers and electrical rule checking"},
+    {"id": "kicad-symbols", "url": "https://gitlab.com/kicad/libraries/kicad-symbols", "scope": "installed symbol identities and pin definitions, not component ratings"}
+  ],
+  "rules": [
+    {"id": "pin-exists", "scope": "schematic", "check": "Every assigned or NC pin must exist in the resolved symbol", "source": "kicad-eeschema"},
+    {"id": "nc-exclusive", "scope": "schematic", "check": "Connected and intentionally NC are mutually exclusive", "source": "kicad-eeschema"},
+    {"id": "required-input", "scope": "schematic", "check": "Unconnected input or power_in pins require explicit treatment; NC on power_in never establishes valid power", "source": "kicad-eeschema"},
+    {"id": "output-contention", "scope": "schematic", "check": "Multiple push-pull outputs or power sources on a net require review", "source": "kicad-eeschema"},
+    {"id": "rail-current-budget", "scope": "DC budget", "check": "Sum of declared worst-case load currents must not exceed declared supply capacity", "source": "arithmetic"},
+    {"id": "rail-voltage-range", "scope": "DC budget", "check": "Declared rail voltage must lie within each declared load operating interval", "source": "arithmetic"}
+  ],
+  "logical_components": {
+    "Device:R": {"kind": "resistor", "pins": {"1": {"type": "passive"}, "2": {"type": "passive"}}, "source": "kicad-symbols", "scope": "CAD pin identity only; not an MPN or voltage/power rating"},
+    "Device:C": {"kind": "capacitor", "pins": {"1": {"type": "passive"}, "2": {"type": "passive"}}, "source": "kicad-symbols", "scope": "CAD pin identity only; not an MPN or voltage rating"}
+  },
+  "components": {}
+}

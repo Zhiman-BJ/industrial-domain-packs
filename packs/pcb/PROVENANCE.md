@@ -36,3 +36,28 @@ The new runtime/, typed tools, Verifiers and examples are original public MIT co
 - 执行层分两步：本变更（PR1）只注册占位 descriptor，调用时抛出带前置条件说明的 setup 错误；
   容器网关接线（bridge 通电、docker 派发、r10 冒烟）在后续 PR 完成。工具 schema 不在本包复制，
   运行期由网关对活体服务指纹校验（`toolSchemaSha256`）。
+
+## 容器派发接线（2026-10-10，PR2）
+
+- `runtime/bench-gateway.cjs`：每个绑定的 project 维持一个网关进程（`bridge/pcb-gateway.py`，MCP stdio），
+  网关进程持有 pinned Linux 容器的生命周期；本模块只做 JSON-RPC，不直接调用 docker。
+  调用串行化（上游 controller 对 /workspace 持排他锁）、空闲 15 分钟回收、分页响应在 256 KiB
+  预算内重组为单一观测文档。
+- bridge 消费快照形状的 provider 视图（`bridgeProvider`）：`sourceFiles`/`resourceRoots`/`directoryEnv`/
+  `pythonEnv`/`mcpVersion(1.29.1)`/`allowedToolIds(89)` 取自 `runtime/bench-upstream.json` 与包内锁，
+  不复用 manifest provider 的 runtime 盘点。policy.tools 必须恰好 89 条——网关启动时与容器活体工具集
+  按名比对，多一条即拒绝。
+- mutating bench 工具声明 `effect:inputs`（容器内工具直接改写挂载的工程），verification 统一为
+  `pcb.bench.receipts.v1`（not_run：receipts 在容器会话内，执行不等于验收）。
+- 前置校验先于任何网关启动：授权 checkout、Docker 镜像、网关 venv；缺一即抛带指引的 setup 错误。
+  环境旋钮：`INDUSTRIAL_HARNESS_PCB_DOCKER`、`_REQUIREMENTS`（须在可写工程之外）、
+  `_DEV_IMAGE_ID`、`_IMAGE_INPUT=1`（投递 view_design 渲染）。
+
+## Actor 源码入包（2026-10-10，chip 式集成，用户拍板）
+
+- 决定：pack 对标 chip 集成模式——actor 源码（`pcb-agent/**`，101 个文件，2.0 MiB）随包分发，
+  运行时容器镜像由包内源码构建（`Dockerfile.local-dev`，构建上下文即 pack 目录）。
+  pack 自包含；`INDUSTRIAL_HARNESS_PCB_BENCH_DIR` 降级为可选覆盖（评测时对齐全量上游 checkout）。
+- 快照 `runtime/bench-upstream.json` 的 112 个哈希现同时承担 vendored 文件的完整性校验
+  （bridge 启动时逐文件核对包内资源）；分发范围仍为自有私有仓库内部分发（见上方 2026-10-10 决定）。
+- 派发自检：缺镜像/缺 venv 在任何进程启动前报出带构建指引的 setup 错误。
