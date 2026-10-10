@@ -303,7 +303,9 @@ async function gatewaySession({ projectDir, environment }) {
   // pinned image is missing (pcbRuntime has already validated the env-var
   // shape, the vendored resources and the gateway venv).
   const docker = bridgeEnvironment.INDUSTRIAL_HARNESS_PCB_DOCKER || "docker";
-  const image = await inspectImage(docker, provider.imageId, {});
+  const imageId =
+    bridgeEnvironment.INDUSTRIAL_HARNESS_PCB_DEV_IMAGE_ID || provider.imageId;
+  const image = await inspectImage(docker, imageId, {});
   if (!image.ok) throw Error(image.reason);
   const session = new GatewaySession(config);
   sessions.set(project, session);

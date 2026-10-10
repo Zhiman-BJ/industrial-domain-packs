@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contentSha256": "a485e06585653bbfaa39c9be30c0a9261cbb49ed6f4c5c08c96099b5a748262b",
+  "contentSha256": "2d2b9768607fa93519f443407c7e4a2b1999499a67c90260198d1d8543f35598",
   "files": {
     "lib/consumer.cjs": "4d670732dbf3d5a3da33cac41007573e1f47b514a7165ac1df1748c9c2f960ab",
     "lib/consumer.json": "f1bb459998a40f1ec8e4392fe31adb6ecdf991ffe145d2f5bc7ec2420e5d0781",
@@ -169,7 +169,7 @@
     "packs/pcb/bridge/pcb-gateway.py": "aef380f4c7392b7fde35977060c1172047759e34aecf97a7db54eda2d55a5b1c",
     "packs/pcb/bridge/pcb-runtime.cjs": "2ba920c0e2baa23e4a43d05ed4b01699c777777f21ef45c2e017af482e3356f7",
     "packs/pcb/examples/mounting-board/board.kicad_pcb": "a892beb0e25094c3c55cb859a22b9811bb1b6c0615f4856b588660cec846ff9e",
-    "packs/pcb/harness-pack.json": "464e1df62852612be2619766e317b0627b60103d15dec7d1cb817236c8dffddd",
+    "packs/pcb/harness-pack.json": "8a52e9379c811ddbb96891358bd2a2aabca86ee32c75eab8328586cee16152d2",
     "packs/pcb/legacy-harness-pack.json": "64be47af2b24d1a6a059db65e39344d60221f161afa8384e8c2c8f14b6edc95c",
     "packs/pcb/pack.json": "37b88737016bf87133ab5df58e0a1a5abded0e7fc6c17d6311c8924c2280a53d",
     "packs/pcb/pcb-agent/tools/acceptance.py": "58ebfd478745755dc90953ca8143daea75c5f1fa08b70bb77c4222c4e61e69ff",
@@ -274,7 +274,7 @@
     "packs/pcb/pcb-agent/tools/visualize.py": "e5c7348f14775ef34c7a1123e5f8a6b7de631b0920718f85bd5c8cf16d5ad645",
     "packs/pcb/pcb-agent/tools/workspace.py": "5fd9a62526b5481407b56c8b289368180ed74a1a9818121964eadda1eec2d8ad",
     "packs/pcb/pyproject.toml": "baa7b9c41b2b57b7e19898fa7138828d1d1401b992dd859e6c5a922a1e793951",
-    "packs/pcb/runtime/bench-gateway.cjs": "d9da6a4d415975d9a25ff524079881a363477f8a75e968667be0cd400ed7c8e6",
+    "packs/pcb/runtime/bench-gateway.cjs": "00c1643d8bce5aac87a68bf5e57039f182b3c0010874200c06f9a93a81336cf5",
     "packs/pcb/runtime/bench-upstream.json": "a6de0b366a17cdeb28685b8571e417f1a9a7b404bd4eac0f301f6de90c01462d",
     "packs/pcb/runtime/index.cjs": "dee5b9cd9192489f5709ae783dd3132c73b5f6e65a09d8afab3182654f62df0d",
     "packs/pcb/runtime/native-dependency.json": "990026ffb36aeac47a3a2e935cf00b17a068628a0a46bc1dfe120bbbf3b21c73",
