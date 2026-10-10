@@ -21,9 +21,6 @@ const {
 const { ID, verify } = require("./verifier.cjs");
 const benchSnapshot = require("./bench-upstream.json");
 const VERSION = "0.2.0-bench.1";
-const BENCH_RECEIPTS = [
-  "Preserve controller action receipts and rerun affected native checks; execution is not acceptance.",
-];
 const BENCH_PROFILE =
   "Executes inside the pinned PCB-bench Linux container (image " +
   benchSnapshot.imageTag +
@@ -154,7 +151,8 @@ const benchTools = benchSnapshot.tools.map((tool) => ({
     id: tool.id,
     version: VERSION,
     risk: tool.risk,
-    verification: tool.verification || BENCH_RECEIPTS,
+    ...(tool.risk === "mutating" ? { effect: "inputs" } : {}),
+    verification: tool.verification || [],
   },
   guide: {
     description: tool.summary + " " + BENCH_PROFILE,
@@ -320,6 +318,12 @@ function createRuntimePlugin({ environment = process.env, runtimeApi } = {}) {
         status: "not_run",
         reason:
           "Source edit preserved; rerun independent board requirements and DRC.",
+        metrics: {},
+      }),
+      "pcb.bench.receipts.v1": () => ({
+        status: "not_run",
+        reason:
+          "Bench controller receipts live inside the container session; execution is not acceptance.",
         metrics: {},
       }),
     },

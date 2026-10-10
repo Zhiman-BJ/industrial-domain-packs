@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contentSha256": "57853e30fc00fc75f05362707f9be9be99d84284b81d1004a8d42b399401e8a7",
+  "contentSha256": "02c8d2e27b2d095642600167a3dea5f4c570bf4aed2cae388136152822c0f306",
   "files": {
     "lib/consumer.cjs": "4d670732dbf3d5a3da33cac41007573e1f47b514a7165ac1df1748c9c2f960ab",
     "lib/consumer.json": "a365a9c67132aaa52521f238bb883b31de648982f301a8a2a3f4fd5a0690f0b5",
@@ -169,12 +169,12 @@
     "packs/pcb/bridge/pcb-gateway.py": "aef380f4c7392b7fde35977060c1172047759e34aecf97a7db54eda2d55a5b1c",
     "packs/pcb/bridge/pcb-runtime.cjs": "2ba920c0e2baa23e4a43d05ed4b01699c777777f21ef45c2e017af482e3356f7",
     "packs/pcb/examples/mounting-board/board.kicad_pcb": "a892beb0e25094c3c55cb859a22b9811bb1b6c0615f4856b588660cec846ff9e",
-    "packs/pcb/harness-pack.json": "d12f5421e4502c6b2b7a14e538b2f1752c8eb475f12cf542746f7100bdf54e9f",
+    "packs/pcb/harness-pack.json": "bd3a946c85227db67131df2e0395e27078522e1d26cd9a6a9fb31192c5eaf37e",
     "packs/pcb/legacy-harness-pack.json": "64be47af2b24d1a6a059db65e39344d60221f161afa8384e8c2c8f14b6edc95c",
     "packs/pcb/pack.json": "543e6f8ac6afab512d02dfb1816668c50c19fe098c9411fff4cac2df3be86ad0",
     "packs/pcb/pyproject.toml": "baa7b9c41b2b57b7e19898fa7138828d1d1401b992dd859e6c5a922a1e793951",
-    "packs/pcb/runtime/bench-upstream.json": "1bf63c8288c5223b5035b3d7b92348af1d5e949b39f633145bea48ce6f2f32d8",
-    "packs/pcb/runtime/index.cjs": "f520a53c68f87b8a51deff3d357a5a691d515a608deed3e76d643089de6019d3",
+    "packs/pcb/runtime/bench-upstream.json": "a6de0b366a17cdeb28685b8571e417f1a9a7b404bd4eac0f301f6de90c01462d",
+    "packs/pcb/runtime/index.cjs": "a61b6d1010d3af530f7a658ac46ea24275b08b4bc8b85c2e94b841493eb1c4e8",
     "packs/pcb/runtime/native-dependency.json": "990026ffb36aeac47a3a2e935cf00b17a068628a0a46bc1dfe120bbbf3b21c73",
     "packs/pcb/runtime/native.py": "8f1eb5f360ad422910266a93356a3e7609f1f26fd72c0ef96645030c1275d29b",
     "packs/pcb/runtime/setup-native.cjs": "9c78c10560e0d651fefd3eb8722681aa995047ce2792ce192523a48bd3890457",

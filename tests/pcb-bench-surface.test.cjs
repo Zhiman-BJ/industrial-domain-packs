@@ -44,8 +44,7 @@ test("bench tool registry is well formed and unique", () => {
     assert.equal(typeof tool.summary, "string");
     assert.ok(tool.summary.length > 8, `${tool.id} summary is substantive`);
     if (tool.risk === "mutating") {
-      assert.equal(tool.verification.length, 1);
-      assert.ok(tool.verification[0].length > 0);
+      assert.deepEqual(tool.verification, ["pcb.bench.receipts.v1"]);
     } else {
       assert.equal(tool.verification, undefined);
     }
@@ -182,6 +181,15 @@ test("runtime plugin exposes placeholder bench tools that fail with setup guidan
   assert.equal(runPython.descriptor.risk, "read-only");
   const addTrack = bench.find((t) => t.descriptor.id === "pcb.bench.add_track");
   assert.equal(addTrack.descriptor.risk, "mutating");
+  assert.equal(addTrack.descriptor.effect, "inputs");
+  assert.deepEqual(addTrack.descriptor.verification, ["pcb.bench.receipts.v1"]);
+  assert.equal(
+    typeof plugin.verifiers["pcb.bench.receipts.v1"],
+    "function",
+    "declared verifier must be registered",
+  );
+  const assessed = plugin.verifiers["pcb.bench.receipts.v1"]();
+  assert.equal(assessed.status, "not_run");
   assert.ok(addTrack.guide.description.includes("INDUSTRIAL_HARNESS_PCB_BENCH_DIR"));
   await assert.rejects(
     addTrack.execute({ projectDir: "/tmp", inputs: {}, action: {}, signal: new AbortController().signal }),
