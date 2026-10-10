@@ -50,10 +50,13 @@ starting a session; it must not silently drop a missing role or unavailable
 requested restriction.
 
 - `skills` uses consumer Skill IDs. As a primary Agent, it selects a session
-  Skill allowlist intersected with globally enabled Skills, project policy and
-  current Broker scope. An omitted list inherits the allowed session Skills;
+  Skill allowlist intersected with the effective global defaults and project
+  overrides, then the current Broker scope. An explicit project setting may
+  override a global default. An omitted list inherits the allowed session Skills;
   an explicit empty list selects none. Delegated Agents inherit the primary
   session's Skill scope; the declaration does not create per-child Skill grants.
+  This controls registered domain Skill disclosure, not physical access to
+  arbitrary files or the kernel's separate discovery of native project Skills.
 - `tools` and `disallowedTools` refer to the selected kernel's public tool names
   or supported patterns. They can narrow tool access but cannot grant protected
   industrial mutation rights. The Broker, Runtime and approval policy remain
