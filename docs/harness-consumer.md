@@ -13,3 +13,21 @@ The Chip distribution remains 0.6.2, while its host MCP declaration identifies t
 ## Consumer release 0.4.0
 
 PCB 0.1.0-kicad.1 and Godot 0.2.0 replace integrated legacy MCP declarations with typed Runtime tools and explicit native requirements Verifiers. The installed factory now requires the trusted `runtimeApi` supplied by Harness. Consumer dependency pins and integrity must be updated together; older consumers cannot claim this installed professional path. See [profiles and limitations](professional-runtime.md).
+
+## Consumer release 0.4.1
+
+PCB 0.1.0-kicad.2 and Godot 0.2.1 add managed native dependency recipes, and FreeCAD 1.1.4-pack.6 adds its measured installed size. Native tool versions, Runtime code, protected actions, Verifiers and qualified platforms are unchanged. The FreeCAD distribution skips pack.5, which was reserved by a separate result-presentation change; no runtime or presentation behavior from that change is included here.
+
+Harness must support the generic `macos-app-zip` type, `archiveApp` nested bundle source, `environmentExecutables` mappings and `installedSize` display metadata before consuming this release. The PCB recipe supplies both kicad-cli and the exact bundled Python used by pcbnew. The Godot recipe needs no export templates for the qualified structural task. The owner retains dependency and license provenance; downloads, health, repair and cancellation are Harness responsibilities. See [native installation](native-installation.md) for source measurements, external prerequisites and qualification limits. Do not update a public consumer pin without its installation checks.
+
+## Consumer release 0.5.1
+
+This release merges the 0.4.1 managed installation recipes with 0.5.0 FreeCAD result declarations. FreeCAD distribution 1.1.4-pack.7 has the exact pack.5 Runtime/presentation sources and the complete pack.6 native recipe, including measured installed size. Its new distribution identity allows both existing pack.5 and pack.6 installations to upgrade without republishing their content. PCB 0.1.0-kicad.2, Godot 0.2.1, Chip prerequisites, and CUDA remote-service and unavailable desktop-bundle declarations are retained.
+
+Consumers must use one immutable 0.5.1 commit and matching lockfile integrity across CLI and Desktop. Source and presentation tests preserve both behavior sets; they do not replace combined packaged installation, native task and result-presentation acceptance. This release adds no qualified platforms or remote profiles.
+
+## Consumer release 0.5.2
+
+Godot distribution 0.2.2 combines the managed native recipe with the typed scene-edit validation and guide fixes from owner main `8f00a3fd12211bfce3b91a69d0bea2406b6695a6`. Its consumer domain, host/provider and Pack distribution versions agree. The Runtime tool version remains 0.2.1 because those execution sources are unchanged from that reviewed main commit; the distribution version identifies the combined source and installation metadata.
+
+FreeCAD 1.1.4-pack.7, PCB 0.1.0-kicad.2, Chip and CUDA retain their previous Pack bytes and versions. No platform qualification or dependency archive changes. Consumers must pin the new full commit and archive integrity together; old 0.5.1 and Godot 0.2.1 content is not republished under its former identity.

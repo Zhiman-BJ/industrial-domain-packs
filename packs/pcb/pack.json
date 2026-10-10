@@ -13,10 +13,10 @@
     "entry": "runtime/index.cjs"
   },
   "externalDependencies": [
-    "Public KiCad 10.0.6: kicad-cli and bundled Python pcbnew"
+    "Official KiCad 10.0.6 app (kicad-cli and bundled pcbnew Python); prepared by a compatible Harness Pack Manager on macOS Apple Silicon"
   ],
   "remoteStatus": "not-qualified",
-  "releaseVersion": "0.1.0-kicad.1",
+  "releaseVersion": "0.1.0-kicad.2",
   "nativePlatforms": [
     "darwin-arm64"
   ]

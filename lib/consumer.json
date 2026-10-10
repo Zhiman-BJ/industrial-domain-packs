@@ -9,18 +9,18 @@
       "version": "0.6.2",
       "summary": "EDA skills, viewers and the Chip MCP service",
       "prerequisites": [
-        "Python 3.13 for the Chip MCP service",
-        "EDA tools and PDK for industrial execution"
+        "Local RTL verification requires Python 3.13, Verilator and a C++ toolchain; prepare these separately",
+        "Other EDA flows require their own tools, container images and PDK; installing this Pack does not install the complete EDA environment"
       ]
     },
     {
       "id": "pcb",
       "label": "PCB",
       "emoji": "\ud83d\udd0c",
-      "version": "0.1.0-kicad.1",
+      "version": "0.1.0-kicad.2",
       "summary": "Public KiCad rectangular board and footprint edits with DRC and task constraints",
       "prerequisites": [
-        "Public KiCad 10.0.6: kicad-cli and bundled Python pcbnew"
+        "KiCad 10.0.6 and its bundled pcbnew Python are prepared automatically by a compatible Harness on Apple Silicon"
       ],
       "qualifiedBundlePlatforms": [
         "darwin-arm64"
@@ -30,10 +30,10 @@
       "id": "godot",
       "label": "Godot",
       "emoji": "\ud83c\udfae",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "summary": "Scene transforms, BoxMesh geometry and independent Godot structural verification",
       "prerequisites": [
-        "Godot 4.7.2 executable"
+        "Godot 4.7.2 is prepared automatically by a compatible Harness on Apple Silicon; export templates are separate and not needed for the qualified structural task"
       ],
       "qualifiedBundlePlatforms": [
         "darwin-arm64"
@@ -43,10 +43,10 @@
       "id": "cad",
       "label": "CAD",
       "emoji": "\ud83d\udcd0",
-      "version": "1.1.4-pack.5",
+      "version": "1.1.4-pack.7",
       "summary": "FreeCAD parametric modelling, geometry verification and OCCT CAD viewer",
       "prerequisites": [
-        "FreeCAD 1.1.4 is prepared automatically on Apple Silicon (620 MB download)"
+        "FreeCAD 1.1.4 is prepared automatically on Apple Silicon"
       ],
       "qualifiedBundlePlatforms": [
         "darwin-arm64"
@@ -55,11 +55,12 @@
     {
       "id": "cuda",
       "label": "CUDA",
-      "emoji": "⚡",
+      "emoji": "\u26a1",
       "version": "0.1.0",
       "summary": "Remote CUDA Compiler and RTX 4090 Evaluator MCP with kernel optimization Skill",
       "prerequisites": [
-        "Both authenticated CUDA MCP Servers and a matching fixed reference model"
+        "Developer configuration: both authenticated remote Compiler and Evaluator MCP services and a matching fixed reference model",
+        "Remote clients need no local GPU; native service deployment and credentials are separate administrator prerequisites"
       ],
       "qualifiedBundlePlatforms": []
     }

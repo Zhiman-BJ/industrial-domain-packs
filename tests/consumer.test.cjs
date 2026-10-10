@@ -40,7 +40,14 @@ test("host consumers resolve canonical Pack identities and verified maintained r
     metadata.domains.find((item) => item.id === "chip").version,
     "0.6.2",
   );
-  assert.equal(freecad.version, "1.1.4-pack.5");
+  assert.equal(freecad.version, "1.1.4-pack.7");
+  assert.equal(freecad.version, packs.getPack(freecad.id).releaseVersion);
+  assert.equal(
+    freecad.version,
+    metadata.domains.find((item) => item.id === "cad").version,
+  );
+  assert.ok(freecad.provider.sourceFiles["runtime/presentation.cjs"]);
+  assert.equal(freecad.runtimeAssets[0].installedSize, 2625114576);
   assert.ok(
     freecad.provider.tools.find((item) => item.id === "cad.freecad.edit"),
   );
