@@ -19,5 +19,8 @@
   "releaseVersion": "0.1.0-kicad.2",
   "nativePlatforms": [
     "darwin-arm64"
+  ],
+  "agents": [
+    "agents/pcb.designer.md"
   ]
 }

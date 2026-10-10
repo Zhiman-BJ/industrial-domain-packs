@@ -30,4 +30,19 @@ Consumers must use one immutable 0.5.1 commit and matching lockfile integrity ac
 
 Godot distribution 0.2.2 combines the managed native recipe with the typed scene-edit validation and guide fixes from owner main `8f00a3fd12211bfce3b91a69d0bea2406b6695a6`. Its consumer domain, host/provider and Pack distribution versions agree. The Runtime tool version remains 0.2.1 because those execution sources are unchanged from that reviewed main commit; the distribution version identifies the combined source and installation metadata.
 
+## Agent declarations in 0.6.0
+
+`consumerMetadata().agents` and `agentResource(id)` expose maintained domain roles
+and their integrity-checked Markdown instruction resources. `hostPacks()` derives
+the owned Agent declarations from the same catalog; source `pack.json` files list
+the corresponding resources. The six initial roles refer to existing Skills and
+do not declare kernel-specific tool restrictions or extra subagents. See the
+[Agent contract](agents.md) for field semantics and host responsibilities.
+
+This metadata is consumed under a new exact owner commit and content-lock
+identity. It changes neither native execution sources nor their existing
+versions or qualification. Older consumers may ignore the additive fields;
+new Harness consumers must enforce role availability, project Skill policy and
+the existing Runtime authorization before applying role instructions.
+
 FreeCAD 1.1.4-pack.7, PCB 0.1.0-kicad.2, Chip and CUDA retain their previous Pack bytes and versions. No platform qualification or dependency archive changes. Consumers must pin the new full commit and archive integrity together; old 0.5.1 and Godot 0.2.1 content is not republished under its former identity.

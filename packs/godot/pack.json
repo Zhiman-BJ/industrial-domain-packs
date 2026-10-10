@@ -19,5 +19,8 @@
   "releaseVersion": "0.2.2",
   "nativePlatforms": [
     "darwin-arm64"
+  ],
+  "agents": [
+    "agents/godot.developer.md"
   ]
 }
