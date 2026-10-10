@@ -1,0 +1,32 @@
+# Generic project inputs. Null means unknown; no factory adaptation is included.
+board:
+  width_mm: null
+  height_mm: null
+  layer_count: null
+rules:
+  unrelated_same_layer_copper_contact: forbidden
+  intentional_same_net_junctions: allowed
+  cross_layer_contact_requires_interconnect: true
+  unfilled_zone_is_connectivity_evidence: false
+  undeclared_pin_or_pad: forbidden
+  connected_and_no_connect: forbidden
+  compare_exact_pin_membership: true
+  net_classes: []
+  differential_pairs: []
+  reference_paths: []
+  voltage_domains: []
+  current_budgets: []
+  timing_budgets: []
+  mechanical_keepouts: []
+  component_height_limits: []
+verification:
+  missing_required_evidence: UNKNOWN
+  failed_required_check: FAIL
+  scope: declared_constraints_only
+
+# Planning template; translate selected requirements into spec.analysis.
+analysis:
+  required: []  # Select function/stability/emc_precheck/emc/thermal/si/pi for this project.
+  not_applicable: {}  # Category: project-specific reason, agreed in original requirements.
+  devices: {}  # Physical ref -> model kind, ordered pins, source/file/SHA-256.
+  tests: []  # Backend, conditions, measurements and finite bounds; missing required tests block.

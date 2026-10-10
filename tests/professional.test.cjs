@@ -11,17 +11,22 @@ test("public professional profiles disclose only Runtime Actions with independen
     const pack = owner.hostPacks().find((p) => p.domain === domain);
     assert.equal(pack.provider.transport, "runtime");
     assert.ok(pack.provider.sourceFiles["runtime/verifier.cjs"]);
-    assert.deepEqual(
-      pack.provider.tools.map((t) => t.id),
-      domain === "pcb"
-        ? ["pcb.kicad.edit", "pcb.kicad.verify"]
-        : ["godot.scene.edit", "godot.scene.verify"],
-    );
-    assert.ok(
-      !pack.provider.tools.some(
-        (t) => t.id.startsWith("pcb.bench.") || t.id.startsWith("godot.game."),
-      ),
-    );
+    if (domain === "pcb") {
+      // Native profile stays first; the declared PCB-bench surface follows
+      // (placeholder execution until the container gateway lands).
+      const ids = pack.provider.tools.map((t) => t.id);
+      assert.deepEqual(ids.slice(0, 2), ["pcb.kicad.edit", "pcb.kicad.verify"]);
+      assert.equal(ids.length, 91);
+      assert.ok(ids.slice(2).every((id) => id.startsWith("pcb.bench.")));
+    } else {
+      assert.deepEqual(
+        pack.provider.tools.map((t) => t.id),
+        ["godot.scene.edit", "godot.scene.verify"],
+      );
+      assert.ok(
+        !pack.provider.tools.some((t) => t.id.startsWith("godot.game.")),
+      );
+    }
     assert.deepEqual(
       owner.consumerMetadata().domains.find((d) => d.id === domain)
         .qualifiedBundlePlatforms,

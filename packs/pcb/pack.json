@@ -2,10 +2,11 @@
   "schemaVersion": 1,
   "id": "pcb-pack",
   "domain": "pcb",
-  "sourceVersion": "2026.09.28",
+  "sourceVersion": "2026.10.10",
   "status": "local-runtime",
   "skills": [
     "skills/pcb-design-e2e/SKILL.md",
+    "skills/pcb-kicad-native/SKILL.md",
     "skills/pcb-layout-inspect/SKILL.md"
   ],
   "profiles": [],
@@ -13,10 +14,11 @@
     "entry": "runtime/index.cjs"
   },
   "externalDependencies": [
-    "Official KiCad 10.0.6 app (kicad-cli and bundled pcbnew Python); prepared by a compatible Harness Pack Manager on macOS Apple Silicon"
+    "Official KiCad 10.0.6 app (kicad-cli and bundled pcbnew Python); prepared by a compatible Harness Pack Manager on macOS Apple Silicon",
+    "Optional pcb.bench.* container profile: Docker with the pinned PCB-bench image and an authorized PCB-bench checkout (INDUSTRIAL_HARNESS_PCB_BENCH_DIR)"
   ],
   "remoteStatus": "not-qualified",
-  "releaseVersion": "0.1.0-kicad.2",
+  "releaseVersion": "0.2.0-bench.1",
   "nativePlatforms": [
     "darwin-arm64"
   ]

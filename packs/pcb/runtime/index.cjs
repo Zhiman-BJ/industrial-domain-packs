@@ -19,7 +19,17 @@ const {
   applyFiles,
 } = s;
 const { ID, verify } = require("./verifier.cjs");
-const VERSION = "0.1.0-kicad.1";
+const benchSnapshot = require("./bench-upstream.json");
+const VERSION = "0.2.0-bench.1";
+const BENCH_RECEIPTS = [
+  "Preserve controller action receipts and rerun affected native checks; execution is not acceptance.",
+];
+const BENCH_PROFILE =
+  "Executes inside the pinned PCB-bench Linux container (image " +
+  benchSnapshot.imageTag +
+  ", upstream commit " +
+  benchSnapshot.sourceCommit.slice(0, 12) +
+  "). Local prerequisites: an authorized PCB-bench checkout in INDUSTRIAL_HARNESS_PCB_BENCH_DIR, Docker with the pinned image, and the gateway Python environment (uv sync --frozen --no-dev inside packs/pcb).";
 const guides = {
   "pcb.kicad.edit": {
     inputs: {
@@ -138,6 +148,21 @@ function dependencies(environment) {
     ],
   };
 }
+const benchTools = benchSnapshot.tools.map((tool) => ({
+  descriptor: {
+    schemaVersion: "1",
+    id: tool.id,
+    version: VERSION,
+    risk: tool.risk,
+    verification: tool.verification || BENCH_RECEIPTS,
+  },
+  guide: {
+    description: tool.summary + " " + BENCH_PROFILE,
+  },
+  execute: async () => {
+    throw Error("pcb.bench container execution is not wired in this build. " + BENCH_PROFILE);
+  },
+}));
 function createRuntimePlugin({ environment = process.env, runtimeApi } = {}) {
   s.configure(runtimeApi);
   return {
@@ -166,7 +191,8 @@ function createRuntimePlugin({ environment = process.env, runtimeApi } = {}) {
         },
       };
     },
-    tools: ["edit", "verify"].map((operation) => ({
+    tools: [
+      ...["edit", "verify"].map((operation) => ({
       descriptor: {
         schemaVersion: "1",
         id: "pcb.kicad." + operation,
@@ -286,6 +312,8 @@ function createRuntimePlugin({ environment = process.env, runtimeApi } = {}) {
         };
       },
     })),
+      ...benchTools,
+    ],
     verifiers: {
       [ID]: verify,
       "pcb.kicad.source.v1": () => ({
