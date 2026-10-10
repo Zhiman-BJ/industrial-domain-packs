@@ -43,7 +43,7 @@
       "id": "cad",
       "label": "CAD",
       "emoji": "\ud83d\udcd0",
-      "version": "1.1.4-pack.7",
+      "version": "1.1.4-pack.8",
       "summary": "FreeCAD parametric modelling, geometry verification and OCCT CAD viewer",
       "prerequisites": [
         "FreeCAD 1.1.4 is prepared automatically on Apple Silicon"
