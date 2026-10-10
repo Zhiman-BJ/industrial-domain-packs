@@ -153,11 +153,21 @@ def build(recipe):
     doc.recompute()
     return doc, result, sketches
 
+def inside_action_dir(path):
+    root = os.path.realpath(ROOT)
+    value = os.path.realpath(path)
+    if sys.platform == 'darwin':
+        # macOS resolves directory names case-insensitively, while realpath
+        # keeps the caller's spelling; without this the check rejects a
+        # registered path whose case differs from the on-disk entry.
+        root, value = root.lower(), value.lower()
+    return os.path.commonpath([root, value]) == root
+
 try:
     version = '.'.join(App.Version()[:3])
     if version != '1.1.4': raise ValueError('Expected FreeCAD 1.1.4; got ' + version)
     runtime_paths = {key: App.ConfigGet(key) for key in ['UserConfigPath', 'UserAppData', 'UserCachePath', 'UserMacroPath', 'AppTempPath']}
-    if any(os.path.commonpath([ROOT, os.path.realpath(value)]) != ROOT for value in runtime_paths.values()):
+    if any(not inside_action_dir(value) for value in runtime_paths.values()):
         raise ValueError('FreeCAD user paths escaped the Action directory')
     if request['operation'] == 'verify':
         doc, result = safe_document(os.path.join(ROOT, 'model.FCStd'))
