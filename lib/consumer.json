@@ -17,10 +17,11 @@
       "id": "pcb",
       "label": "PCB",
       "emoji": "\ud83d\udd0c",
-      "version": "0.1.0-kicad.2",
-      "summary": "Public KiCad rectangular board and footprint edits with DRC and task constraints",
+      "version": "0.2.0-bench.1",
+      "summary": "PCB design and repair on the pinned PCB-bench atomic tool surface (89 tools) plus bounded native KiCad edits",
       "prerequisites": [
-        "KiCad 10.0.6 and its bundled pcbnew Python are prepared automatically by a compatible Harness on Apple Silicon"
+        "KiCad 10.0.6 and its bundled pcbnew Python are prepared automatically by a compatible Harness on Apple Silicon",
+        "pcb.bench.* container tools additionally need Docker with the pinned PCB-bench image, the gateway Python (uv sync --frozen --no-dev) and an authorized PCB-bench checkout (INDUSTRIAL_HARNESS_PCB_BENCH_DIR)"
       ],
       "qualifiedBundlePlatforms": [
         "darwin-arm64"
@@ -105,6 +106,14 @@
       "enabledByDefault": true,
       "packId": "chip-pack",
       "resourcePath": "skills/chip-eda-operate"
+    },
+    {
+      "id": "pcb.kicad.native",
+      "domain": "pcb",
+      "title": "Bounded native KiCad edits",
+      "enabledByDefault": true,
+      "packId": "pcb-pack",
+      "resourcePath": "skills/pcb-kicad-native"
     },
     {
       "id": "pcb.design.e2e",
