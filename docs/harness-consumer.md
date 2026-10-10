@@ -8,7 +8,7 @@ The release reconciles committed Harness 2482114 changes using original import c
 
 New distribution versions are Chip 0.6.2, FreeCAD 1.1.4-pack.4, Godot 0.1.1 and PCB 2026.09.28-pack.1. Native software versions are unchanged. PCB actor hashes and image identity identify private external dependencies, not redistributed actor code. Sandbox profile exports remain compatible with existing pinned remote consumers. No additional remote/native platform qualification is asserted by source tests.
 
-The Chip distribution remains 0.6.2, while its host MCP declaration identifies the embedded EDA Python package as 0.6.1. The gateway validates that native identity against its locked environment; a distribution version must not substitute for the tool version. Consumer tests compare the declaration with the maintained Python project metadata.
+In release 0.3.1, the Chip distribution is 0.6.2, while its host MCP declaration identifies the embedded EDA Python package as 0.6.1. The gateway validates that native identity against its locked environment; a distribution version must not substitute for the tool version. Consumer tests compare the declaration with the maintained Python project metadata.
 
 ## Consumer release 0.4.0
 
@@ -30,6 +30,8 @@ Consumers must use one immutable 0.5.1 commit and matching lockfile integrity ac
 
 Godot distribution 0.2.2 combines the managed native recipe with the typed scene-edit validation and guide fixes from owner main `8f00a3fd12211bfce3b91a69d0bea2406b6695a6`. Its consumer domain, host/provider and Pack distribution versions agree. The Runtime tool version remains 0.2.1 because those execution sources are unchanged from that reviewed main commit; the distribution version identifies the combined source and installation metadata.
 
+FreeCAD 1.1.4-pack.7, PCB 0.1.0-kicad.2, Chip and CUDA retain their previous Pack bytes and versions in 0.5.2. No platform qualification or dependency archive changes. Consumers must pin the new full commit and archive integrity together; old 0.5.1 and Godot 0.2.1 content is not republished under its former identity.
+
 ## Agent declarations in 0.6.0
 
 `consumerMetadata().agents` and `agentResource(id)` expose maintained domain roles
@@ -45,4 +47,12 @@ versions or qualification. Older consumers may ignore the additive fields;
 new Harness consumers must enforce role availability, project Skill policy and
 the existing Runtime authorization before applying role instructions.
 
-FreeCAD 1.1.4-pack.7, PCB 0.1.0-kicad.2, Chip and CUDA retain their previous Pack bytes and versions. No platform qualification or dependency archive changes. Consumers must pin the new full commit and archive integrity together; old 0.5.1 and Godot 0.2.1 content is not republished under its former identity.
+Distribution versions advance to Chip 0.6.3, PCB 0.1.0-kicad.3, Godot 0.2.3 and
+FreeCAD 1.1.4-pack.8 so a future catalog can offer the Agent resources as an
+update to existing installations. Consumer domain and Pack release metadata
+agree; PCB, Godot and FreeCAD host/provider distribution versions also advance.
+Chip's host MCP version remains the native EDA identity 0.6.1. Native Runtime,
+tool, Verifier and dependency asset identities are unchanged. CUDA still has no
+qualified desktop bundle and retains its distribution metadata. These new
+distribution archives have not been published; earlier releases keep their
+original immutable content.

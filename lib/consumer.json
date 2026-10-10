@@ -6,7 +6,7 @@
       "id": "chip",
       "label": "Chip",
       "emoji": "\ud83d\udca0",
-      "version": "0.6.2",
+      "version": "0.6.3",
       "summary": "EDA skills, viewers and the Chip MCP service",
       "prerequisites": [
         "Local RTL verification requires Python 3.13, Verilator and a C++ toolchain; prepare these separately",
@@ -17,7 +17,7 @@
       "id": "pcb",
       "label": "PCB",
       "emoji": "\ud83d\udd0c",
-      "version": "0.1.0-kicad.2",
+      "version": "0.1.0-kicad.3",
       "summary": "Public KiCad rectangular board and footprint edits with DRC and task constraints",
       "prerequisites": [
         "KiCad 10.0.6 and its bundled pcbnew Python are prepared automatically by a compatible Harness on Apple Silicon"
@@ -30,7 +30,7 @@
       "id": "godot",
       "label": "Godot",
       "emoji": "\ud83c\udfae",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "summary": "Scene transforms, BoxMesh geometry and independent Godot structural verification",
       "prerequisites": [
         "Godot 4.7.2 is prepared automatically by a compatible Harness on Apple Silicon; export templates are separate and not needed for the qualified structural task"
@@ -43,7 +43,7 @@
       "id": "cad",
       "label": "CAD",
       "emoji": "\ud83d\udcd0",
-      "version": "1.1.4-pack.7",
+      "version": "1.1.4-pack.8",
       "summary": "FreeCAD parametric modelling, geometry verification and OCCT CAD viewer",
       "prerequisites": [
         "FreeCAD 1.1.4 is prepared automatically on Apple Silicon"

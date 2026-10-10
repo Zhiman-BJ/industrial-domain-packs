@@ -16,7 +16,7 @@
     "Official Godot 4.7.2 app; prepared by a compatible Harness Pack Manager on macOS Apple Silicon"
   ],
   "remoteStatus": "not-qualified",
-  "releaseVersion": "0.2.2",
+  "releaseVersion": "0.2.3",
   "nativePlatforms": [
     "darwin-arm64"
   ],

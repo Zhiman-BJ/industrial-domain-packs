@@ -47,4 +47,4 @@ FreeCAD 现声明模型、对应版本的预览、导出和诊断成果组。检
 
 0.5.2 保留托管安装配方和 FreeCAD 成果声明，同时合入最新 Godot 场景编辑类型校验与工具说明。Godot 发行版本 0.2.2 将已审查的 Runtime 源码与现有托管原生配方组合；其他 Pack 的版本及内容均保持不变。旧发行版本仍保留各自不可变身份。
 
-0.6.0 为每个 Pack 增加一个由领域仓维护的 Agent 角色。`consumerMetadata().agents` 提供角色说明与 Skill 引用，`agentResource(id)` 返回固定版本的 Markdown 指令，`hostPacks()` 附带自身拥有的角色声明。Harness 负责角色选择、配置与内核接入，Broker 和 Runtime 继续决定执行授权。原生执行版本与验收范围保持不变；消费者通过新的不可变 owner commit 与内容身份采用这些资源。详见 [Agent 声明与接入](docs/agents.md)。
+0.6.0 为每个 Pack 增加一个由领域仓维护的 Agent 角色。`consumerMetadata().agents` 提供角色说明与 Skill 引用，`agentResource(id)` 返回固定版本的 Markdown 指令，`hostPacks()` 附带自身拥有的角色声明。Harness 负责角色选择、配置与内核接入，Broker 和 Runtime 继续决定执行授权。为后续安装更新递增分发版本至 Chip 0.6.3、PCB 0.1.0-kicad.3、Godot 0.2.3 和 FreeCAD 1.1.4-pack.8，这些归档尚未发布。原生执行版本、依赖资产与验收范围保持不变；消费者通过新的不可变 owner commit 与内容身份采用这些资源。详见 [Agent 声明与接入](docs/agents.md)。

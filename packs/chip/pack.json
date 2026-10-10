@@ -56,7 +56,7 @@
     "toolId": "chip.rtl.verify",
     "toolVersion": "0.6.1-core.2"
   },
-  "releaseVersion": "0.6.2",
+  "releaseVersion": "0.6.3",
   "agents": [
     "agents/chip.engineer.md"
   ]

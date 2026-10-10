@@ -12,6 +12,14 @@ content identity to adopt the definitions. Native tool and runtime versions
 retain their existing identities; the package version and immutable owner
 commit identify these additional Agent resources.
 
+To make the roles available through future Pack updates, distribution versions
+advance to Chip 0.6.3, PCB 0.1.0-kicad.3, Godot 0.2.3 and FreeCAD 1.1.4-pack.8.
+The CAD distribution includes both FreeCAD and CAD drawing roles. CUDA has no
+qualified desktop bundle and retains its existing distribution metadata. These
+new distribution archives have not been published; previous versions retain
+their original bytes. Native assets, Runtime tools, Verifiers and their locked
+identities are unchanged.
+
 ## Consumer API
 
 `consumerMetadata().agents` returns declarations in this shape:
