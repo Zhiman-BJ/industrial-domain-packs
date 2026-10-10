@@ -20,5 +20,8 @@
     "windows": "not-qualified"
   },
   "remoteStatus": "not-qualified",
-  "releaseVersion": "1.1.4-pack.7"
+  "releaseVersion": "1.1.4-pack.8",
+  "agents": [
+    "agents/cad.freecad.designer.md"
+  ]
 }

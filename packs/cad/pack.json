@@ -10,5 +10,8 @@
     "skills/cad-intent-loop/SKILL.md"
   ],
   "profiles": [],
-  "remoteStatus": "no-execution-profile"
+  "remoteStatus": "no-execution-profile",
+  "agents": [
+    "agents/cad.drawing.author.md"
+  ]
 }

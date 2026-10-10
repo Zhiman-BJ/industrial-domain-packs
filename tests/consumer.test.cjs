@@ -36,16 +36,18 @@ test("host consumers resolve canonical Pack identities and verified maintained r
     chip.provider.version,
     sourceProject.match(/^version = "([^"]+)"/m)[1],
   );
-  assert.equal(
-    metadata.domains.find((item) => item.id === "chip").version,
-    "0.6.2",
-  );
-  assert.equal(freecad.version, "1.1.4-pack.7");
-  assert.equal(freecad.version, packs.getPack(freecad.id).releaseVersion);
-  assert.equal(
-    freecad.version,
-    metadata.domains.find((item) => item.id === "cad").version,
-  );
+  for (const [domain, packId, version] of [
+    ["chip", "chip-pack", "0.6.3"],
+    ["pcb", "pcb-pack", "0.1.0-kicad.3"],
+    ["godot", "godot-pack", "0.2.3"],
+    ["cad", "freecad-pack", "1.1.4-pack.8"],
+  ]) {
+    assert.equal(metadata.domains.find((item) => item.id === domain).version, version);
+    assert.equal(packs.getPack(packId).releaseVersion, version);
+    // Chip's gateway reports its native Python package identity instead.
+    if (domain !== "chip")
+      assert.equal(host.find((item) => item.id === packId).version, version);
+  }
   assert.ok(freecad.provider.sourceFiles["runtime/presentation.cjs"]);
   assert.equal(freecad.runtimeAssets[0].installedSize, 2625114576);
   assert.ok(

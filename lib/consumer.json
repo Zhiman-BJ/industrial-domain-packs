@@ -6,7 +6,7 @@
       "id": "chip",
       "label": "Chip",
       "emoji": "\ud83d\udca0",
-      "version": "0.6.2",
+      "version": "0.6.3",
       "summary": "EDA skills, viewers and the Chip MCP service",
       "prerequisites": [
         "Local RTL verification requires Python 3.13, Verilator and a C++ toolchain; prepare these separately",
@@ -17,7 +17,7 @@
       "id": "pcb",
       "label": "PCB",
       "emoji": "\ud83d\udd0c",
-      "version": "0.1.0-kicad.2",
+      "version": "0.1.0-kicad.3",
       "summary": "Public KiCad rectangular board and footprint edits with DRC and task constraints",
       "prerequisites": [
         "KiCad 10.0.6 and its bundled pcbnew Python are prepared automatically by a compatible Harness on Apple Silicon"
@@ -30,7 +30,7 @@
       "id": "godot",
       "label": "Godot",
       "emoji": "\ud83c\udfae",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "summary": "Scene transforms, BoxMesh geometry and independent Godot structural verification",
       "prerequisites": [
         "Godot 4.7.2 is prepared automatically by a compatible Harness on Apple Silicon; export templates are separate and not needed for the qualified structural task"
@@ -43,7 +43,7 @@
       "id": "cad",
       "label": "CAD",
       "emoji": "\ud83d\udcd0",
-      "version": "1.1.4-pack.7",
+      "version": "1.1.4-pack.8",
       "summary": "FreeCAD parametric modelling, geometry verification and OCCT CAD viewer",
       "prerequisites": [
         "FreeCAD 1.1.4 is prepared automatically on Apple Silicon"
@@ -394,6 +394,81 @@
       "tools": [],
       "verification": [
         "Confirm the resulting drawing file on disk"
+      ]
+    }
+  ],
+  "agents": [
+    {
+      "id": "chip.engineer",
+      "title": "Chip engineer",
+      "description": "Inspect EDA project context, run scoped verification, and explain evidence from the exact design revision.",
+      "domain": "chip",
+      "packId": "chip-pack",
+      "resourcePath": "agents/chip.engineer.md",
+      "skills": [
+        "chip.eda.operate",
+        "chip.netlist.inspect",
+        "chip.waveform.inspect",
+        "chip.layout.inspect"
+      ]
+    },
+    {
+      "id": "pcb.designer",
+      "title": "PCB designer",
+      "description": "Edit supported KiCad board geometry and verify explicit layout requirements with native DRC and readback.",
+      "domain": "pcb",
+      "packId": "pcb-pack",
+      "resourcePath": "agents/pcb.designer.md",
+      "skills": [
+        "pcb.design.e2e",
+        "pcb.layout.inspect"
+      ]
+    },
+    {
+      "id": "godot.developer",
+      "title": "Godot developer",
+      "description": "Develop supported Godot scene changes and verify structure through native import, readback and frame execution.",
+      "domain": "godot",
+      "packId": "godot-pack",
+      "resourcePath": "agents/godot.developer.md",
+      "skills": [
+        "godot.game.develop",
+        "godot.game.inspect"
+      ]
+    },
+    {
+      "id": "cad.freecad.designer",
+      "title": "FreeCAD designer",
+      "description": "Build and revise parametric parts with measurable requirements and independent geometry verification.",
+      "domain": "cad",
+      "packId": "freecad-pack",
+      "resourcePath": "agents/cad.freecad.designer.md",
+      "skills": [
+        "cad.freecad.headless"
+      ]
+    },
+    {
+      "id": "cad.drawing.author",
+      "title": "CAD drawing author",
+      "description": "Maintain drawing intent, absorb user edits, and produce verified 2D deliverables with the available CAD tools.",
+      "domain": "cad",
+      "packId": "cad-pack",
+      "resourcePath": "agents/cad.drawing.author.md",
+      "skills": [
+        "cad.intent.loop",
+        "cad.ezdxf.author",
+        "cad.autocad.macos"
+      ]
+    },
+    {
+      "id": "cuda.optimizer",
+      "title": "CUDA optimizer",
+      "description": "Optimize the bound CUDA candidate while preserving trusted inputs and comparing verified performance evidence.",
+      "domain": "cuda",
+      "packId": "cuda-pack",
+      "resourcePath": "agents/cuda.optimizer.md",
+      "skills": [
+        "cuda.kernel.optimize"
       ]
     }
   ]
