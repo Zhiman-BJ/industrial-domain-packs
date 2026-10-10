@@ -26,7 +26,10 @@ const BENCH_PROFILE =
   benchSnapshot.imageTag +
   ", upstream commit " +
   benchSnapshot.sourceCommit.slice(0, 12) +
-  "). Local prerequisites: an authorized PCB-bench checkout in INDUSTRIAL_HARNESS_PCB_BENCH_DIR, Docker with the pinned image, and the gateway Python environment (uv sync --frozen --no-dev inside packs/pcb).";
+  "). The actor sources ship inside this pack; prepare the container image " +
+  "(docker build --platform linux/amd64 -f Dockerfile.local-dev -t industrial-pcb-bench <packDir>, " +
+  "then set INDUSTRIAL_HARNESS_PCB_DEV_IMAGE_ID) and the gateway Python environment " +
+  "(uv sync --frozen --no-dev inside packs/pcb).";
 const guides = {
   "pcb.kicad.edit": {
     inputs: {

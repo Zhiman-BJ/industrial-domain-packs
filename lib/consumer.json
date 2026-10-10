@@ -21,7 +21,7 @@
       "summary": "PCB design and repair on the pinned PCB-bench atomic tool surface (89 tools) plus bounded native KiCad edits",
       "prerequisites": [
         "KiCad 10.0.6 and its bundled pcbnew Python are prepared automatically by a compatible Harness on Apple Silicon",
-        "pcb.bench.* container tools additionally need Docker with the pinned PCB-bench image, the gateway Python (uv sync --frozen --no-dev) and an authorized PCB-bench checkout (INDUSTRIAL_HARNESS_PCB_BENCH_DIR)"
+        "pcb.bench.* container tools additionally need Docker with the image built from the vendored sources (Dockerfile.local-dev) and the gateway Python (uv sync --frozen --no-dev)"
       ],
       "qualifiedBundlePlatforms": [
         "darwin-arm64"

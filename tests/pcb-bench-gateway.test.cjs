@@ -23,6 +23,7 @@ const manifestProvider = JSON.parse(
 
 test("bridge provider view carries the pinned upstream inventory", () => {
   const provider = bridgeProvider(manifestProvider, snapshot);
+  assert.equal(provider.installedDirectory, path.join(packDirectory));
   assert.equal(provider.directoryEnv, "INDUSTRIAL_HARNESS_PCB_BENCH_DIR");
   assert.equal(provider.pythonEnv, "INDUSTRIAL_HARNESS_PCB_GATEWAY_PYTHON");
   assert.equal(provider.mcpVersion, GATEWAY_MCP_VERSION);
@@ -106,7 +107,10 @@ test("gateway errors surface as rejections with their detail", async () => {
 
 test("plugin dispatch rejects with setup guidance before any gateway start", async () => {
   const { createRuntimePlugin } = require("../packs/pcb/runtime/index.cjs");
+  // Force a deterministic prerequisite failure: the gateway venv is resolved
+  // from this (bogus) env var before anything spawns.
   const plugin = createRuntimePlugin({
+    environment: { INDUSTRIAL_HARNESS_PCB_GATEWAY_PYTHON: "/nonexistent/python" },
     runtimeApi: { executeTask: () => {}, runtimeFiles: () => {} },
   });
   const status = plugin.tools.find(
@@ -121,7 +125,7 @@ test("plugin dispatch rejects with setup guidance before any gateway start", asy
         action: {},
         signal: new AbortController().signal,
       }),
-      /INDUSTRIAL_HARNESS_PCB_BENCH_DIR/,
+      /uv sync --frozen --no-dev/,
     );
   } finally {
     fs.rmSync(scratch, { recursive: true, force: true });

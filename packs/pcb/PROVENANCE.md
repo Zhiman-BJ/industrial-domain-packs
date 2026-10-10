@@ -52,3 +52,12 @@ The new runtime/, typed tools, Verifiers and examples are original public MIT co
 - 前置校验先于任何网关启动：授权 checkout、Docker 镜像、网关 venv；缺一即抛带指引的 setup 错误。
   环境旋钮：`INDUSTRIAL_HARNESS_PCB_DOCKER`、`_REQUIREMENTS`（须在可写工程之外）、
   `_DEV_IMAGE_ID`、`_IMAGE_INPUT=1`（投递 view_design 渲染）。
+
+## Actor 源码入包（2026-10-10，chip 式集成，用户拍板）
+
+- 决定：pack 对标 chip 集成模式——actor 源码（`pcb-agent/**`，101 个文件，2.0 MiB）随包分发，
+  运行时容器镜像由包内源码构建（`Dockerfile.local-dev`，构建上下文即 pack 目录）。
+  pack 自包含；`INDUSTRIAL_HARNESS_PCB_BENCH_DIR` 降级为可选覆盖（评测时对齐全量上游 checkout）。
+- 快照 `runtime/bench-upstream.json` 的 112 个哈希现同时承担 vendored 文件的完整性校验
+  （bridge 启动时逐文件核对包内资源）；分发范围仍为自有私有仓库内部分发（见上方 2026-10-10 决定）。
+- 派发自检：缺镜像/缺 venv 在任何进程启动前报出带构建指引的 setup 错误。

@@ -19,11 +19,13 @@ const CALL_TIMEOUT_MS = 60000; // gateway policy is 45 s; let its error land fir
 const IDLE_RECYCLE_MS = 15 * 60 * 1000;
 const REQUEST_TIMEOUT_MS = 15000;
 
-// The bridge validates an external checkout against the pinned upstream
-// inventory, so it consumes a snapshot-shaped provider view rather than the
-// manifest provider (whose sourceFiles cover packs/pcb/runtime only). The
-// gateway also compares the live container tool set with policy.tools by
-// name, so the tool list must be exactly the 89 bench descriptors.
+// The bridge validates a resource directory against the pinned upstream
+// inventory. The actor sources are vendored inside this pack (chip-style
+// integration), so the default directory is the pack root itself;
+// INDUSTRIAL_HARNESS_PCB_BENCH_DIR still overrides it for evaluation
+// against a full upstream checkout. The gateway also compares the live
+// container tool set with policy.tools by name, so the tool list must be
+// exactly the 89 bench descriptors.
 function bridgeProvider(provider, snapshot) {
   const files = snapshot.sourceFiles;
   const compact = JSON.stringify(
@@ -31,6 +33,7 @@ function bridgeProvider(provider, snapshot) {
   );
   return {
     ...provider,
+    installedDirectory: path.resolve(__dirname, ".."),
     tools: snapshot.tools,
     sourceCommit: snapshot.sourceCommit,
     toolSchemaSha256: snapshot.toolSchemaSha256,
@@ -241,6 +244,34 @@ class GatewaySession {
   }
 }
 
+function inspectImage(docker, imageId, environment) {
+  return new Promise((resolve) => {
+    const child = spawn(docker, ["image", "inspect", "--format", "{{.Id}}", imageId], {
+      env: { ...process.env, ...environment },
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+    let out = "";
+    let err = "";
+    child.stdout.on("data", (chunk) => (out += chunk));
+    child.stderr.on("data", (chunk) => (err += chunk));
+    child.on("error", () =>
+      resolve({ ok: false, reason: `Docker executable "${docker}" is unavailable: ${err || "not found"}.` }),
+    );
+    child.on("exit", (code) =>
+      code === 0
+        ? resolve({ ok: true, id: out.trim() })
+        : resolve({
+            ok: false,
+            reason:
+              `The pinned PCB-bench image ${imageId} is not present locally. ` +
+              `Build it from this pack: docker build --platform linux/amd64 -f Dockerfile.local-dev -t industrial-pcb-bench <packDir> ` +
+              `(then set INDUSTRIAL_HARNESS_PCB_DEV_IMAGE_ID to the resulting image ID), ` +
+              `or set INDUSTRIAL_HARNESS_PCB_DEV_IMAGE_ID to an already-built image. ${err.trim()}`.trim(),
+          }),
+    );
+  });
+}
+
 const sessions = new Map();
 
 // One gateway process per bound project: the upstream controller holds an
@@ -254,13 +285,26 @@ async function gatewaySession({ projectDir, environment }) {
     require("../harness-pack.json").provider,
     require("./bench-upstream.json"),
   );
+  // The vendored actor inside this pack is the resource directory;
+  // INDUSTRIAL_HARNESS_PCB_BENCH_DIR overrides it for a full checkout.
+  const bridgeEnvironment = {
+    ...environment,
+    [provider.directoryEnv]:
+      environment[provider.directoryEnv] || provider.installedDirectory,
+  };
   const config = pcbGatewayConfig(
     sessionDirectory(project),
     provider,
     project,
-    environment,
+    bridgeEnvironment,
     { imageInput: environment.INDUSTRIAL_HARNESS_PCB_IMAGE_INPUT === "1" },
   );
+  // Fail with actionable guidance before spawning anything if Docker or the
+  // pinned image is missing (pcbRuntime has already validated the env-var
+  // shape, the vendored resources and the gateway venv).
+  const docker = bridgeEnvironment.INDUSTRIAL_HARNESS_PCB_DOCKER || "docker";
+  const image = await inspectImage(docker, provider.imageId, {});
+  if (!image.ok) throw Error(image.reason);
   const session = new GatewaySession(config);
   sessions.set(project, session);
   try {
