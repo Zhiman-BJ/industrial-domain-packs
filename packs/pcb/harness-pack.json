@@ -2,22 +2,23 @@
   "schemaVersion": 1,
   "id": "pcb-pack",
   "domain": "pcb",
-  "version": "0.2.0-bench.1",
+  "version": "0.2.0-bench.2",
   "provider": {
     "id": "pcb-bench.tools",
     "title": "Public KiCad board Runtime",
     "domain": "pcb",
-    "version": "0.2.0-bench.1",
+    "version": "0.2.0-bench.2",
     "transport": "runtime",
     "packDirectory": "pcb",
     "packId": "pcb-pack",
-    "sourceSha256": "a5c043161b734ced8e33efd39ba12c4207d1f624ad058d389193bd7755105504",
+    "sourceSha256": "5660ae493a39ab9755918e37ea57a791fd293d1086e417b738579e988559f0f1",
     "resourceRoots": [
       "runtime"
     ],
     "sourceFiles": {
+      "runtime/bench-gateway.cjs": "f563727355f95b4f74c00fcb4156d7c75667159da38359d16f6d524687ab6b43",
       "runtime/bench-upstream.json": "a6de0b366a17cdeb28685b8571e417f1a9a7b404bd4eac0f301f6de90c01462d",
-      "runtime/index.cjs": "a61b6d1010d3af530f7a658ac46ea24275b08b4bc8b85c2e94b841493eb1c4e8",
+      "runtime/index.cjs": "d3cd36927fb1ef6ef7e090c8fd507875d29ddaf296cfc501a2dfdb7629945a3f",
       "runtime/native-dependency.json": "990026ffb36aeac47a3a2e935cf00b17a068628a0a46bc1dfe120bbbf3b21c73",
       "runtime/native.py": "8f1eb5f360ad422910266a93356a3e7609f1f26fd72c0ef96645030c1275d29b",
       "runtime/setup-native.cjs": "9c78c10560e0d651fefd3eb8722681aa995047ce2792ce192523a48bd3890457",

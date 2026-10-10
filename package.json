@@ -179,6 +179,7 @@
     "packs/pcb/legacy-harness-pack.json",
     "packs/pcb/pack.json",
     "packs/pcb/pyproject.toml",
+    "packs/pcb/runtime/bench-gateway.cjs",
     "packs/pcb/runtime/bench-upstream.json",
     "packs/pcb/runtime/index.cjs",
     "packs/pcb/runtime/native-dependency.json",

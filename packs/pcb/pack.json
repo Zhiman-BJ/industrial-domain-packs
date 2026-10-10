@@ -18,7 +18,7 @@
     "Optional pcb.bench.* container profile: Docker with the pinned PCB-bench image and an authorized PCB-bench checkout (INDUSTRIAL_HARNESS_PCB_BENCH_DIR)"
   ],
   "remoteStatus": "not-qualified",
-  "releaseVersion": "0.2.0-bench.1",
+  "releaseVersion": "0.2.0-bench.2",
   "nativePlatforms": [
     "darwin-arm64"
   ]
