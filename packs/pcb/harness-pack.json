@@ -885,6 +885,186 @@
       ]
     },
     {
+      "id": "pcb.design.create",
+      "title": "PCB · create from an empty project",
+      "domain": "pcb",
+      "stages": [],
+      "priority": 30,
+      "keywords": [
+        "new project",
+        "create project",
+        "create a new",
+        "from scratch",
+        "empty directory",
+        "new_project",
+        "generate schematic",
+        "generate_schematic",
+        "新建工程",
+        "新建项目",
+        "创建工程",
+        "创建项目",
+        "从零",
+        "空目录",
+        "生成原理图"
+      ],
+      "skills": [
+        {
+          "id": "pcb.design.e2e",
+          "summary": "Create, inspect, edit and verify the user’s PCB project with native evidence.",
+          "reference": "Managed PCB design runtime with revision-bound atomic CAD tools and complete engineering references; observations are not verification."
+        }
+      ],
+      "tools": [
+        {
+          "id": "pcb.design.project_status",
+          "name": "project_status",
+          "risk": "read-only",
+          "summary": "Inspect current CAD, declared design requirements, analyses and revision-bound findings."
+        },
+        {
+          "id": "pcb.design.new_project",
+          "name": "new_project",
+          "risk": "mutating",
+          "summary": "Create design intent; prepared libraries are retained. Dimensions in mm, even copper layers.",
+          "verification": [
+            "pcb.design.receipts.v1"
+          ]
+        },
+        {
+          "id": "pcb.design.set_requirements",
+          "name": "set_requirements",
+          "risk": "mutating",
+          "summary": "Set design constraints, postroute checks, power trees, interfaces and applicable analyses; preserve separately bound user requirements when present.",
+          "verification": [
+            "pcb.design.receipts.v1"
+          ]
+        },
+        {
+          "id": "pcb.design.view_design",
+          "name": "view_design",
+          "risk": "mutating",
+          "summary": "Render current native schematic and top PCB views with source/image hashes; MCP delivers images only when the controller enables vision. Partial views are not acceptance.",
+          "verification": [
+            "pcb.design.receipts.v1"
+          ]
+        },
+        {
+          "id": "pcb.design.inspect_tool",
+          "name": "inspect_tool",
+          "risk": "read-only",
+          "summary": "Return a public tool contract or analysis/power_tree/interfaces schema without reading implementation source."
+        },
+        {
+          "id": "pcb.design.add_component",
+          "name": "add_component",
+          "risk": "mutating",
+          "summary": "Add a disconnected component. Legacy pin metadata cannot define connectivity.",
+          "verification": [
+            "pcb.design.receipts.v1"
+          ]
+        },
+        {
+          "id": "pcb.design.add_net",
+          "name": "add_net",
+          "risk": "mutating",
+          "summary": "Declare a net and its electrical properties explicitly.",
+          "verification": [
+            "pcb.design.receipts.v1"
+          ]
+        },
+        {
+          "id": "pcb.design.connect_pin",
+          "name": "connect_pin",
+          "risk": "mutating",
+          "summary": "Connect a pin; remove its NC marker, reject unknown declared nets.",
+          "verification": [
+            "pcb.design.receipts.v1"
+          ]
+        },
+        {
+          "id": "pcb.design.disconnect_pin",
+          "name": "disconnect_pin",
+          "risk": "mutating",
+          "summary": "Disconnect a pin without declaring that leaving it open is intentional.",
+          "verification": [
+            "pcb.design.receipts.v1"
+          ]
+        },
+        {
+          "id": "pcb.design.set_component_value",
+          "name": "set_component_value",
+          "risk": "mutating",
+          "summary": "Update value; datasheet/functional checks must be rerun.",
+          "verification": [
+            "pcb.design.receipts.v1"
+          ]
+        },
+        {
+          "id": "pcb.design.assign_footprint",
+          "name": "assign_footprint",
+          "risk": "mutating",
+          "summary": "Assign a CAD footprint; optional pin-to-pad map must be explicit.",
+          "verification": [
+            "pcb.design.receipts.v1"
+          ]
+        },
+        {
+          "id": "pcb.design.add_power_symbol",
+          "name": "add_power_symbol",
+          "risk": "mutating",
+          "summary": "Add a schematic-only power symbol/PWR_FLAG after verifying the supply path.",
+          "verification": [
+            "pcb.design.receipts.v1"
+          ]
+        },
+        {
+          "id": "pcb.design.generate_schematic",
+          "name": "generate_schematic",
+          "risk": "mutating",
+          "summary": "Generate board.kicad_sch and project tables from saved intent. Explicit overwrite archives old files and invalidates checks.",
+          "verification": [
+            "pcb.design.receipts.v1"
+          ]
+        },
+        {
+          "id": "pcb.design.verify_schematic",
+          "name": "verify_schematic",
+          "risk": "mutating",
+          "summary": "Fresh ERC, exact netlist, footprints, structural rules and declared electrical checks; missing datasheets remain UNKNOWN.",
+          "verification": [
+            "pcb.design.receipts.v1"
+          ]
+        },
+        {
+          "id": "pcb.design.generate_pcb",
+          "name": "generate_pcb",
+          "risk": "mutating",
+          "summary": "Freshly check the schematic, then generate an unrouted PCB and explicit project rules. An explained prototype scope permits missing electrical evidence; failed checks block generation.",
+          "verification": [
+            "pcb.design.receipts.v1"
+          ]
+        },
+        {
+          "id": "pcb.design.run_erc",
+          "name": "run_erc",
+          "risk": "mutating",
+          "summary": "Run official ERC; return UNKNOWN when no fresh valid report was produced.",
+          "verification": [
+            "pcb.design.receipts.v1"
+          ]
+        },
+        {
+          "id": "pcb.design.run_drc",
+          "name": "run_drc",
+          "risk": "mutating",
+          "summary": "Run full official DRC including all unconnected and parity errors.",
+          "verification": [
+            "pcb.design.receipts.v1"
+          ]
+        }
+      ]
+    },
+    {
       "id": "pcb.design.core",
       "title": "PCB · core",
       "domain": "pcb",
