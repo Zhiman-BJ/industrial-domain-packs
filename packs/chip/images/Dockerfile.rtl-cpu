@@ -18,7 +18,16 @@ COPY lib /opt/domain-packs/lib
 COPY packs /opt/domain-packs/packs
 RUN python3 /opt/domain-packs/packs/chip/runtime/native-profile.py /opt/domain-packs/packs/chip/examples/rtl /tmp/smoke \
     && test -s /tmp/smoke/wave.vcd && rm -rf /tmp/smoke
+# The runtime identity this image agrees to serve; must match the server's
+# pinned RuntimeProfile runtimeDigest (overridable per qualification build).
+ARG CHIP_RUNTIME_DIGEST=sha256:ba6a3ccb431d95e01e29a0e363b8a8b4f077f7d2d08cc6f6c6e23277fb2e202b
+ENV CHIP_WORKER_RUNTIME_DIGEST=${CHIP_RUNTIME_DIGEST}
+# /input is the server-staged read-only snapshot; /work holds per-request
+# evidence directories written by the unprivileged runtime user.
+RUN mkdir -p /input /work/requests && chown -R 1000:1000 /work
+EXPOSE 8080
 WORKDIR /work
 USER 1000:1000
-ENTRYPOINT ["python3", "/opt/domain-packs/packs/chip/runtime/native-profile.py"]
-CMD ["/input", "/work"]
+# Long-running narrow HTTP worker (POST /v1/worker/invoke); the trusted
+# one-shot native-profile.py stays the executor it dispatches to.
+ENTRYPOINT ["python3", "/opt/domain-packs/packs/chip/runtime/worker-http.py"]

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contentSha256": "0993f662ee863247fdccef3891ae01b56101e5c986449067e8b3979726145f61",
+  "contentSha256": "9baf0b532838f74694be6fbfcea9f25bd4bbd797f22704bcb2951d8ca6426fef",
   "files": {
     "lib/consumer.cjs": "4d670732dbf3d5a3da33cac41007573e1f47b514a7165ac1df1748c9c2f960ab",
     "lib/consumer.json": "43458eb74bbae7199da8a47bb878e3f5c89ca327bf6dc3dc18b36f26ac576f76",
@@ -99,7 +99,7 @@
     "packs/chip/examples/rtl/counter_tb.sv": "30574b9c02ac10965a0db9959c8619c6f80140a1dc7f989a9ab5e009c693075a",
     "packs/chip/examples/rtl/eda.yaml": "824ccce8d12446492fd89dc12989d874bf91d5fc89cb1387f9c71beeb4a3ae96",
     "packs/chip/harness-pack.json": "6917dcb2efa7956b23dd51846dd6c6d45541d77c9877fe45c8b033cd903b0245",
-    "packs/chip/images/Dockerfile.rtl-cpu": "96f5d25b8b2f4672ec9667ff5ee02cb4fdeb798a06c1d008ac0333ba5d4ac3b1",
+    "packs/chip/images/Dockerfile.rtl-cpu": "8d8c3806ea0b44360c226bc7980a6e7ce87413af5d07252dc4603926d890f197",
     "packs/chip/linux-bootstrap.sh": "8006af4b130d81febd9b5835e594566b09fc80b64dd30c5a60a34010b7855e7b",
     "packs/chip/linux-installer-header.sh": "22a635d04702c059f30f2afd886c359064432f23fbd88777dd27da85ea1e2b8a",
     "packs/chip/pack.json": "9b0dd565306b2e47d9fb211b38e270c225c01f1ba249dc76dacb010cc998268f",
@@ -108,6 +108,7 @@
     "packs/chip/runtime/index.cjs": "e978c7ee4713b753110d21eea9710409dfdb149ba252aed4844e73eaf645476b",
     "packs/chip/runtime/native-profile.py": "72a581ffc3e9ea28add739a3b6ff435985ed0e03dfcf38c10694916332c776f1",
     "packs/chip/runtime/verifier.cjs": "d8b94be8d0da62862da4b1a3de75f08e73a7120312a73876c5d66b09377c1e5b",
+    "packs/chip/runtime/worker-http.py": "cfc41b51518945ea6f64bf8795141630b3560a7f407fbaa1df5f8bb94ebf736f",
     "packs/chip/scripts/mcp-smoke.py": "18e64b1ba3d105b02a8e8c08a0d689d68b0bcb0d44154c15a7a85e1f7bd818d9",
     "packs/chip/scripts/validate-image.cjs": "4b90ab682c31a973380b8c3c90b6442285dac04b4a8f752f61a2f08e5d0a581d",
     "packs/chip/skills/chip-eda-operate/SKILL.md": "d225e14c09a0d6d7830e34f36fe9c7a5bf5f90e1df0fded9c3f28ec53959ead6",

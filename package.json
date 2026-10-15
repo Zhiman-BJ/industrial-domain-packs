@@ -114,6 +114,7 @@
     "packs/chip/runtime/index.cjs",
     "packs/chip/runtime/native-profile.py",
     "packs/chip/runtime/verifier.cjs",
+    "packs/chip/runtime/worker-http.py",
     "packs/chip/scripts/mcp-smoke.py",
     "packs/chip/scripts/validate-image.cjs",
     "packs/chip/skills/chip-eda-operate/SKILL.md",
