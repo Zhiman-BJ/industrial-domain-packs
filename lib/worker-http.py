@@ -28,6 +28,7 @@ import json
 import os
 import re
 import shutil
+import signal
 import subprocess
 import sys
 import threading
@@ -447,12 +448,20 @@ class WorkerHandler(BaseHTTPRequestHandler):
                 "PYTHONDONTWRITEBYTECODE": "1",
                 "CCACHE_DISABLE": "1",
             },
+            # The executor trees out (python -> verilator -> g++/make); own
+            # the whole tree as a session so a deadline kill reaches the
+            # grandchildren too. Orphaned toolchain processes would otherwise
+            # outlive the lease and burn a pooled instance's CPU.
+            start_new_session=True,
         )
         try:
             exit_code = process.wait(timeout=CONFIG["timeout_seconds"])
         except subprocess.TimeoutExpired:
             timed_out = True
-            process.kill()
+            try:
+                os.killpg(os.getpgid(process.pid), signal.SIGKILL)
+            except (ProcessLookupError, PermissionError):
+                process.kill()
             exit_code = process.wait()
         observation = build_observation(
             work_dir, exit_code, timed_out, CONFIG["timeout_seconds"]
