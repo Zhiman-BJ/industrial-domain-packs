@@ -1,20 +1,26 @@
-"""Narrow HTTP worker for the rtl-cpu profile.
+"""Narrow pack worker: one shared HTTP wrapper for remote sandbox profiles.
 
-The long-running entrypoint that adapts the trusted one-shot
-native-profile.py executor to the gateway's worker protocol: exactly one
-endpoint (POST /v1/worker/invoke), one JSON body carrying the
-server-created invocation context, and nothing else. The wrapper never
-accepts commands, paths, images, mounts, environments, or working
-directories from the request; it verifies the materialized input snapshot
-against the referenced manifest digest, runs the executor once per request
-in a fresh work directory, and maps the executor's evidence files into the
-WorkerClient observation schema (logs, candidateState, verificationInputs,
-artifacts).
+The long-running entrypoint that adapts a pack's trusted one-shot batch
+executor to the gateway's worker protocol: exactly one endpoint
+(POST /v1/worker/invoke), one JSON body carrying the server-created
+invocation context, and nothing else. The wrapper never accepts commands,
+paths, images, mounts, environments, or working directories from the
+request; it verifies the materialized input snapshot against the
+referenced manifest digest, runs the pack profile's executor once per
+request in a fresh work directory, and maps the executor's evidence files
+into the WorkerClient observation schema (logs, candidateState,
+verificationInputs, artifacts) using the profile's pinned artifact
+mapping and byte caps.
 
-The snapshot bytes reach the sandbox through the server-owned staging path
-(the fixed read-only input directory); this wrapper only re-derives their
-canonical manifest digest and refuses to run against anything that does not
-match the referenced snapshot.
+Everything profile-specific comes from the pack's pack.json entry named
+by WORKER_PROFILE_ID: the executor script, the tool id allowlist, the
+argument policy ("none" rejects any arguments; "object" passes the
+bounded invocation arguments to the executor via work-dir request.json),
+and the report field that marks a successful run. The snapshot bytes
+reach the sandbox through the server-owned staging path (the fixed
+read-only input directory); this wrapper only re-derives their canonical
+manifest digest and refuses to run against anything that does not match
+the referenced snapshot.
 """
 import base64
 import hashlib
@@ -58,41 +64,62 @@ REQUEST_KEYS = frozenset(
     }
 )
 
+# Root of the pack tree (lib/ sits beside packs/ in the shipped layout).
+ROOT = Path(__file__).resolve().parents[1]
+
 
 def config():
     """Runtime configuration. Everything is image/server-owned state: a
     request has no channel into any of it."""
-    pack = json.loads((Path(__file__).resolve().parent.parent / "pack.json").read_text())
-    profile = next(p for p in pack["profiles"] if p["id"] == "rtl-cpu")
-    executor = os.environ.get(
-        "CHIP_WORKER_EXECUTOR",
-        str(Path(__file__).resolve().parent / "native-profile.py"),
+    pack_name = os.environ.get("WORKER_PACK")
+    profile_id = os.environ.get("WORKER_PROFILE_ID")
+    if not pack_name or not profile_id:
+        print(
+            "pack worker: WORKER_PACK and WORKER_PROFILE_ID are not configured",
+            file=sys.stderr,
+        )
+        sys.exit(2)
+    pack = json.loads((ROOT / "packs" / pack_name / "pack.json").read_text())
+    profile = next(
+        (p for p in pack["profiles"] if p["id"] == profile_id), None
     )
-    digest = os.environ.get("CHIP_WORKER_RUNTIME_DIGEST")
+    worker = profile.get("worker") if profile else None
+    if not worker or worker.get("arguments") not in ("none", "object"):
+        print(
+            "pack worker: profile %s has no valid worker block" % profile_id,
+            file=sys.stderr,
+        )
+        sys.exit(2)
+    digest = os.environ.get("WORKER_RUNTIME_DIGEST")
     if not digest:
         # Fail closed: an unpinned runtime must refuse every invocation, so
         # a misconfigured boot is loud instead of quietly permissive.
-        print("chip worker: CHIP_WORKER_RUNTIME_DIGEST is not configured", file=sys.stderr)
+        print("pack worker: WORKER_RUNTIME_DIGEST is not configured", file=sys.stderr)
         sys.exit(2)
+    executor = os.environ.get(
+        "WORKER_EXECUTOR", str(ROOT / worker["executor"])
+    )
     return {
-        "bind": os.environ.get("CHIP_WORKER_BIND", "0.0.0.0"),
-        "port": int(os.environ.get("CHIP_WORKER_PORT", "8080")),
-        "input_dir": Path(os.environ.get("CHIP_WORKER_INPUT_DIR", "/input")).resolve(),
-        "work_root": Path(os.environ.get("CHIP_WORKER_WORK_ROOT", "/work/requests")),
+        "bind": os.environ.get("WORKER_BIND", "0.0.0.0"),
+        "port": int(os.environ.get("WORKER_PORT", "8080")),
+        "input_dir": Path(os.environ.get("WORKER_INPUT_DIR", "/input")).resolve(),
+        "work_root": Path(os.environ.get("WORKER_WORK_ROOT", "/work/requests")),
         "executor": executor,
-        "access_token": os.environ.get("CHIP_WORKER_ACCESS_TOKEN"),
+        "access_token": os.environ.get("WORKER_ACCESS_TOKEN"),
         "runtime_digest": digest,
-        "timeout_seconds": float(os.environ.get("CHIP_WORKER_TIMEOUT_SECONDS", "900")),
-        "max_work_dirs": int(os.environ.get("CHIP_WORKER_MAX_WORK_DIRS", "8")),
-        "tool_id": pack["runtime"]["toolId"],
+        "timeout_seconds": float(os.environ.get("WORKER_TIMEOUT_SECONDS", "900")),
+        "max_work_dirs": int(os.environ.get("WORKER_MAX_WORK_DIRS", "8")),
+        "arguments": worker["arguments"],
+        "success_field": worker["successField"],
+        "tool_ids": list(worker["toolIds"]),
         # [executor file, artifact kind, byte cap] from the pinned profile.
         "artifacts": [(f, k, c) for f, k, c in profile["artifacts"]],
     }
 
 
 CONFIG = config()
-# One execution at a time: a sandbox runs a single leased simulation; a
-# concurrent second invocation gets a clean 409 rejection.
+# One execution at a time: a sandbox runs a single leased run; a concurrent
+# second invocation gets a clean 409 rejection.
 IN_FLIGHT = threading.Lock()
 
 
@@ -161,29 +188,26 @@ def build_observation(work_dir, exit_code, timed_out, timeout_seconds):
                 report = parsed
         except ValueError:
             report = None
-    diagnostic = None
     if timed_out:
         diagnostic = "execution timed out after %gs and was terminated" % timeout_seconds
     elif report is None:
         diagnostic = "executor produced no readable report.json"
-    completed = bool(report and report.get("completed") is True)
-    ok = exit_code == 0 and not timed_out and report is not None and completed
+    else:
+        diagnostic = None
+    succeeded = bool(report and report.get(CONFIG["success_field"]) is True)
+    ok = exit_code == 0 and not timed_out and report is not None and succeeded
+    if report is not None:
+        verification_inputs = dict(report)
+        if timed_out:
+            verification_inputs["diagnostic"] = diagnostic
+    else:
+        verification_inputs = {CONFIG["success_field"]: False}
+        if diagnostic:
+            verification_inputs["diagnostic"] = diagnostic
     logs = tail_logs(
         work_dir,
         "worker: " + diagnostic if diagnostic and (timed_out or report is None) else None,
     )
-    verification_inputs = {
-        "completed": completed,
-        "diagnostic": diagnostic or (report or {}).get("diagnostic"),
-        "nativeVerification": (report or {}).get("nativeVerification"),
-        "completionMarker": (report or {}).get("completionMarker"),
-        "compileExitCode": (report or {}).get("compileExitCode"),
-        "simulationExitCode": (report or {}).get("simulationExitCode"),
-        "toolVersion": (report or {}).get("toolVersion"),
-        "packIdentity": (report or {}).get("packIdentity"),
-        "durationMs": (report or {}).get("durationMs"),
-        "timedOut": timed_out,
-    }
     artifacts = []
     for filename, kind, cap in CONFIG["artifacts"]:
         candidate = work_dir / filename
@@ -265,10 +289,10 @@ def validate_request(body):
 
 class WorkerHandler(BaseHTTPRequestHandler):
     protocol_version = "HTTP/1.1"
-    server_version = "chip-rtl-worker/1"
+    server_version = "pack-worker/1"
 
     def log_message(self, fmt, *args):
-        print("chip worker: %s %s" % (self.address_string(), fmt % args), flush=True)
+        print("pack worker: %s %s" % (self.address_string(), fmt % args), flush=True)
 
     def send_json(self, status, payload):
         body = json.dumps(payload).encode("utf-8")
@@ -350,18 +374,18 @@ class WorkerHandler(BaseHTTPRequestHandler):
                 {"code": "RUNTIME_DIGEST_MISMATCH", "message": "runtime digest is not the pinned image runtime"},
             )
             return
-        if body["toolId"] != CONFIG["tool_id"] or body["toolId"] not in body["toolScope"]:
+        if body["toolId"] not in CONFIG["tool_ids"] or body["toolId"] not in body["toolScope"]:
             self.send_json(
                 400,
-                {"code": "TOOL_REJECTED", "message": "tool is not the pinned chip tool"},
+                {"code": "TOOL_REJECTED", "message": "tool is not in this profile's pinned tool catalog"},
             )
             return
-        if body["arguments"]:
+        if CONFIG["arguments"] == "none" and body["arguments"]:
             self.send_json(
                 400,
                 {
                     "code": "TOOL_REJECTED",
-                    "message": "rtl verification reads the declared eda.yaml inputs; arguments are not accepted",
+                    "message": "this profile reads its declared inputs from the snapshot; arguments are not accepted",
                 },
             )
             return
@@ -393,6 +417,18 @@ class WorkerHandler(BaseHTTPRequestHandler):
             )
             return
         work_dir.mkdir(parents=True)
+        # The bounded invocation arguments reach the trusted executor through
+        # the work directory, never through the process environment.
+        (work_dir / "request.json").write_text(
+            json.dumps(
+                {
+                    "requestId": body["requestId"],
+                    "toolId": body["toolId"],
+                    "arguments": body["arguments"],
+                }
+            )
+            + "\n"
+        )
         started = time.monotonic()
         timed_out = False
         process = subprocess.Popen(
@@ -423,7 +459,7 @@ class WorkerHandler(BaseHTTPRequestHandler):
         )
         prune_work_dirs(work_root)
         print(
-            "chip worker: request %s finished in %.1fs (ok=%s)"
+            "pack worker: request %s finished in %.1fs (ok=%s)"
             % (body["requestId"], time.monotonic() - started, observation["ok"]),
             flush=True,
         )
@@ -434,11 +470,11 @@ def main():
     server = ThreadingHTTPServer((CONFIG["bind"], CONFIG["port"]), WorkerHandler)
     server.daemon_threads = True
     print(
-        "chip worker listening on %s:%d (tool=%s input=%s executor=%s)"
+        "pack worker listening on %s:%d (tools=%s input=%s executor=%s)"
         % (
             CONFIG["bind"],
             CONFIG["port"],
-            CONFIG["tool_id"],
+            ",".join(CONFIG["tool_ids"]),
             CONFIG["input_dir"],
             CONFIG["executor"],
         ),

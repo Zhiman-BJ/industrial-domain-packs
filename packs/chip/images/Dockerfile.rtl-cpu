@@ -21,7 +21,7 @@ RUN python3 /opt/domain-packs/packs/chip/runtime/native-profile.py /opt/domain-p
 # The runtime identity this image agrees to serve; must match the server's
 # pinned RuntimeProfile runtimeDigest (overridable per qualification build).
 ARG CHIP_RUNTIME_DIGEST=sha256:ba6a3ccb431d95e01e29a0e363b8a8b4f077f7d2d08cc6f6c6e23277fb2e202b
-ENV CHIP_WORKER_RUNTIME_DIGEST=${CHIP_RUNTIME_DIGEST}
+ENV WORKER_RUNTIME_DIGEST=${CHIP_RUNTIME_DIGEST} WORKER_PACK=chip WORKER_PROFILE_ID=rtl-cpu
 # AGS management daemon (binary only, from the public reference image):
 # health checks, command execution, and the snapshot-staging file interface
 # all flow through envd on 49983. Runs as the same fixed unprivileged user
@@ -37,4 +37,4 @@ USER 1000:1000
 # Long-running narrow HTTP worker (POST /v1/worker/invoke); the trusted
 # one-shot native-profile.py stays the executor it dispatches to. envd is
 # brought up first per the AGS startup template.
-ENTRYPOINT ["/bin/bash", "-l", "-c", "/usr/bin/envd > /tmp/envd.log 2>&1 & exec python3 /opt/domain-packs/packs/chip/runtime/worker-http.py"]
+ENTRYPOINT ["/bin/bash", "-l", "-c", "/usr/bin/envd > /tmp/envd.log 2>&1 & exec python3 /opt/domain-packs/lib/worker-http.py"]

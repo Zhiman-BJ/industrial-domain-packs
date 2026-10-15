@@ -9,7 +9,31 @@
     "skills/pcb-kicad-native/SKILL.md",
     "skills/pcb-layout-inspect/SKILL.md"
   ],
-  "profiles": [],
+  "profiles": [
+    {
+      "id": "pcb-verify-cpu",
+      "platform": "linux/amd64",
+      "recipe": "packs/pcb/images/Dockerfile.pcb-verify",
+      "status": "qualification-pending",
+      "worker": {
+        "executor": "packs/pcb/runtime/verify-board.py",
+        "arguments": "object",
+        "successField": "executionSucceeded",
+        "toolIds": ["pcb.kicad.verify"]
+      },
+      "entry": [
+        "python3",
+        "/opt/domain-packs/packs/pcb/runtime/verify-board.py"
+      ],
+      "inputProfile": "pcb.yaml-declared board.kicad_pcb; kicad-cli DRC + native readback; no execution overrides",
+      "artifacts": [
+        ["tool.log", "log.tool", 2097152],
+        ["report.json", "report.pcb.run", 65536],
+        ["drc.json", "report.pcb.drc", 8388608],
+        ["readback.json", "report.pcb.readback", 8388608]
+      ]
+    }
+  ],
   "runtime": {
     "entry": "runtime/index.cjs"
   },
