@@ -177,15 +177,6 @@ def verify_snapshot(input_dir, manifest_sha256):
     return digest == manifest_sha256
 
 
-def clear_input_tree(input_dir):
-    """Remove staged snapshot entries before a pooled worker is reused."""
-    for entry in input_dir.iterdir():
-        if entry.is_dir() and not entry.is_symlink():
-            shutil.rmtree(entry)
-        else:
-            entry.unlink()
-
-
 def tail_logs(work_dir, extra_line=None):
     lines = []
     log_file = work_dir / "tool.log"
@@ -429,12 +420,6 @@ class WorkerHandler(BaseHTTPRequestHandler):
         try:
             self.execute(body)
         finally:
-            try:
-                clear_input_tree(CONFIG["input_dir"])
-            except OSError:
-                # A failed cleanup leaves the next snapshot to fail closed at
-                # manifest verification instead of reusing stale inputs.
-                pass
             IN_FLIGHT.release()
 
     def execute(self, body):
