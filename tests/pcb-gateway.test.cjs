@@ -57,7 +57,9 @@ test("session directory is private and stable per project", () => {
   assert.equal(first, second);
   const stats = fs.statSync(first);
   assert.ok(stats.isDirectory());
-  assert.equal(stats.mode & 0o777, 0o700);
+  // Windows has no Unix permission bits; per-user privacy comes from the
+  // user-scoped temp directory ACLs, so the mode check is POSIX-only.
+  if (process.platform !== "win32") assert.equal(stats.mode & 0o777, 0o700);
   assert.ok(first.startsWith(path.join(os.tmpdir(), "industrial-pcb-gateway")));
 });
 
