@@ -109,6 +109,9 @@ def config():
         "access_token": os.environ.get("WORKER_ACCESS_TOKEN"),
         "runtime_digest": digest,
         "timeout_seconds": float(os.environ.get("WORKER_TIMEOUT_SECONDS", "900")),
+        "client_timeout_seconds": float(
+            os.environ.get("WORKER_CLIENT_TIMEOUT_SECONDS", "30")
+        ),
         "max_work_dirs": int(os.environ.get("WORKER_MAX_WORK_DIRS", "8")),
         "arguments": worker["arguments"],
         "success_field": worker["successField"],
@@ -164,8 +167,23 @@ def verify_snapshot(input_dir, manifest_sha256):
         return False
     # UTF-16 code-unit ordering matches the gateway's manifest sort exactly.
     files.sort(key=lambda entry: entry["path"].encode("utf-16-be"))
-    digest = hashlib.sha256(canonical_manifest_bytes(files)).hexdigest()
+    try:
+        digest = hashlib.sha256(canonical_manifest_bytes(files)).hexdigest()
+    except UnicodeEncodeError:
+        # A filename containing a lone surrogate cannot be represented by the
+        # UTF-8 canonical manifest contract. Treat it as an untrusted tree so
+        # the caller receives the normal 422 SNAPSHOT_MISMATCH response.
+        return False
     return digest == manifest_sha256
+
+
+def clear_input_tree(input_dir):
+    """Remove staged snapshot entries before a pooled worker is reused."""
+    for entry in input_dir.iterdir():
+        if entry.is_dir() and not entry.is_symlink():
+            shutil.rmtree(entry)
+        else:
+            entry.unlink()
 
 
 def tail_logs(work_dir, extra_line=None):
@@ -292,6 +310,10 @@ class WorkerHandler(BaseHTTPRequestHandler):
     protocol_version = "HTTP/1.1"
     server_version = "pack-worker/1"
 
+    def setup(self):
+        super().setup()
+        self.connection.settimeout(CONFIG["client_timeout_seconds"])
+
     def log_message(self, fmt, *args):
         print("pack worker: %s %s" % (self.address_string(), fmt % args), flush=True)
 
@@ -349,7 +371,18 @@ class WorkerHandler(BaseHTTPRequestHandler):
             self.close_connection = True
             self.send_json(413, {"code": "WORKER_REQUEST_INVALID", "message": "request body exceeds the size bound"})
             return None
-        return self.rfile.read(size)
+        try:
+            return self.rfile.read(size)
+        except TimeoutError:
+            self.close_connection = True
+            self.send_json(
+                408,
+                {
+                    "code": "WORKER_REQUEST_INVALID",
+                    "message": "request body read timed out",
+                },
+            )
+            return None
 
     def handle_invoke(self):
         raw = self.read_body()
@@ -396,6 +429,12 @@ class WorkerHandler(BaseHTTPRequestHandler):
         try:
             self.execute(body)
         finally:
+            try:
+                clear_input_tree(CONFIG["input_dir"])
+            except OSError:
+                # A failed cleanup leaves the next snapshot to fail closed at
+                # manifest verification instead of reusing stale inputs.
+                pass
             IN_FLIGHT.release()
 
     def execute(self, body):
