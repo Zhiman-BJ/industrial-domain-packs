@@ -1,4 +1,4 @@
-"""Public KiCad adapter. No PCB-bench actor or private resources."""
+"""Public KiCad adapter. No upstream actor or private resources."""
 import json,sys,os
 from pathlib import Path
 # macOS resolves the login user's home independently of HOME. Explicitly bind

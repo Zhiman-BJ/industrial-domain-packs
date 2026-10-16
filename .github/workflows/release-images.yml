@@ -1,0 +1,334 @@
+name: Release images
+
+# Public release surface (docs/release-runbook.md): a pushed pcb-v* / chip-v*
+# tag builds the digest-pinned recipes for linux/amd64, pushes them to
+# ghcr.io/zhiman-bj (anonymous pull), attaches a compressed oci-archive
+# tarball + sha256 to the GitHub Release, anonymously verifies the pushed
+# bytes, and opens a lock-update pull request for
+# provenance/runtime-distribution.json. Nothing merges automatically.
+
+on:
+  push:
+    tags: ['pcb-v*', 'chip-v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing tag to release (pcb-v* or chip-v*)'
+        required: true
+      pack:
+        description: 'Expected pack (sanity check against the tag prefix)'
+        type: choice
+        options: [pcb, chip]
+        required: false
+
+concurrency:
+  group: release-images-${{ github.ref_name }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  packages: write
+
+env:
+  NAMESPACE: zhiman-bj
+  LOCK_BRANCH: chore/runtime-distribution
+
+jobs:
+  meta:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.resolve.outputs.tag }}
+      pack: ${{ steps.resolve.outputs.pack }}
+    steps:
+      - name: Resolve tag and pack
+        id: resolve
+        env:
+          REF_NAME: ${{ github.ref_name }}
+          REF_TYPE: ${{ github.ref_type }}
+          INPUT_TAG: ${{ inputs.tag }}
+          INPUT_PACK: ${{ inputs.pack }}
+        run: |
+          set -euo pipefail
+          if [ "$REF_TYPE" = "tag" ]; then
+            tag="$REF_NAME"
+          else
+            tag="${INPUT_TAG:?workflow_dispatch requires the tag input}"
+          fi
+          case "$tag" in
+            pcb-v*) pack=pcb ;;
+            chip-v*) pack=chip ;;
+            *) echo "::error file=docs/release-runbook.md::tag $tag does not match pcb-v* or chip-v*"; exit 1 ;;
+          esac
+          if [ -n "${INPUT_PACK:-}" ] && [ "$INPUT_PACK" != "$pack" ]; then
+            echo "::error::pack input $INPUT_PACK does not match tag prefix of $tag"; exit 1
+          fi
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "pack=$pack" >> "$GITHUB_OUTPUT"
+
+  pcb:
+    needs: meta
+    if: needs.meta.outputs.pack == 'pcb'
+    runs-on: ubuntu-latest
+    outputs:
+      digest: ${{ steps.identity.outputs.digest }}
+      config_digest: ${{ steps.identity.outputs.config_digest }}
+      archive: ${{ steps.identity.outputs.archive }}
+      archive_sha256: ${{ steps.identity.outputs.archive_sha256 }}
+      archive_bytes: ${{ steps.identity.outputs.archive_bytes }}
+    env:
+      IMAGE: industrial-pcb-runtime
+      RECIPE: packs/pcb/Dockerfile.local-dev
+      CONTEXT: packs/pcb
+      TAG: ${{ needs.meta.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.meta.outputs.tag }}
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push ${{ env.IMAGE }}
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ env.CONTEXT }}
+          file: ${{ env.RECIPE }}
+          platforms: linux/amd64
+          push: true
+          tags: ghcr.io/${{ env.NAMESPACE }}/${{ env.IMAGE }}:${{ env.TAG }}
+      - name: Install skopeo
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq skopeo >/dev/null
+      - name: Export identity and oci-archive
+        id: identity
+        env:
+          IMAGE: industrial-pcb-runtime
+          PUSH_DIGEST: ${{ steps.build.outputs.digest }}
+        run: scripts/export-oci-archive.sh "$IMAGE" "$TAG" "$PUSH_DIGEST" "$NAMESPACE"
+      - name: Attach assets to the release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          gh release view "$TAG" >/dev/null 2>&1 || \
+            gh release create "$TAG" --title "$TAG" --notes "Container images for $TAG. See docs/release-runbook.md and provenance/runtime-distribution.json."
+          gh release upload "$TAG" \
+            "${{ steps.identity.outputs.archive }}" \
+            "${{ steps.identity.outputs.archive }}.sha256" \
+            --clobber
+      - name: Verify release assets anonymously
+        run: |
+          set -euo pipefail
+          base="https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG}"
+          python3 scripts/verify-release-artifact.py asset \
+            "${base}/${{ steps.identity.outputs.archive }}" \
+            --sha256 "${{ steps.identity.outputs.archive_sha256 }}" \
+            --size "${{ steps.identity.outputs.archive_bytes }}"
+      - name: Check the GHCR pull channel (non-fatal while org policy locks visibility)
+        run: |
+          set -uo pipefail
+          if python3 scripts/verify-release-artifact.py image \
+              "https://ghcr.io/v2/${NAMESPACE}/${IMAGE}/manifests/${{ steps.identity.outputs.digest }}"; then
+            echo "ghcr.io pull channel is anonymously reachable."
+          else
+            echo "::warning::ghcr.io/${NAMESPACE}/${IMAGE} is not anonymously reachable: org package policy locks visibility to Private and no API exists to change it. An org owner must allow public packages, then a member flips the package in the web UI and this check turns green. Until then the Release tarballs above are the anonymous channel."
+          fi
+
+  chip:
+    needs: meta
+    if: needs.meta.outputs.pack == 'chip'
+    runs-on: ubuntu-latest
+    outputs:
+      tools_digest: ${{ steps.tools_identity.outputs.digest }}
+      tools_config_digest: ${{ steps.tools_identity.outputs.config_digest }}
+      tools_archive: ${{ steps.tools_identity.outputs.archive }}
+      tools_archive_sha256: ${{ steps.tools_identity.outputs.archive_sha256 }}
+      tools_archive_bytes: ${{ steps.tools_identity.outputs.archive_bytes }}
+      rtl_digest: ${{ steps.rtl_identity.outputs.digest }}
+      rtl_config_digest: ${{ steps.rtl_identity.outputs.config_digest }}
+      rtl_archive: ${{ steps.rtl_identity.outputs.archive }}
+      rtl_archive_sha256: ${{ steps.rtl_identity.outputs.archive_sha256 }}
+      rtl_archive_bytes: ${{ steps.rtl_identity.outputs.archive_bytes }}
+    env:
+      TAG: ${{ needs.meta.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.meta.outputs.tag }}
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push industrial-chip-tools
+        id: tools_build
+        uses: docker/build-push-action@v6
+        with:
+          context: packs/chip/eda-harness
+          file: packs/chip/eda-harness/Dockerfile.tools
+          platforms: linux/amd64
+          push: true
+          tags: ghcr.io/${{ env.NAMESPACE }}/industrial-chip-tools:${{ env.TAG }}
+      - name: Build and push industrial-chip-rtl
+        id: rtl_build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: packs/chip/images/Dockerfile.rtl-cpu
+          platforms: linux/amd64
+          push: true
+          tags: ghcr.io/${{ env.NAMESPACE }}/industrial-chip-rtl:${{ env.TAG }}
+      - name: Install skopeo
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq skopeo >/dev/null
+      - name: Export industrial-chip-tools identity and oci-archive
+        id: tools_identity
+        env:
+          IMAGE: industrial-chip-tools
+          PUSH_DIGEST: ${{ steps.tools_build.outputs.digest }}
+        run: scripts/export-oci-archive.sh "$IMAGE" "$TAG" "$PUSH_DIGEST" "$NAMESPACE"
+      - name: Export industrial-chip-rtl identity and oci-archive
+        id: rtl_identity
+        env:
+          IMAGE: industrial-chip-rtl
+          PUSH_DIGEST: ${{ steps.rtl_build.outputs.digest }}
+        run: scripts/export-oci-archive.sh "$IMAGE" "$TAG" "$PUSH_DIGEST" "$NAMESPACE"
+      - name: Attach assets to the release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          gh release view "$TAG" >/dev/null 2>&1 || \
+            gh release create "$TAG" --title "$TAG" --notes "Container images for $TAG. See docs/release-runbook.md and provenance/runtime-distribution.json."
+          gh release upload "$TAG" \
+            "${{ steps.tools_identity.outputs.archive }}" \
+            "${{ steps.tools_identity.outputs.archive }}.sha256" \
+            "${{ steps.rtl_identity.outputs.archive }}" \
+            "${{ steps.rtl_identity.outputs.archive }}.sha256" \
+            --clobber
+      - name: Verify release assets anonymously
+        run: |
+          set -euo pipefail
+          base="https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG}"
+          python3 scripts/verify-release-artifact.py asset \
+            "${base}/${{ steps.tools_identity.outputs.archive }}" \
+            --sha256 "${{ steps.tools_identity.outputs.archive_sha256 }}" \
+            --size "${{ steps.tools_identity.outputs.archive_bytes }}"
+          python3 scripts/verify-release-artifact.py asset \
+            "${base}/${{ steps.rtl_identity.outputs.archive }}" \
+            --sha256 "${{ steps.rtl_identity.outputs.archive_sha256 }}" \
+            --size "${{ steps.rtl_identity.outputs.archive_bytes }}"
+      - name: Check the GHCR pull channel (non-fatal while org policy locks visibility)
+        run: |
+          set -uo pipefail
+          ok=0
+          python3 scripts/verify-release-artifact.py image \
+            "https://ghcr.io/v2/${NAMESPACE}/industrial-chip-tools/manifests/${{ steps.tools_identity.outputs.digest }}" || ok=1
+          python3 scripts/verify-release-artifact.py image \
+            "https://ghcr.io/v2/${NAMESPACE}/industrial-chip-rtl/manifests/${{ steps.rtl_identity.outputs.digest }}" || ok=1
+          if [ "$ok" = 0 ]; then
+            echo "ghcr.io pull channel is anonymously reachable."
+          else
+            echo "::warning::ghcr.io/${NAMESPACE}/industrial-chip-* images are not anonymously reachable: org package policy locks visibility to Private and no API exists to change it. An org owner must allow public packages, then a member flips each package in the web UI and this check turns green. Until then the Release tarballs above are the anonymous channel."
+          fi
+
+  lock:
+    needs: [meta, pcb, chip]
+    if: ${{ !cancelled() && (needs.pcb.result == 'success' || needs.chip.result == 'success') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          token: ${{ secrets.PACK_BUMP_PAT }}
+      - name: Record identities in the distribution lock
+        run: |
+          set -euo pipefail
+          commit="${{ needs.meta.outputs.tag }}"
+          if [ "${{ needs.pcb.result }}" = "success" ]; then
+            python3 scripts/update-runtime-distribution.py \
+              --id industrial-pcb-runtime \
+              --tag "${{ needs.meta.outputs.tag }}" \
+              --digest "${{ needs.pcb.outputs.digest }}" \
+              --config-digest "${{ needs.pcb.outputs.config_digest }}" \
+              --archive "${{ needs.pcb.outputs.archive }}" \
+              --archive-sha256 "${{ needs.pcb.outputs.archive_sha256 }}" \
+              --archive-bytes "${{ needs.pcb.outputs.archive_bytes }}" \
+              --commit "$GITHUB_SHA"
+          fi
+          if [ "${{ needs.chip.result }}" = "success" ]; then
+            python3 scripts/update-runtime-distribution.py \
+              --id industrial-chip-tools \
+              --tag "${{ needs.meta.outputs.tag }}" \
+              --digest "${{ needs.chip.outputs.tools_digest }}" \
+              --config-digest "${{ needs.chip.outputs.tools_config_digest }}" \
+              --archive "${{ needs.chip.outputs.tools_archive }}" \
+              --archive-sha256 "${{ needs.chip.outputs.tools_archive_sha256 }}" \
+              --archive-bytes "${{ needs.chip.outputs.tools_archive_bytes }}" \
+              --commit "$GITHUB_SHA"
+            python3 scripts/update-runtime-distribution.py \
+              --id industrial-chip-rtl \
+              --tag "${{ needs.meta.outputs.tag }}" \
+              --digest "${{ needs.chip.outputs.rtl_digest }}" \
+              --config-digest "${{ needs.chip.outputs.rtl_config_digest }}" \
+              --archive "${{ needs.chip.outputs.rtl_archive }}" \
+              --archive-sha256 "${{ needs.chip.outputs.rtl_archive_sha256 }}" \
+              --archive-bytes "${{ needs.chip.outputs.rtl_archive_bytes }}" \
+              --commit "$GITHUB_SHA"
+          fi
+      - name: Attach the updated lock to the release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload "${{ needs.meta.outputs.tag }}" provenance/runtime-distribution.json --clobber
+      - name: Push lock branch and open the update PR
+        env:
+          GH_TOKEN: ${{ secrets.PACK_BUMP_PAT }}
+          TAG: ${{ needs.meta.outputs.tag }}
+        run: |
+          set -euo pipefail
+          if [ -z "${GH_TOKEN:-}" ]; then
+            echo "::warning::PACK_BUMP_PAT is not configured; the lock update was attached to the release only, no PR opened."
+            exit 0
+          fi
+          branch="${LOCK_BRANCH}/${TAG}"
+          git config user.name "release-images-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git checkout -B "$branch"
+          git add provenance/runtime-distribution.json
+          git commit -m "chore(packs): record runtime distribution for ${TAG}"
+          git push --force origin "$branch"
+          gh pr list -R "$GITHUB_REPOSITORY" --state open --head "$branch" \
+            --json number --jq '.[].number' | while read -r n; do
+            gh pr close -R "$GITHUB_REPOSITORY" "$n" \
+              --comment "Superseded by ${TAG}."
+          done
+          body=$(mktemp)
+          {
+            echo "## Runtime distribution update for ${TAG}"
+            echo
+            echo 'Updated by the release workflow; identity must match the release assets.'
+            echo 'Manual acceptance before merge:'
+            echo
+            echo '```sh'
+            if [ "${{ needs.pcb.result }}" = "success" ]; then
+              echo "python3 scripts/verify-release-artifact.py asset 'https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG}/${{ needs.pcb.outputs.archive }}' --sha256 ${{ needs.pcb.outputs.archive_sha256 }} --size ${{ needs.pcb.outputs.archive_bytes }}"
+              echo "# registry check - only while GHCR packages are public (org package policy); 401 while they are private:"
+              echo "python3 scripts/verify-release-artifact.py image 'https://ghcr.io/v2/zhiman-bj/industrial-pcb-runtime/manifests/${{ needs.pcb.outputs.digest }}'"
+            fi
+            if [ "${{ needs.chip.result }}" = "success" ]; then
+              echo "python3 scripts/verify-release-artifact.py asset 'https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG}/${{ needs.chip.outputs.tools_archive }}' --sha256 ${{ needs.chip.outputs.tools_archive_sha256 }} --size ${{ needs.chip.outputs.tools_archive_bytes }}"
+              echo "python3 scripts/verify-release-artifact.py asset 'https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG}/${{ needs.chip.outputs.rtl_archive }}' --sha256 ${{ needs.chip.outputs.rtl_archive_sha256 }} --size ${{ needs.chip.outputs.rtl_archive_bytes }}"
+              echo "# registry check - only while GHCR packages are public (org package policy); 401 while they are private:"
+              echo "python3 scripts/verify-release-artifact.py image 'https://ghcr.io/v2/zhiman-bj/industrial-chip-tools/manifests/${{ needs.chip.outputs.tools_digest }}'"
+              echo "python3 scripts/verify-release-artifact.py image 'https://ghcr.io/v2/zhiman-bj/industrial-chip-rtl/manifests/${{ needs.chip.outputs.rtl_digest }}'"
+            fi
+            echo '```'
+            echo
+            echo 'Opened automatically by `.github/workflows/release-images.yml` per docs/release-runbook.md. Never merged automatically.'
+          } > "$body"
+          gh pr create -R "$GITHUB_REPOSITORY" \
+            --base main --head "$branch" \
+            --title "chore(packs): record runtime distribution for ${TAG}" \
+            --body-file "$body"

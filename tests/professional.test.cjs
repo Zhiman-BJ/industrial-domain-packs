@@ -17,7 +17,7 @@ test("public professional profiles disclose only Runtime Actions with independen
       const ids = pack.provider.tools.map((t) => t.id);
       assert.deepEqual(ids.slice(0, 2), ["pcb.kicad.edit", "pcb.kicad.verify"]);
       assert.equal(ids.length, 91);
-      assert.ok(ids.slice(2).every((id) => id.startsWith("pcb.bench.")));
+      assert.ok(ids.slice(2).every((id) => id.startsWith("pcb.design.")));
     } else {
       assert.deepEqual(
         pack.provider.tools.map((t) => t.id),

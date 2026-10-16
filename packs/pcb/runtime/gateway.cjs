@@ -1,5 +1,5 @@
 "use strict";
-// Scoped MCP stdio client for the maintained PCB-bench container gateway.
+// Scoped MCP stdio client for the maintained upstream container gateway.
 //
 // The gateway process (bridge/pcb-gateway.py) owns the pinned Linux
 // container: it starts one docker run per gateway lifetime, keeps the
@@ -22,10 +22,10 @@ const REQUEST_TIMEOUT_MS = 15000;
 // The bridge validates a resource directory against the pinned upstream
 // inventory. The actor sources are vendored inside this pack (chip-style
 // integration), so the default directory is the pack root itself;
-// INDUSTRIAL_HARNESS_PCB_BENCH_DIR still overrides it for evaluation
+// INDUSTRIAL_HARNESS_PCB_UPSTREAM_DIR still overrides it for evaluation
 // against a full upstream checkout. The gateway also compares the live
 // container tool set with policy.tools by name, so the tool list must be
-// exactly the 89 bench descriptors.
+// exactly the 89 upstream descriptors.
 function bridgeProvider(provider, snapshot) {
   const files = snapshot.sourceFiles;
   const compact = JSON.stringify(
@@ -41,7 +41,7 @@ function bridgeProvider(provider, snapshot) {
     sourceSha256: crypto.createHash("sha256").update(compact).digest("hex"),
     resourceRoots: ["pcb-agent", "skills/pcb-design-e2e"],
     sourceFiles: files,
-    directoryEnv: "INDUSTRIAL_HARNESS_PCB_BENCH_DIR",
+    directoryEnv: "INDUSTRIAL_HARNESS_PCB_UPSTREAM_DIR",
     pythonEnv: "INDUSTRIAL_HARNESS_PCB_GATEWAY_PYTHON",
     mcpVersion: GATEWAY_MCP_VERSION,
     allowedToolIds: snapshot.tools.map((tool) => tool.id),
@@ -178,7 +178,7 @@ class GatewaySession {
     this.queue = run.catch(() => {});
     const result = await run;
     this.scheduleRecycle();
-    if (signal?.aborted) throw Error("Action was cancelled; the bench mutation outcome may be unknown.");
+    if (signal?.aborted) throw Error("Action was cancelled; the container mutation outcome may be unknown.");
     const block = (result.content || []).find((item) => item.type === "text");
     let payload = null;
     if (block) {
@@ -263,8 +263,8 @@ function inspectImage(docker, imageId, environment) {
         : resolve({
             ok: false,
             reason:
-              `The pinned PCB-bench image ${imageId} is not present locally. ` +
-              `Build it from this pack: docker build --platform linux/amd64 -f Dockerfile.local-dev -t industrial-pcb-bench <packDir> ` +
+              `The pinned upstream runtime image ${imageId} is not present locally. ` +
+              `Build it from this pack: docker build --platform linux/amd64 -f Dockerfile.local-dev -t industrial-pcb-runtime <packDir> ` +
               `(then set INDUSTRIAL_HARNESS_PCB_DEV_IMAGE_ID to the resulting image ID), ` +
               `or set INDUSTRIAL_HARNESS_PCB_DEV_IMAGE_ID to an already-built image. ${err.trim()}`.trim(),
           }),
@@ -283,10 +283,10 @@ async function gatewaySession({ projectDir, environment }) {
   if (existing && !existing.closing) return existing;
   const provider = bridgeProvider(
     require("../harness-pack.json").provider,
-    require("./bench-upstream.json"),
+    require("./upstream-snapshot.json"),
   );
   // The vendored actor inside this pack is the resource directory;
-  // INDUSTRIAL_HARNESS_PCB_BENCH_DIR overrides it for a full checkout.
+  // INDUSTRIAL_HARNESS_PCB_UPSTREAM_DIR overrides it for a full checkout.
   const bridgeEnvironment = {
     ...environment,
     [provider.directoryEnv]:

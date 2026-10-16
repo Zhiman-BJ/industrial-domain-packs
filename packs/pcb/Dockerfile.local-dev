@@ -1,26 +1,35 @@
-# Diagnostic local runtime. It is not the qualified PCB-bench release image.
-# Build with the pinned PCB-bench checkout as the Docker context.
-FROM eclipse-temurin:25-jre AS java
-FROM ubuntu:24.04
+# PCB runtime recipe: built for linux/amd64 both locally and by the
+# release workflow (docs/release-runbook.md). It is not the upstream
+# qualification record; that identity stays in runtime/upstream-snapshot.json.
+# Base layers are digest-pinned; bump deliberately and record why.
+FROM eclipse-temurin:25-jre@sha256:fd4b1c02c64eef378212e23656fc0b0caa41a357876fa0b60e51ceda94a3db64 AS java
+FROM ubuntu:24.04@sha256:534baea6a22c03a63003dbc8dbe78fe34bc0d7e595d9a9dc9834884ff530eb55
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG PCB_DEV_INSECURE_APT_TLS=0
+# The minimal Ubuntu base has no CA roots before the first HTTPS apt request.
+# Bootstrap trust from the digest-pinned Java image, then install Ubuntu's bundle.
+COPY --from=java /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 RUN if [ "$PCB_DEV_INSECURE_APT_TLS" = 1 ]; then \
       printf 'Acquire::https::Verify-Peer "false";\nAcquire::https::Verify-Host "false";\n' > /etc/apt/apt.conf.d/99local-dev-proxy; \
     fi \
     && sed -i 's#http://archive.ubuntu.com#https://archive.ubuntu.com#g; s#http://security.ubuntu.com#https://security.ubuntu.com#g' /etc/apt/sources.list.d/ubuntu.sources \
     && apt-get update -qq \
-    && apt-get install -y --no-install-recommends ca-certificates software-properties-common \
-      python3 python3-numpy python3-scipy python3-shapely python3-yaml \
-      python3-cairosvg ngspice curl git \
-    && add-apt-repository -y ppa:kicad/kicad-10.0-releases \
-    && apt-get update -qq \
     && apt-get install -y --no-install-recommends \
-      kicad=10.0.6~ubuntu24.04.1 \
-      kicad-symbols=10.0.6~ubuntu24.04.1 \
-      kicad-footprints=10.0.6~ubuntu24.04.1 \
-      kicad-packages3d=10.0.6~ubuntu24.04.1 \
+      ca-certificates=20260601~24.04.1 software-properties-common=0.99.49.4 \
+      python3=3.12.3-0ubuntu2.1 python3-numpy=1:1.26.4+ds-6ubuntu1 \
+      python3-scipy=1.11.4-6build1 python3-shapely=2.0.3-1build2 \
+      python3-yaml=6.0.1-2build2 python3-cairosvg=2.7.1-1 \
+      ngspice=42+ds-3build1 curl=8.5.0-2ubuntu10.16 git=1:2.43.0-1ubuntu7.3 \
     && rm -rf /var/lib/apt/lists/*
+
+# Rolling PPA indexes remove superseded versions. Preserve the qualified 10.0.6
+# build using official Launchpad artifacts and checksums from their .changes files.
+COPY runtime/kicad-packages.json scripts/fetch-kicad.py /opt/industrial-pcb/
+RUN python3 /opt/industrial-pcb/fetch-kicad.py /opt/industrial-pcb/kicad-packages.json /tmp/kicad-debs \
+    && apt-get update -qq \
+    && apt-get install -y --no-install-recommends /tmp/kicad-debs/*.deb \
+    && rm -rf /tmp/kicad-debs /var/lib/apt/lists/*
 
 COPY pcb-agent/tools/ /pcb-agent/tools/
 COPY skills/ /skills/
@@ -35,4 +44,9 @@ RUN if [ "$PCB_DEV_INSECURE_APT_TLS" = 1 ]; then curl -kfsSL --retry 5 --retry-a
 ENV PYTHONPATH=/pcb-agent PCB_AGENT_HOME=/pcb-agent PCB_SKILLS=/skills \
     PYTHONDONTWRITEBYTECODE=1 FREEROUTING_JAR=/opt/freerouting.jar \
     JAVA=/opt/java/openjdk/bin/java
+COPY scripts/validate-board.py /opt/industrial-pcb/validate-board.py
+COPY examples/mounting-board/board.kicad_pcb /opt/industrial-pcb/smoke.kicad_pcb
+RUN HOME=/tmp python3 /opt/industrial-pcb/validate-board.py /opt/industrial-pcb/smoke.kicad_pcb /tmp/pcb-smoke \
+    && python3 -c 'import json; s=json.load(open("/tmp/pcb-smoke/board-summary.json")); assert s["footprints"] == 2 and abs(s["width_mm"] - 40.05) < 0.001 and abs(s["height_mm"] - 30.05) < 0.001' \
+    && rm -rf /tmp/pcb-smoke
 WORKDIR /workspace

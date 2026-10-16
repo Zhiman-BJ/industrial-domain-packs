@@ -112,7 +112,7 @@ function createRuntimePlugin({ environment = process.env } = {}) {
         domain: 'chip',
         stages: ['rtl'],
         priority: 100,
-        keywords: ['simulate', 'simulation', 'verification', 'assertion', 'rtl verify'],
+        keywords: ['simulate', 'simulation', 'verification', 'assertion', 'rtl verify', '仿真', '模拟', '验证', '断言', '跑一下', '逻辑'],
         skills: [],
         tools: [
           {

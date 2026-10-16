@@ -43,7 +43,10 @@ jobs:
 
   trusted:
     name: Trusted architecture policy
-    if: github.event_name == 'pull_request_target'
+    # actions/checkout refuses to fetch fork heads in a pull_request_target run
+    # (pwn-request protection), so the trusted binding is structurally red for
+    # fork PRs. The untrusted contract job publishes the result for them instead.
+    if: github.event_name == 'pull_request_target' && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     permissions:

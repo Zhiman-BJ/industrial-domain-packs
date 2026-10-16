@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "policy": "Container images are published from this repository's digest-pinned recipes to ghcr.io (lowercase namespace) and attached to the matching GitHub Release as compressed oci-archive tarballs. Release assets are the anonymous consumer channel (download, verify, docker load); ghcr.io anonymous pull activates once org package policy allows public packages - visibility is UI-administered and has no API. The org Harbor stays internal-only. Entries are updated only by scripts/update-runtime-distribution.py from a release workflow run; never hand-edit a digest.",
+  "registry": "ghcr.io",
+  "imageNamespace": "zhiman-bj",
+  "releaseAssetUrlTemplate": "https://github.com/Zhiman-BJ/industrial-domain-packs/releases/download/{tag}/{archive}",
+  "registryManifestUrlTemplate": "https://ghcr.io/v2/{namespace}/{repository}/manifests/{digest}",
+  "images": [
+    {
+      "id": "industrial-pcb-runtime",
+      "pack": "pcb",
+      "repository": "industrial-pcb-runtime",
+      "recipe": "packs/pcb/Dockerfile.local-dev",
+      "context": "packs/pcb",
+      "platform": "linux/amd64",
+      "tagPattern": "pcb-v*",
+      "current": {
+        "tag": "pcb-v0.1.0",
+        "imageDigest": "sha256:fc43bd6471a41270346d0217f29c4eb64d6a8fb5dcd9a0421c7f08aa03cd611a",
+        "configDigest": "sha256:1ceac40dcb7ed1c8eae093f26d311636539e16aee0dcb1e359d53ea3e83aa0ea",
+        "ociArchive": "industrial-pcb-runtime-pcb-v0.1.0.tar",
+        "ociArchiveSha256": "d2ce08e13e12407162e17f7c92c7285e3349062183b83abb58ac5b7c608d612c",
+        "ociArchiveBytes": 1232038400,
+        "sourceCommit": "f55fa00ddefffdbe534f29a726fa8b845cd3788c",
+        "releasedAt": "2026-10-15T00:44:01Z"
+      }
+    },
+    {
+      "id": "industrial-chip-tools",
+      "pack": "chip",
+      "repository": "industrial-chip-tools",
+      "recipe": "packs/chip/eda-harness/Dockerfile.tools",
+      "context": "packs/chip/eda-harness",
+      "platform": "linux/amd64",
+      "tagPattern": "chip-v*",
+      "current": {
+        "tag": "chip-v0.1.0",
+        "imageDigest": "sha256:5e57e215dabf6928ade6cf4df935c83fba1b586137c2abf38829b2e09ea2619e",
+        "configDigest": "sha256:594a86bcb38f8ef0d494a9a9ab093ccc31dad68c497fee0cfc8488d4b4250e3b",
+        "ociArchive": "industrial-chip-tools-chip-v0.1.0.tar",
+        "ociArchiveSha256": "019876e6bf05dcca4656ad014c4b0300d4ebe83c867885aa03f85aa595502c05",
+        "ociArchiveBytes": 1719728640,
+        "sourceCommit": "456b7ef78698417ac8c86a65ee75506c0b6e4fcf",
+        "releasedAt": "2026-10-14T10:58:19Z"
+      }
+    },
+    {
+      "id": "industrial-chip-rtl",
+      "pack": "chip",
+      "repository": "industrial-chip-rtl",
+      "recipe": "packs/chip/images/Dockerfile.rtl-cpu",
+      "context": "packs/chip",
+      "platform": "linux/amd64",
+      "tagPattern": "chip-v*",
+      "current": {
+        "tag": "chip-v0.1.0",
+        "imageDigest": "sha256:836deaaa4f2dcf9e41ae0aa7c71bae4ce04d751bca6bd16f49dfc04018469128",
+        "configDigest": "sha256:51af7422d2c5725c4c3482cfb84fe81c032017f6b7f51dc15bc8176b8a82d9b6",
+        "ociArchive": "industrial-chip-rtl-chip-v0.1.0.tar",
+        "ociArchiveSha256": "b040be164a7215cd73e355c6d57a64dcadf118e3dd9410b5b53e24f5ccf91816",
+        "ociArchiveBytes": 256450048,
+        "sourceCommit": "456b7ef78698417ac8c86a65ee75506c0b6e4fcf",
+        "releasedAt": "2026-10-14T10:58:19Z"
+      }
+    }
+  ]
+}

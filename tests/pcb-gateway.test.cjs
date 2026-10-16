@@ -8,14 +8,15 @@ const owner = require("../lib/index.cjs");
 
 const packDirectory = owner.sourceDirectory("pcb-pack");
 const snapshot = JSON.parse(
-  fs.readFileSync(path.join(packDirectory, "runtime/bench-upstream.json"), "utf8"),
+  fs.readFileSync(path.join(packDirectory, "runtime/upstream-snapshot.json"), "utf8"),
 );
 const {
   bridgeProvider,
+  gatewaySession,
   sessionDirectory,
   GatewaySession,
   GATEWAY_MCP_VERSION,
-} = require("../packs/pcb/runtime/bench-gateway.cjs");
+} = require("../packs/pcb/runtime/gateway.cjs");
 
 const manifestProvider = JSON.parse(
   fs.readFileSync(path.join(packDirectory, "harness-pack.json"), "utf8"),
@@ -24,7 +25,7 @@ const manifestProvider = JSON.parse(
 test("bridge provider view carries the pinned upstream inventory", () => {
   const provider = bridgeProvider(manifestProvider, snapshot);
   assert.equal(provider.installedDirectory, path.join(packDirectory));
-  assert.equal(provider.directoryEnv, "INDUSTRIAL_HARNESS_PCB_BENCH_DIR");
+  assert.equal(provider.directoryEnv, "INDUSTRIAL_HARNESS_PCB_UPSTREAM_DIR");
   assert.equal(provider.pythonEnv, "INDUSTRIAL_HARNESS_PCB_GATEWAY_PYTHON");
   assert.equal(provider.mcpVersion, GATEWAY_MCP_VERSION);
   assert.deepEqual(provider.resourceRoots, ["pcb-agent", "skills/pcb-design-e2e"]);
@@ -73,10 +74,10 @@ async function fakeSession() {
 test("gateway session handshakes and returns observation payloads", async () => {
   const session = await fakeSession();
   const payload = await session.callTool("domain_tool_call", {
-    toolId: "pcb.bench.project_status",
+    toolId: "pcb.design.project_status",
     arguments: {},
   });
-  assert.equal(payload.toolId, "pcb.bench.project_status");
+  assert.equal(payload.toolId, "pcb.design.project_status");
   assert.equal(payload.result.status, "ok");
   session.close();
 });
@@ -84,10 +85,10 @@ test("gateway session handshakes and returns observation payloads", async () => 
 test("paged responses are reassembled into one document", async () => {
   const session = await fakeSession();
   const payload = await session.callTool("domain_tool_call", {
-    toolId: "pcb.bench.inspect_board",
+    toolId: "pcb.design.inspect_board",
     arguments: { collection: "tracks" },
   });
-  assert.equal(payload.toolId, "pcb.bench.inspect_board");
+  assert.equal(payload.toolId, "pcb.design.inspect_board");
   assert.deepEqual(payload.result.collection, ["x".repeat(40), "y".repeat(40)]);
   assert.equal(payload.truncated, undefined);
   session.close();
@@ -97,7 +98,7 @@ test("gateway errors surface as rejections with their detail", async () => {
   const session = await fakeSession();
   await assert.rejects(
     session.callTool("domain_tool_call", {
-      toolId: "pcb.bench.add_track",
+      toolId: "pcb.design.add_track",
       arguments: {},
     }),
     /outside scope/,
@@ -114,9 +115,9 @@ test("plugin dispatch rejects with setup guidance before any gateway start", asy
     runtimeApi: { executeTask: () => {}, runtimeFiles: () => {} },
   });
   const status = plugin.tools.find(
-    (tool) => tool.descriptor.id === "pcb.bench.project_status",
+    (tool) => tool.descriptor.id === "pcb.design.project_status",
   );
-  const scratch = fs.mkdtempSync(path.join(os.tmpdir(), "pcb-bench-dispatch-"));
+  const scratch = fs.mkdtempSync(path.join(os.tmpdir(), "pcb-design-dispatch-"));
   try {
     await assert.rejects(
       status.execute({
@@ -132,22 +133,24 @@ test("plugin dispatch rejects with setup guidance before any gateway start", asy
   }
 });
 
-// Full container path: set INDUSTRIAL_HARNESS_PCB_BENCH_DIR (authorized
-// PCB-bench checkout), prepare the gateway venv (uv sync --frozen --no-dev)
+// Full container path: set INDUSTRIAL_HARNESS_PCB_UPSTREAM_DIR (authorized
+// upstream checkout), prepare the gateway venv (uv sync --frozen --no-dev)
 // and Docker with the pinned image, then this exercises real dispatch.
-test("real container dispatch when the bench environment is provided", async (t) => {
-  const configured = process.env.INDUSTRIAL_HARNESS_PCB_BENCH_DIR;
-  if (!configured) return t.skip("INDUSTRIAL_HARNESS_PCB_BENCH_DIR is not configured");
+test("real container dispatch when the container environment is provided", async (t) => {
+  const configured = process.env.INDUSTRIAL_HARNESS_PCB_UPSTREAM_DIR;
+  if (!configured) return t.skip("INDUSTRIAL_HARNESS_PCB_UPSTREAM_DIR is not configured");
   const { createRuntimePlugin } = require("../packs/pcb/runtime/index.cjs");
   const plugin = createRuntimePlugin({
     environment: process.env,
     runtimeApi: { executeTask: () => {}, runtimeFiles: () => {} },
   });
   const status = plugin.tools.find(
-    (tool) => tool.descriptor.id === "pcb.bench.project_status",
+    (tool) => tool.descriptor.id === "pcb.design.project_status",
   );
-  const scratch = fs.mkdtempSync(path.join(os.tmpdir(), "pcb-bench-live-"));
+  const scratch = fs.mkdtempSync(path.join(os.tmpdir(), "pcb-design-live-"));
+  let session;
   try {
+    session = await gatewaySession({ projectDir: scratch, environment: process.env });
     const result = await status.execute({
       projectDir: scratch,
       inputs: {},
@@ -156,8 +159,9 @@ test("real container dispatch when the bench environment is provided", async (t)
     });
     assert.equal(result.executionSucceeded, true);
     const payload = JSON.parse(result.diagnostics[0]);
-    assert.equal(payload.toolId, "pcb.bench.project_status");
+    assert.equal(payload.toolId, "pcb.design.project_status");
   } finally {
+    session?.close();
     fs.rmSync(scratch, { recursive: true, force: true });
   }
 });

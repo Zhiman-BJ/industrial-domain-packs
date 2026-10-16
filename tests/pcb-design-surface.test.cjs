@@ -7,7 +7,7 @@ const owner = require("../lib/index.cjs");
 
 const packDirectory = owner.sourceDirectory("pcb-pack");
 const snapshot = JSON.parse(
-  fs.readFileSync(path.join(packDirectory, "runtime/bench-upstream.json"), "utf8"),
+  fs.readFileSync(path.join(packDirectory, "runtime/upstream-snapshot.json"), "utf8"),
 );
 const manifest = JSON.parse(
   fs.readFileSync(path.join(packDirectory, "harness-pack.json"), "utf8"),
@@ -35,7 +35,7 @@ test("bench tool registry is well formed and unique", () => {
   const ids = new Set();
   const names = new Set();
   for (const tool of snapshot.tools) {
-    assert.match(tool.id, /^pcb\.bench\.[a-z0-9_]+$/);
+    assert.match(tool.id, /^pcb\.design\.[a-z0-9_]+$/);
     assert.ok(!ids.has(tool.id), `duplicate id ${tool.id}`);
     assert.ok(!names.has(tool.name), `duplicate name ${tool.name}`);
     ids.add(tool.id);
@@ -44,7 +44,7 @@ test("bench tool registry is well formed and unique", () => {
     assert.equal(typeof tool.summary, "string");
     assert.ok(tool.summary.length > 8, `${tool.id} summary is substantive`);
     if (tool.risk === "mutating") {
-      assert.deepEqual(tool.verification, ["pcb.bench.receipts.v1"]);
+      assert.deepEqual(tool.verification, ["pcb.design.receipts.v1"]);
     } else {
       assert.equal(tool.verification, undefined);
     }
@@ -56,8 +56,8 @@ test("bench tool registry is well formed and unique", () => {
 test("provider declares the bench surface verbatim plus the native profile", () => {
   const provider = manifest.provider;
   assert.equal(manifest.version, provider.version);
-  const bench = provider.tools.filter((t) => t.id.startsWith("pcb.bench."));
-  const native = provider.tools.filter((t) => !t.id.startsWith("pcb.bench."));
+  const bench = provider.tools.filter((t) => t.id.startsWith("pcb.design."));
+  const native = provider.tools.filter((t) => !t.id.startsWith("pcb.design."));
   assert.equal(bench.length, 89);
   assert.deepEqual(
     native.map((t) => t.id),
@@ -70,18 +70,18 @@ test("provider declares the bench surface verbatim plus the native profile", () 
 
 test("seven stage capabilities mirror the snapshot groups and provider tools", () => {
   const groups = manifest.capabilities.filter((c) =>
-    c.id.startsWith("pcb.bench."),
+    c.id.startsWith("pcb.design."),
   );
   assert.deepEqual(
     groups.map((c) => c.id),
     [
-      "pcb.bench.core",
-      "pcb.bench.components",
-      "pcb.bench.schematic",
-      "pcb.bench.pcb",
-      "pcb.bench.verification",
-      "pcb.bench.delivery",
-      "pcb.bench.operate",
+      "pcb.design.core",
+      "pcb.design.components",
+      "pcb.design.schematic",
+      "pcb.design.pcb",
+      "pcb.design.verification",
+      "pcb.design.delivery",
+      "pcb.design.operate",
     ],
   );
   const byId = new Map(manifest.provider.tools.map((t) => [t.id, t]));
@@ -156,7 +156,7 @@ test("runtime inventory and digest stay exact", () => {
   assert.equal(provider.sourceSha256, hash(Buffer.from(compact)));
 });
 
-test("runtime plugin exposes placeholder bench tools that fail with setup guidance", async () => {
+test("runtime plugin exposes placeholder design tools that fail with setup guidance", async () => {
   const { createRuntimePlugin } = require(path.join(
     packDirectory,
     "runtime/index.cjs",
@@ -165,28 +165,28 @@ test("runtime plugin exposes placeholder bench tools that fail with setup guidan
     runtimeApi: { executeTask: () => {}, runtimeFiles: () => {} },
   });
   const bench = plugin.tools.filter((t) =>
-    t.descriptor.id.startsWith("pcb.bench."),
+    t.descriptor.id.startsWith("pcb.design."),
   );
   assert.equal(bench.length, 89);
   assert.equal(plugin.tools.length, 91);
   const status = bench.find(
-    (t) => t.descriptor.id === "pcb.bench.project_status",
+    (t) => t.descriptor.id === "pcb.design.project_status",
   );
   assert.equal(status.descriptor.risk, "read-only");
   const runPython = bench.find(
-    (t) => t.descriptor.id === "pcb.bench.run_python",
+    (t) => t.descriptor.id === "pcb.design.run_python",
   );
   assert.equal(runPython.descriptor.risk, "read-only");
-  const addTrack = bench.find((t) => t.descriptor.id === "pcb.bench.add_track");
+  const addTrack = bench.find((t) => t.descriptor.id === "pcb.design.add_track");
   assert.equal(addTrack.descriptor.risk, "mutating");
   assert.equal(addTrack.descriptor.effect, "inputs");
-  assert.deepEqual(addTrack.descriptor.verification, ["pcb.bench.receipts.v1"]);
+  assert.deepEqual(addTrack.descriptor.verification, ["pcb.design.receipts.v1"]);
   assert.equal(
-    typeof plugin.verifiers["pcb.bench.receipts.v1"],
+    typeof plugin.verifiers["pcb.design.receipts.v1"],
     "function",
     "declared verifier must be registered",
   );
-  const assessed = plugin.verifiers["pcb.bench.receipts.v1"]();
+  const assessed = plugin.verifiers["pcb.design.receipts.v1"]();
   assert.equal(assessed.status, "not_run");
   assert.ok(addTrack.guide.description.includes("Dockerfile.local-dev"));
   const { createRuntimePlugin: freshPlugin } = require("../packs/pcb/runtime/index.cjs");
@@ -195,7 +195,7 @@ test("runtime plugin exposes placeholder bench tools that fail with setup guidan
     runtimeApi: { executeTask: () => {}, runtimeFiles: () => {} },
   });
   const bareTrack = bare.tools.find(
-    (t) => t.descriptor.id === "pcb.bench.add_track",
+    (t) => t.descriptor.id === "pcb.design.add_track",
   );
   await assert.rejects(
     bareTrack.execute({ projectDir: "/tmp", inputs: {}, action: {}, signal: new AbortController().signal }),
@@ -208,7 +208,7 @@ test("published file whitelist carries the vendored skill tree and actor", () =>
     fs.readFileSync(path.join(__dirname, "..", "package.json"), "utf8"),
   );
   const expected = [
-    "packs/pcb/runtime/bench-upstream.json",
+    "packs/pcb/runtime/upstream-snapshot.json",
     "packs/pcb/skills/pcb-kicad-native/SKILL.md",
     "packs/pcb/skills/pcb-design-e2e/assets/constraints.example.yaml",
     "packs/pcb/skills/pcb-design-e2e/references/tools.md",
