@@ -217,8 +217,8 @@ def run_native(work_dir, operation, payload):
     shutil.copyfile(Path(__file__).with_name("native.py"), work_dir / "native.py")
     home = work_dir / "home"
     temp = work_dir / "temp"
-    home.mkdir()
-    temp.mkdir()
+    home.mkdir(exist_ok=True)
+    temp.mkdir(exist_ok=True)
     env = {
         "PATH": "/usr/bin:/bin:/opt/freecad/usr/bin",
         "HOME": str(home),
@@ -229,7 +229,7 @@ def run_native(work_dir, operation, payload):
         "PYTHONDONTWRITEBYTECODE": "1",
         "QT_QPA_PLATFORM": "offscreen",
     }
-    (home / "data").mkdir()
+    (home / "data").mkdir(exist_ok=True)
     try:
         process = subprocess.Popen(
             [FREECAD, "--keep-deprecated-paths", str(work_dir / "native.py")],
@@ -247,7 +247,10 @@ def run_native(work_dir, operation, payload):
             timed_out = True
             os.killpg(os.getpgid(process.pid), signal.SIGKILL)
             output, _ = process.communicate()
-        (work_dir / "tool.log").write_text(output[-1024 * 1024 :], encoding="utf-8", errors="replace")
+        log = work_dir / "tool.log"
+        prefix = "\n--- %s ---\n" % operation if log.exists() else ""
+        previous = log.read_text(encoding="utf-8", errors="replace") if log.exists() else ""
+        log.write_text((previous + prefix + output)[-1024 * 1024 :], encoding="utf-8", errors="replace")
         return process.returncode == 0 and not timed_out
     except (OSError, ValueError) as error:
         (work_dir / "tool.log").write_text("native launch failed: %s\n" % error, encoding="utf-8")
