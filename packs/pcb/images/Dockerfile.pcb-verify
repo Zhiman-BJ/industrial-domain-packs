@@ -46,7 +46,8 @@ ENV WORKER_RUNTIME_DIGEST=${PCB_RUNTIME_DIGEST} \
 # envd is the only management/data-plane bridge. It is copied from the pinned
 # AGS reference image and runs as the same unprivileged user as the worker.
 COPY --from=ccr.ccs.tencentyun.com/ags-image/envd:v0.5.14 --chmod=755 /usr/bin/envd /usr/bin/envd
-RUN mkdir -p /input /work/requests && chown -R 1000:1000 /input /work
+RUN mkdir -p /input /work/requests /tmp/.cache/kicad \
+    && chown -R 1000:1000 /input /work /tmp/.cache
 EXPOSE 8080 49983
 WORKDIR /work
 USER 1000:1000
