@@ -212,7 +212,8 @@ function verify({ result, artifacts, readArtifact, action }) {
       metrics: {},
     };
   const original = JSON.parse(readArtifact(originalArtifact)).original;
-  const tolerance = action.inputs.expect?.tolerance || 0.00001;
+  const expected = result.expect || {};
+  const tolerance = expected.tolerance || 0.00001;
   const near = (a, b) => Number.isFinite(a) && Number.isFinite(b) && Math.abs(a - b) <= tolerance;
   const checks = {
     nativeValid: data.native?.valid === true,
@@ -242,7 +243,6 @@ function verify({ result, artifacts, readArtifact, action }) {
     ].every(kind => artifacts.some(a => a.kind === kind)),
     inputUnchanged: result.inputUnchanged !== false,
   };
-  const expected = action.inputs.expect || {};
   if (expected.volume !== undefined)
     checks.expectedVolume = near(data.native.volume, expected.volume);
   if (expected.solids !== undefined) checks.expectedSolids = data.native.solids === expected.solids;

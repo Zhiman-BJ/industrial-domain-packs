@@ -19,7 +19,9 @@
         "executor": "packs/pcb/runtime/verify-board.py",
         "arguments": "object",
         "successField": "executionSucceeded",
-        "toolIds": ["pcb.kicad.verify"]
+        "toolIds": [
+          "pcb.kicad.verify"
+        ]
       },
       "entry": [
         "python3",
@@ -27,11 +29,29 @@
       ],
       "inputProfile": "pcb.yaml-declared board.kicad_pcb; kicad-cli DRC + native readback; no execution overrides",
       "artifacts": [
-        ["tool.log", "log.tool", 2097152],
-        ["report.json", "report.pcb.run", 65536],
-        ["drc.json", "report.pcb.drc", 8388608],
-        ["readback.json", "report.pcb.readback", 5242880]
-      ]
+        [
+          "tool.log",
+          "log.tool",
+          2097152
+        ],
+        [
+          "report.json",
+          "report.pcb.run",
+          65536
+        ],
+        [
+          "drc.json",
+          "report.pcb.drc",
+          8388608
+        ],
+        [
+          "readback.json",
+          "report.pcb.readback",
+          5242880
+        ]
+      ],
+      "canonicalEntry": "packs/pcb/runtime/verifier.cjs",
+      "runtimeDigest": "sha256:62ee1ce7ed0058bcc8cab1ff61d6cb278c30cbbb811334529ba0b966030ac8a6"
     }
   ],
   "runtime": {

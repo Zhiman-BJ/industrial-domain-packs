@@ -11,7 +11,7 @@
     "transport": "runtime",
     "packDirectory": "pcb",
     "packId": "pcb-pack",
-    "sourceSha256": "91bc11a8c47fd513017a6d3a95c853379eea9202ed87bdd3fe4df50e6489d071",
+    "sourceSha256": "b4618eafe4905c43ecfc096a071ef7fb2f4b671694ae22f0ead04355356fa59e",
     "resourceRoots": [
       "runtime"
     ],
@@ -23,8 +23,9 @@
       "runtime/native.py": "5446b0ffe8fa4880fb11c4357e342694a97dffff94c1e5a505defd34071a1f7c",
       "runtime/setup-native.cjs": "9c78c10560e0d651fefd3eb8722681aa995047ce2792ce192523a48bd3890457",
       "runtime/support.cjs": "27c8c2b8b7472677c007a4c7fa6e1d42651a8ef0579fc58c85878a3e986e60cc",
-      "runtime/verifier.cjs": "e6e6a2fe501b9b93f2b863b682b9a4fa07c8a08cc2ce88bb9043a66df212eb0d",
-      "runtime/kicad-packages.json": "815c19e4412bf602c921758dcb877c183d6c29cd24d167a4c2a13935ab66c9d9"
+      "runtime/verifier.cjs": "6ab2b0f1f746b461b74b3d27ed807650eac4046a1b2ccad9a9be4554f745d687",
+      "runtime/kicad-packages.json": "815c19e4412bf602c921758dcb877c183d6c29cd24d167a4c2a13935ab66c9d9",
+      "runtime/verify-board.py": "845167bf9e1db169f19513c2b22d7bac91335b1e313edc95d9d97df84c6120cb"
     },
     "tools": [
       {
