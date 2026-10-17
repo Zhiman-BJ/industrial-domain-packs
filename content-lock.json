@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contentSha256": "99dd78c5d0d44d6508204957410aef4f1ec1d513f19d20cbad3596184f169c58",
+  "contentSha256": "8d53c088e4a3a69bfadba068fb9458524ba011cc28dbf461fdecda8870da04cd",
   "files": {
     "lib/consumer.cjs": "4d670732dbf3d5a3da33cac41007573e1f47b514a7165ac1df1748c9c2f960ab",
     "lib/consumer.json": "33e50b9ea84e2971ecf72b387daa2203f8849313fddfba73be2561445c4a4d2f",
@@ -142,7 +142,7 @@
     "packs/freecad/runtime/native.py": "c9da3e181617403384cdeb2135480dd3f7b0bf6b238771c81898f69ba559d9dc",
     "packs/freecad/runtime/presentation.cjs": "767c4e97d61d19b3980765c91a4d50ef3e7d4e61684d19cecf1415013facb77e",
     "packs/freecad/runtime/recipe.cjs": "8d0f0dc69776359a590561c65c9ca51289bdb417294dddf99317438d080670f3",
-    "packs/freecad/runtime/remote-worker.py": "66f7875f670bba8f04d2385b1dc460aaf9f6affba8276a80aa9a46d2f4107ce3",
+    "packs/freecad/runtime/remote-worker.py": "1cd6a97d4ad9c1006fb8a7e653872899febeb0a5718b23657eaf5820f5274cde",
     "packs/freecad/runtime/verifier.cjs": "e555c034a59498f97fd50bc5ad7c4db739431a147b88cb77cfb33eed9fa9efb3",
     "packs/freecad/skills/cad-freecad-headless/SKILL.md": "87312053383171d78e1598a4fba86c93e4feb79c4682e9a0cbd6ac71116a6866",
     "packs/godot/PROVENANCE.md": "df17680057afb550c68a9b7cbfed30f8d9fa5518d40785bb1c4fc2701c6c9d9d",

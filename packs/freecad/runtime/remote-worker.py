@@ -247,13 +247,13 @@ def run_native(work_dir, operation, payload):
             timed_out = True
             os.killpg(os.getpgid(process.pid), signal.SIGKILL)
             output, _ = process.communicate()
-        log = work_dir / "tool.log"
-        prefix = "\n--- %s ---\n" % operation if log.exists() else ""
-        previous = log.read_text(encoding="utf-8", errors="replace") if log.exists() else ""
-        log.write_text((previous + prefix + output)[-1024 * 1024 :], encoding="utf-8", errors="replace")
+        with (work_dir / "tool.log").open("a", encoding="utf-8", errors="replace") as log:
+            log.write(output[-1024 * 1024 :])
+            log.write("\n")
         return process.returncode == 0 and not timed_out
     except (OSError, ValueError) as error:
-        (work_dir / "tool.log").write_text("native launch failed: %s\n" % error, encoding="utf-8")
+        with (work_dir / "tool.log").open("a", encoding="utf-8") as log:
+            log.write("native launch failed: %s\n" % error)
         return False
 
 
