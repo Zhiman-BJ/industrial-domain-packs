@@ -9,17 +9,18 @@ ARG FREECAD_SHA256=f6dc6ba676e5ac96a565ebc8d657232f94c6158e85b4352141bd1a46f6b43
 # digest in the build script below; override only with a reviewed release pin.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-      ca-certificates curl file libfuse2t64 python3 python3-minimal bash \
-    && rm -rf /var/lib/apt/lists/* \
-    && curl --fail --location --retry 3 --retry-all-errors "$FREECAD_URL" --output /tmp/freecad.AppImage \
+      ca-certificates curl file libfuse2t64 python3 python3-minimal bash squashfs-tools \
+    && rm -rf /var/lib/apt/lists/*
+# Extract the x86_64 AppImage without executing its ELF runtime. This keeps
+# cross-building on arm64 hosts deterministic; the worker itself runs in the
+# linux/amd64 image and is exercised separately during qualification.
+RUN curl --fail --location --retry 3 --retry-all-errors "$FREECAD_URL" --output /tmp/freecad.AppImage \
     && echo "$FREECAD_SHA256  /tmp/freecad.AppImage" | sha256sum --check --status \
-    && chmod 0755 /tmp/freecad.AppImage \
-    && cd /opt \
-    && /tmp/freecad.AppImage --appimage-extract >/dev/null \
-    && mv /opt/squashfs-root /opt/freecad \
+    && rm -rf /opt/freecad \
+    && unsquashfs -d /opt/freecad /tmp/freecad.AppImage >/dev/null \
     && rm -f /tmp/freecad.AppImage \
-    && test -x /opt/freecad/usr/bin/freecadcmd \
-    && /opt/freecad/usr/bin/freecadcmd --version | grep -F '1.1.4'
+    && test -x /opt/freecad/usr/bin/freecadcmd
+RUN /opt/freecad/usr/bin/freecadcmd --version | grep -F '1.1.4'
 # AGS management daemon: envd owns health checks and snapshot staging.
 COPY --from=ccr.ccs.tencentyun.com/ags-image/envd:v0.5.14 --chmod=755 /usr/bin/envd /usr/bin/envd
 COPY packs/freecad/pack.json /opt/domain-packs/packs/freecad/pack.json
