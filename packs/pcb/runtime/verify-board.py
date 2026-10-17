@@ -139,6 +139,8 @@ def main(input_directory, work_directory):
         drc_path = work / "drc.json"
         with log_path.open("wb") as log:
             drc = subprocess.run(["kicad-cli", "pcb", "drc", "--format", "json", "--severity-all", "--output", str(drc_path), str(board)], stdout=log, stderr=subprocess.STDOUT, timeout=arguments["timeoutMs"] / 1000)
+        if drc.returncode != 0:
+            fail(f"kicad-cli DRC failed with exit {drc.returncode}")
         if not drc_path.is_file():
             fail(f"kicad-cli did not produce drc.json (exit {drc.returncode})")
         drc_document = json.loads(drc_path.read_text(encoding="utf-8"))
