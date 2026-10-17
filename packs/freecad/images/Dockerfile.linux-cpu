@@ -15,9 +15,26 @@ RUN apt-get update \
 # cross-building on arm64 hosts deterministic; the worker itself runs in the
 # linux/amd64 image and is exercised separately during qualification.
 RUN curl --fail --location --retry 3 --retry-all-errors "$FREECAD_URL" --output /tmp/freecad.AppImage \
-    && echo "$FREECAD_SHA256  /tmp/freecad.AppImage" | sha256sum --check --status \
+    && echo "$FREECAD_SHA256  /tmp/freecad.AppImage" | sha256sum --check --status
+RUN SQUASHFS_OFFSET="$(python3 - <<'PY'
+from pathlib import Path
+
+path = Path('/tmp/freecad.AppImage')
+offset = 0
+with path.open('rb') as handle:
+    while chunk := handle.read(1024 * 1024):
+        index = chunk.find(b'hsqs')
+        if index >= 0:
+            print(offset + index)
+            break
+        offset += len(chunk)
+    else:
+        raise SystemExit('SquashFS superblock not found in AppImage')
+PY
+)" \
+    && test "$SQUASHFS_OFFSET" -ge 0 \
     && rm -rf /opt/freecad \
-    && unsquashfs -d /opt/freecad /tmp/freecad.AppImage >/dev/null \
+    && unsquashfs -offset "$SQUASHFS_OFFSET" -d /opt/freecad /tmp/freecad.AppImage >/dev/null \
     && rm -f /tmp/freecad.AppImage \
     && test -x /opt/freecad/usr/bin/freecadcmd
 RUN /opt/freecad/usr/bin/freecadcmd --version | grep -F '1.1.4'
