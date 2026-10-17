@@ -71,6 +71,7 @@ def validate_recipe(recipe):
     if not isinstance(features, list) or not 1 <= len(features) <= 50:
         fail("CAD recipe needs 1-50 features.")
     names = set()
+    normalized = []
     for feature in features:
         if not isinstance(feature, dict) or feature.get("op") not in OPS:
             fail("Unsupported CAD operation.")
@@ -107,12 +108,14 @@ def validate_recipe(recipe):
                 fail("Sketch profile must be rectangle or circle.")
         else:
             dimensions = tuple(key for key in OPS[feature["op"]] if key not in {"base", "tool"})
+        resolved = dict(feature)
         for key in dimensions:
-            dimension(feature.get(key))
+            resolved[key] = dimension(feature.get(key))
+        normalized.append(resolved)
         names.add(feature_id)
     if recipe.get("result") not in names:
         fail("CAD result must name a feature.")
-    return recipe
+    return {"parameters": parameters, "features": normalized, "result": recipe["result"]}
 
 
 def validate_expect(expect):
@@ -143,7 +146,8 @@ def validate_input(operation, inputs):
     object_keys(inputs, allowed)
     validate_expect(inputs.get("expect"))
     if operation == "build":
-        return validate_recipe(inputs.get("recipe"))
+        validate_recipe(inputs.get("recipe"))
+        return inputs["recipe"]
     file = inputs.get("file")
     if not isinstance(file, str) or not file or len(file) > 1024:
         fail("CAD file must be a project-relative FCStd/STEP path.")
@@ -199,7 +203,8 @@ def apply_changes(recipe, changes):
             fail("Unknown CAD feature patch: " + feature_id)
         feature.update(patch)
         changed.add(feature_id)
-    return validate_recipe(next_recipe)
+    validate_recipe(next_recipe)
+    return next_recipe
 
 
 def copy_source(input_dir, work_dir, relative):
@@ -287,12 +292,15 @@ def main():
                 preview = source.with_suffix(".cad-preview.json")
                 recipe_doc = read_json(companion)
                 preview_doc = read_json(preview, 2 * MAX_RECIPE_BYTES)
-                if preview_doc.get("schemaVersion") != 1 or preview_doc.get("hashes", {}).get(source.name) != source_hash:
+                hashes = preview_doc.get("hashes", {})
+                if (preview_doc.get("schemaVersion") != 1
+                    or hashes.get(source.name) != source_hash
+                    or hashes.get(companion.name) != hashlib.sha256(companion.read_bytes()).hexdigest()):
                     fail("CAD editable recipe hash does not match the staged model.")
                 recipe = apply_changes(recipe_doc, arguments["changes"])
-            native_payload = {"recipe": recipe} if operation == "edit" else {"file": str(staged)}
+            native_payload = {"recipe": validate_recipe(recipe)} if operation == "edit" else {"file": str(staged)}
         else:
-            native_payload = {"recipe": recipe}
+            native_payload = {"recipe": validate_recipe(recipe)}
             (work_dir / "model.recipe.json").write_text(json.dumps(recipe, indent=2), encoding="utf-8")
         first_ok = run_native(work_dir, operation, native_payload)
         second_ok = first_ok and run_native(work_dir, "verify", {})
@@ -304,6 +312,7 @@ def main():
             "operation": operation,
             "inputUnchanged": True,
             "sourceSha256": source_hash,
+            "expect": arguments.get("expect", {}),
             "nativeVerification": {"status": "PASS" if second_ok else "FAIL"},
         }
         (work_dir / "report.json").write_text(json.dumps(report, indent=2), encoding="utf-8")

@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1
+# syntax=docker/dockerfile:1@sha256:4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e
 # FreeCAD 1.1.4 is the latest stable 1.1.x maintenance release as of 2026-10-17.
 # The AppImage URL and SHA are from the official FreeCAD 1.1.4 GitHub release.
 FROM ubuntu:24.04@sha256:534baea6a22c03a63003dbc8dbe78fe34bc0d7e595d9a9dc9834884ff530eb55
@@ -9,22 +9,27 @@ ARG FREECAD_SHA256=f6dc6ba676e5ac96a565ebc8d657232f94c6158e85b4352141bd1a46f6b43
 # digest in the build script below; override only with a reviewed release pin.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-      ca-certificates curl file libfuse2t64 python3 python3-minimal bash squashfs-tools \
+      ca-certificates=20260601~24.04.1 curl=8.5.0-2ubuntu10.16 \
+      file=1:5.45-3build1 libfuse2t64=2.9.9-8.1build1 \
+      python3=3.12.3-0ubuntu2.1 python3-minimal=3.12.3-0ubuntu2.1 \
+      bash=5.2.21-2ubuntu4 squashfs-tools=1:4.6.1-1build1 \
     && rm -rf /var/lib/apt/lists/*
 # Extract the x86_64 AppImage without executing its ELF runtime. This keeps
 # cross-building on arm64 hosts deterministic; the worker itself runs in the
 # linux/amd64 image and is exercised separately during qualification.
-RUN curl --fail --location --retry 3 --retry-all-errors "$FREECAD_URL" --output /tmp/freecad.AppImage \
-    && echo "$FREECAD_SHA256  /tmp/freecad.AppImage" | sha256sum --check --status
-RUN SQUASHFS_OFFSET="$(python3 -c 'import mmap; f = open("/tmp/freecad.AppImage", "rb"); print(mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ).find(b"hsqs"))')" \
-    && test "$SQUASHFS_OFFSET" -ge 0 \
-    && rm -rf /opt/freecad \
-    && unsquashfs -offset "$SQUASHFS_OFFSET" -d /opt/freecad /tmp/freecad.AppImage >/dev/null \
+RUN --mount=type=cache,target=/var/cache/freecad \
+    curl --fail --location --retry 10 --retry-all-errors --continue-at - "$FREECAD_URL" --output /var/cache/freecad/freecad.AppImage \
+    && echo "$FREECAD_SHA256  /var/cache/freecad/freecad.AppImage" | sha256sum --check --status \
+    && cp /var/cache/freecad/freecad.AppImage /tmp/freecad.AppImage
+# The pinned ELF64 section table ends at byte 944632. Earlier "hsqs" bytes
+# are strings inside the bootstrap, not the filesystem superblock.
+RUN python3 -c 'f=open("/tmp/freecad.AppImage", "rb"); f.seek(944632); assert f.read(4) == b"hsqs"' \
+    && unsquashfs -offset 944632 -d /opt/freecad /tmp/freecad.AppImage >/dev/null \
     && rm -f /tmp/freecad.AppImage \
     && test -x /opt/freecad/usr/bin/freecadcmd
 RUN /opt/freecad/usr/bin/freecadcmd --version | grep -F '1.1.4'
 # AGS management daemon: envd owns health checks and snapshot staging.
-COPY --from=ccr.ccs.tencentyun.com/ags-image/envd:v0.5.14 --chmod=755 /usr/bin/envd /usr/bin/envd
+COPY --from=ccr.ccs.tencentyun.com/ags-image/envd:v0.5.14@sha256:339efc1a2186ae32b9cbe388c0069c33f9c844361d7dcbc830f4e9863d6e8e51 --chmod=755 /usr/bin/envd /usr/bin/envd
 COPY packs/freecad/pack.json /opt/domain-packs/packs/freecad/pack.json
 COPY lib/worker-http.py /opt/domain-packs/lib/worker-http.py
 COPY packs/freecad/runtime/native.py /opt/domain-packs/packs/freecad/runtime/native.py
@@ -33,7 +38,7 @@ COPY packs/freecad/runtime/index.cjs /opt/domain-packs/packs/freecad/runtime/ind
 COPY packs/freecad/runtime/recipe.cjs /opt/domain-packs/packs/freecad/runtime/recipe.cjs
 COPY packs/freecad/runtime/presentation.cjs /opt/domain-packs/packs/freecad/runtime/presentation.cjs
 COPY packs/freecad/runtime/verifier.cjs /opt/domain-packs/packs/freecad/runtime/verifier.cjs
-ARG FREECAD_RUNTIME_DIGEST=sha256:a3ce69d24d42e7e023eddbb02b0fd7d331473dd7bad3d12f032b93ae3a97683f
+ARG FREECAD_RUNTIME_DIGEST=sha256:ab4f32aef70022813f0699e034bb11c4caa1655cb766d12985c783a4de04a54d
 ENV PATH="/opt/freecad/usr/bin:${PATH}" \
     HOME=/tmp \
     QT_QPA_PLATFORM=offscreen \
@@ -43,8 +48,7 @@ ENV PATH="/opt/freecad/usr/bin:${PATH}" \
     WORKER_PROFILE_ID=freecad-linux-cpu \
     WORKER_EXECUTOR=/opt/domain-packs/packs/freecad/runtime/remote-worker.py \
     WORKER_TIMEOUT_SECONDS=900
-RUN useradd --create-home --uid 1000 --shell /usr/sbin/nologin sandbox \
-    && mkdir -p /input /work/requests \
+RUN mkdir -p /input /work/requests \
     && chown -R 1000:1000 /input /work /tmp
 EXPOSE 8080 49983
 WORKDIR /work

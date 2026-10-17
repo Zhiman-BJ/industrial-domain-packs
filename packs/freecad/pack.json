@@ -29,7 +29,7 @@
         "/opt/domain-packs/packs/freecad/runtime/remote-worker.py"
       ],
       "inputProfile": "FreeCAD 1.1.4 Linux x86_64 headless; bounded recipes and project-relative FCStd/STEP inputs",
-      "runtimeDigest": "sha256:a3ce69d24d42e7e023eddbb02b0fd7d331473dd7bad3d12f032b93ae3a97683f",
+      "runtimeDigest": "sha256:ab4f32aef70022813f0699e034bb11c4caa1655cb766d12985c783a4de04a54d",
       "artifacts": [
         ["tool.log", "log.tool", 2097152],
         ["report.json", "report.cad.execution", 65536],

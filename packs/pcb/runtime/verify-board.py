@@ -8,6 +8,8 @@ CLI/native readback against the server-materialized ``/input`` tree.
 """
 
 import json
+import hashlib
+import shutil
 import os
 import re
 import subprocess
@@ -119,6 +121,12 @@ def main(input_directory, work_directory):
     filename = arguments["file"]
     board = relative_board(root, filename)
     parse_board_declaration(root, filename)
+    input_hashes = {str(p.relative_to(root)): hashlib.sha256(p.read_bytes()).hexdigest() for p in root.rglob("*") if p.is_file()}
+    # KiCad writes project-local sidecars even for readback. Isolate those
+    # writes in this invocation so the frozen input remains reusable.
+    staged_root = work / "project"
+    shutil.copytree(root, staged_root)
+    board = staged_root / filename
     started = time.monotonic()
     report = {
         "schemaVersion": "1",
@@ -164,6 +172,7 @@ def main(input_directory, work_directory):
         with log_path.open("ab") as log:
             if log.tell() < MAX_LOG_BYTES:
                 log.write(("PCB verify: " + report["diagnostic"] + "\n").encode())
+    report["inputUnchanged"] = input_hashes == {str(p.relative_to(root)): hashlib.sha256(p.read_bytes()).hexdigest() for p in root.rglob("*") if p.is_file()}
     report["durationMs"] = round((time.monotonic() - started) * 1000)
     (work / "report.json").write_text(json.dumps(report, sort_keys=True) + "\n", encoding="utf-8")
     return 0 if report["executionSucceeded"] else 1

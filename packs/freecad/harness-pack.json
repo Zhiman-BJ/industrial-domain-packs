@@ -10,7 +10,7 @@
     "version": "1.1.4-pack.8",
     "transport": "runtime",
     "packDirectory": "freecad",
-    "sourceSha256": "f8c9aa9c91fce8ce72a1d4e4379f1c4d16b2f14b490d79aeca026f89cf098581",
+    "sourceSha256": "efacbd74ddb10d99195f6c39b91e552b34de4a6bbbd7e5598acdf95fe56332a0",
     "tools": [
       {
         "id": "cad.freecad.build",
@@ -53,11 +53,11 @@
       "runtime"
     ],
     "sourceFiles": {
-      "runtime/index.cjs": "6694995917a51519d36e9447184d7cbb13e99f0338f8db37c6e0948a48d35ebc",
+      "runtime/index.cjs": "931c2a4a701098d9d156defdd6472b7f34b9bdba0a5214083b48963292b0ef6a",
       "runtime/native.py": "c9da3e181617403384cdeb2135480dd3f7b0bf6b238771c81898f69ba559d9dc",
       "runtime/presentation.cjs": "767c4e97d61d19b3980765c91a4d50ef3e7d4e61684d19cecf1415013facb77e",
       "runtime/recipe.cjs": "8d0f0dc69776359a590561c65c9ca51289bdb417294dddf99317438d080670f3",
-      "runtime/remote-worker.py": "66f7875f670bba8f04d2385b1dc460aaf9f6affba8276a80aa9a46d2f4107ce3",
+      "runtime/remote-worker.py": "facd30be3558a84936a6ee86a5f2867d28562963e2ad27c229af7a7081b44fa2",
       "runtime/verifier.cjs": "e555c034a59498f97fd50bc5ad7c4db739431a147b88cb77cfb33eed9fa9efb3"
     },
     "packId": "freecad-pack"
