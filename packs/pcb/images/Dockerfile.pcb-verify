@@ -6,7 +6,7 @@ FROM ubuntu:24.04@sha256:534baea6a22c03a63003dbc8dbe78fe34bc0d7e595d9a9dc9834884
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG PCB_DEV_INSECURE_APT_TLS=0
-ARG PCB_RUNTIME_DIGEST=sha256:1c28ca11d3428e44c0d793047613ea78b29f3922427a57d98b84804dd112776e
+ARG PCB_RUNTIME_DIGEST=sha256:62ee1ce7ed0058bcc8cab1ff61d6cb278c30cbbb811334529ba0b966030ac8a6
 
 COPY --from=java /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 RUN if [ "$PCB_DEV_INSECURE_APT_TLS" = 1 ]; then \

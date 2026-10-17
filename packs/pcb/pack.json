@@ -51,7 +51,7 @@
         ]
       ],
       "canonicalEntry": "packs/pcb/runtime/verifier.cjs",
-      "runtimeDigest": "sha256:1c28ca11d3428e44c0d793047613ea78b29f3922427a57d98b84804dd112776e"
+      "runtimeDigest": "sha256:62ee1ce7ed0058bcc8cab1ff61d6cb278c30cbbb811334529ba0b966030ac8a6"
     }
   ],
   "runtime": {
