@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contentSha256": "3676446828a644829550274838da187bb58edda761537c6dfa3987b1a81d851d",
+  "contentSha256": "531934b6aaca63a9f0e7cfa457035768bd603788ef77d0bd96f41b693e8883f1",
   "files": {
     "lib/consumer.cjs": "4d670732dbf3d5a3da33cac41007573e1f47b514a7165ac1df1748c9c2f960ab",
     "lib/consumer.json": "33e50b9ea84e2971ecf72b387daa2203f8849313fddfba73be2561445c4a4d2f",
@@ -444,7 +444,7 @@
     "packs/pcb/bridge/pcb-gateway.py": "aef380f4c7392b7fde35977060c1172047759e34aecf97a7db54eda2d55a5b1c",
     "packs/pcb/bridge/pcb-runtime.cjs": "2ba920c0e2baa23e4a43d05ed4b01699c777777f21ef45c2e017af482e3356f7",
     "packs/pcb/examples/mounting-board/board.kicad_pcb": "a892beb0e25094c3c55cb859a22b9811bb1b6c0615f4856b588660cec846ff9e",
-    "packs/pcb/harness-pack.json": "d7419cd37c370f0697b1c8e6c10e1bf311c467ec3475029550bc56be0b59af2c",
+    "packs/pcb/harness-pack.json": "c3f66cb8cd9632c858c1259ac2945db0402aa96290452d221e14f7bee2adfda4",
     "packs/pcb/images/Dockerfile.pcb-verify": "7e3bc2bd1618b43b3eb835ef81c0eb4de796c07dff711dc9f224e84dea250542",
     "packs/pcb/legacy-harness-pack.json": "64be47af2b24d1a6a059db65e39344d60221f161afa8384e8c2c8f14b6edc95c",
     "packs/pcb/pack.json": "99cf86e0f57c2447b58970c70e0ad03796ce5f34bf86af26ff5d1fda9a53be75",
