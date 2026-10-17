@@ -31,7 +31,8 @@
         ["report.json", "report.pcb.run", 65536],
         ["drc.json", "report.pcb.drc", 8388608],
         ["readback.json", "report.pcb.readback", 5242880]
-      ]
+      ],
+      "canonicalEntry": "packs/pcb/runtime/verifier.cjs"
     }
   ],
   "runtime": {

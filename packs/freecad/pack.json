@@ -7,7 +7,49 @@
   "skills": [
     "skills/cad-freecad-headless/SKILL.md"
   ],
-  "profiles": [],
+  "profiles": [
+    {
+      "id": "freecad-linux-cpu",
+      "platform": "linux/amd64",
+      "recipe": "packs/freecad/images/Dockerfile.linux-cpu",
+      "status": "qualification-pending",
+      "worker": {
+        "executor": "packs/freecad/runtime/remote-worker.py",
+        "arguments": "object",
+        "successField": "executionSucceeded",
+        "toolIds": [
+          "cad.freecad.build",
+          "cad.freecad.inspect",
+          "cad.freecad.export",
+          "cad.freecad.edit"
+        ]
+      },
+      "entry": [
+        "python3",
+        "/opt/domain-packs/packs/freecad/runtime/remote-worker.py"
+      ],
+      "inputProfile": "FreeCAD 1.1.4 Linux x86_64 headless; bounded recipes and project-relative FCStd/STEP inputs",
+      "runtimeDigest": "sha256:a3ce69d24d42e7e023eddbb02b0fd7d331473dd7bad3d12f032b93ae3a97683f",
+      "artifacts": [
+        ["tool.log", "log.tool", 2097152],
+        ["report.json", "report.cad.execution", 65536],
+        ["build.json", "report.cad.build", 65536],
+        ["readback.json", "report.cad.readback", 131072],
+        ["model.FCStd", "model.cad.fcstd", 16777216],
+        ["model.step", "model.cad.step", 16777216],
+        ["model.stl", "model.cad.stl", 16777216],
+        ["model.brep", "display.cad.brep", 16777216],
+        ["model.cad-sketches.json", "display.cad.sketches", 1048576],
+        ["model.cad-preview.json", "display.cad.manifest", 1048576],
+        ["model.recipe.json", "input.cad.recipe", 262144],
+        ["input.fcstd", "input.cad.model", 16777216],
+        ["input.step", "input.cad.model", 16777216],
+        ["input.stp", "input.cad.model", 16777216],
+        ["error.json", "diagnostic.cad", 65536]
+      ],
+      "canonicalEntry": "packs/freecad/runtime/verifier.cjs"
+    }
+  ],
   "runtime": {
     "entry": "runtime/index.cjs"
   },

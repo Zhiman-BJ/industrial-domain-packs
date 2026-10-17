@@ -1,0 +1,49 @@
+# syntax=docker/dockerfile:1
+# FreeCAD 1.1.4 is the latest stable 1.1.x maintenance release as of 2026-10-17.
+# The AppImage URL and SHA are from the official FreeCAD 1.1.4 GitHub release.
+FROM ubuntu:24.04@sha256:534baea6a22c03a63003dbc8dbe78fe34bc0d7e595d9a9dc9834884ff530eb55
+ARG DEBIAN_FRONTEND=noninteractive
+ARG FREECAD_URL=https://github.com/FreeCAD/FreeCAD/releases/download/1.1.4/FreeCAD_1.1.4-Linux-x86_64-py311.AppImage
+ARG FREECAD_SHA256=f6dc6ba676e5ac96a565ebc8d657232f94c6158e85b4352141bd1a46f6b43434
+# The default value above is intentionally checked against the full release
+# digest in the build script below; override only with a reviewed release pin.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+      ca-certificates curl file libfuse2t64 python3 python3-minimal bash \
+    && rm -rf /var/lib/apt/lists/* \
+    && curl --fail --location --retry 3 --retry-all-errors "$FREECAD_URL" --output /tmp/freecad.AppImage \
+    && echo "$FREECAD_SHA256  /tmp/freecad.AppImage" | sha256sum --check --status \
+    && chmod 0755 /tmp/freecad.AppImage \
+    && cd /opt \
+    && /tmp/freecad.AppImage --appimage-extract >/dev/null \
+    && mv /opt/squashfs-root /opt/freecad \
+    && rm -f /tmp/freecad.AppImage \
+    && test -x /opt/freecad/usr/bin/freecadcmd \
+    && /opt/freecad/usr/bin/freecadcmd --version | grep -F '1.1.4'
+# AGS management daemon: envd owns health checks and snapshot staging.
+COPY --from=ccr.ccs.tencentyun.com/ags-image/envd:v0.5.14 --chmod=755 /usr/bin/envd /usr/bin/envd
+COPY packs/freecad/pack.json /opt/domain-packs/packs/freecad/pack.json
+COPY lib/worker-http.py /opt/domain-packs/lib/worker-http.py
+COPY packs/freecad/runtime/native.py /opt/domain-packs/packs/freecad/runtime/native.py
+COPY packs/freecad/runtime/remote-worker.py /opt/domain-packs/packs/freecad/runtime/remote-worker.py
+COPY packs/freecad/runtime/index.cjs /opt/domain-packs/packs/freecad/runtime/index.cjs
+COPY packs/freecad/runtime/recipe.cjs /opt/domain-packs/packs/freecad/runtime/recipe.cjs
+COPY packs/freecad/runtime/presentation.cjs /opt/domain-packs/packs/freecad/runtime/presentation.cjs
+COPY packs/freecad/runtime/verifier.cjs /opt/domain-packs/packs/freecad/runtime/verifier.cjs
+ARG FREECAD_RUNTIME_DIGEST=sha256:a3ce69d24d42e7e023eddbb02b0fd7d331473dd7bad3d12f032b93ae3a97683f
+ENV PATH="/opt/freecad/usr/bin:${PATH}" \
+    HOME=/tmp \
+    QT_QPA_PLATFORM=offscreen \
+    PYTHONDONTWRITEBYTECODE=1 \
+    WORKER_RUNTIME_DIGEST=${FREECAD_RUNTIME_DIGEST} \
+    WORKER_PACK=freecad \
+    WORKER_PROFILE_ID=freecad-linux-cpu \
+    WORKER_EXECUTOR=/opt/domain-packs/packs/freecad/runtime/remote-worker.py \
+    WORKER_TIMEOUT_SECONDS=900
+RUN useradd --create-home --uid 1000 --shell /usr/sbin/nologin sandbox \
+    && mkdir -p /input /work/requests \
+    && chown -R 1000:1000 /input /work /tmp
+EXPOSE 8080 49983
+WORKDIR /work
+USER 1000:1000
+ENTRYPOINT ["/bin/bash", "-lc", "/usr/bin/envd >/tmp/envd.log 2>&1 & exec python3 /opt/domain-packs/lib/worker-http.py"]

@@ -10,7 +10,7 @@
     "version": "1.1.4-pack.8",
     "transport": "runtime",
     "packDirectory": "freecad",
-    "sourceSha256": "7e18709cb6cb3aff47261c9eeb9baddc0a3855a6f12e95c549f9efa94732c975",
+    "sourceSha256": "f8c9aa9c91fce8ce72a1d4e4379f1c4d16b2f14b490d79aeca026f89cf098581",
     "tools": [
       {
         "id": "cad.freecad.build",
@@ -56,7 +56,9 @@
       "runtime/index.cjs": "6694995917a51519d36e9447184d7cbb13e99f0338f8db37c6e0948a48d35ebc",
       "runtime/native.py": "c9da3e181617403384cdeb2135480dd3f7b0bf6b238771c81898f69ba559d9dc",
       "runtime/presentation.cjs": "767c4e97d61d19b3980765c91a4d50ef3e7d4e61684d19cecf1415013facb77e",
-      "runtime/recipe.cjs": "8d0f0dc69776359a590561c65c9ca51289bdb417294dddf99317438d080670f3"
+      "runtime/recipe.cjs": "8d0f0dc69776359a590561c65c9ca51289bdb417294dddf99317438d080670f3",
+      "runtime/remote-worker.py": "66f7875f670bba8f04d2385b1dc460aaf9f6affba8276a80aa9a46d2f4107ce3",
+      "runtime/verifier.cjs": "e555c034a59498f97fd50bc5ad7c4db739431a147b88cb77cfb33eed9fa9efb3"
     },
     "packId": "freecad-pack"
   },
@@ -169,6 +171,26 @@
         "FREECAD_USER_TEMP": "temp"
       },
       "installedSize": 2625114576
+    },
+    {
+      "id": "freecad-linux",
+      "label": "FreeCAD",
+      "version": "1.1.4",
+      "type": "linux-appimage",
+      "platform": "linux-amd64",
+      "url": "https://github.com/FreeCAD/FreeCAD/releases/download/1.1.4/FreeCAD_1.1.4-Linux-x86_64-py311.AppImage",
+      "sha256": "f6dc6ba676e5ac96a565ebc8d657232f94c6158e85b4352141bd1a46f6b43434",
+      "executable": "usr/bin/freecadcmd",
+      "versionArgs": [
+        "--keep-deprecated-paths",
+        "--version"
+      ],
+      "versionText": "1.1.4",
+      "profileEnvironment": {
+        "FREECAD_USER_HOME": "home",
+        "FREECAD_USER_DATA": "data",
+        "FREECAD_USER_TEMP": "temp"
+      }
     }
   ]
 }
