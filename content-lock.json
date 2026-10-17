@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contentSha256": "8d53c088e4a3a69bfadba068fb9458524ba011cc28dbf461fdecda8870da04cd",
+  "contentSha256": "c367fa0bcdc83a9c4bdc006c37b32511e89f9c4dddd16d80b200ba6ca4adc5b9",
   "files": {
     "lib/consumer.cjs": "4d670732dbf3d5a3da33cac41007573e1f47b514a7165ac1df1748c9c2f960ab",
     "lib/consumer.json": "33e50b9ea84e2971ecf72b387daa2203f8849313fddfba73be2561445c4a4d2f",
@@ -133,10 +133,10 @@
     "packs/cuda/server/native.py": "d075ea76a09099865cbd6e56003513be6c2e67ad6cb55dc03f4268d630a41388",
     "packs/cuda/server/store.cjs": "f8a737cefba4c80a6089792219b968b8af22eae7e4010886e8eb9dece2052152",
     "packs/cuda/skills/cuda-kernel-optimize/SKILL.md": "b55adbf383182435248a47990110cebd692a19293ac5db162555140abf989964",
-    "packs/freecad/PROVENANCE.md": "aaa731a5a1b6f3bfce430f926ba91ba96c154cf1354dacb20a1d44a5a42316f7",
+    "packs/freecad/PROVENANCE.md": "2eff06b4c7691006805af1cfc0d1d60a53b32f4f3532b72a323b4c866e3dc17a",
     "packs/freecad/README.md": "a706df8dbb1df645b7f75635a2561880079c050382258dea897880a08ec54e04",
     "packs/freecad/harness-pack.json": "ca318a73049b174ee1947292512d250a13b2064a92314c525226611f2abb7fda",
-    "packs/freecad/images/Dockerfile.linux-cpu": "5df15362f93cdf6237a98c92d0d227cf2341a90571fba402185e9322bad6ea6e",
+    "packs/freecad/images/Dockerfile.linux-cpu": "eca877545df4a4faf3ce8b000d4d7b5e2b3f06b1168cf791204c3ba72ec5436f",
     "packs/freecad/pack.json": "ee43e6df485167f21bc132167d952ae556de09afc0b5fcf3ecc5946a58f89a59",
     "packs/freecad/runtime/index.cjs": "931c2a4a701098d9d156defdd6472b7f34b9bdba0a5214083b48963292b0ef6a",
     "packs/freecad/runtime/native.py": "c9da3e181617403384cdeb2135480dd3f7b0bf6b238771c81898f69ba559d9dc",
