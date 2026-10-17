@@ -16,22 +16,7 @@ RUN apt-get update \
 # linux/amd64 image and is exercised separately during qualification.
 RUN curl --fail --location --retry 3 --retry-all-errors "$FREECAD_URL" --output /tmp/freecad.AppImage \
     && echo "$FREECAD_SHA256  /tmp/freecad.AppImage" | sha256sum --check --status
-RUN SQUASHFS_OFFSET="$(python3 - <<'PY'
-from pathlib import Path
-
-path = Path('/tmp/freecad.AppImage')
-offset = 0
-with path.open('rb') as handle:
-    while chunk := handle.read(1024 * 1024):
-        index = chunk.find(b'hsqs')
-        if index >= 0:
-            print(offset + index)
-            break
-        offset += len(chunk)
-    else:
-        raise SystemExit('SquashFS superblock not found in AppImage')
-PY
-)" \
+RUN SQUASHFS_OFFSET="$(python3 -c 'import mmap; f = open("/tmp/freecad.AppImage", "rb"); print(mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ).find(b"hsqs"))')" \
     && test "$SQUASHFS_OFFSET" -ge 0 \
     && rm -rf /opt/freecad \
     && unsquashfs -offset "$SQUASHFS_OFFSET" -d /opt/freecad /tmp/freecad.AppImage >/dev/null \
