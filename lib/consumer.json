@@ -17,7 +17,7 @@
       "id": "pcb",
       "label": "PCB",
       "emoji": "🔌",
-      "version": "0.3.1",
+      "version": "0.3.2",
       "summary": "PCB design and repair on the pinned upstream atomic tool surface (89 tools) plus bounded native KiCad edits",
       "prerequisites": [
         "KiCad 10.0.6 and its bundled pcbnew Python are prepared automatically by a compatible Harness on Apple Silicon",
@@ -44,7 +44,7 @@
       "id": "cad",
       "label": "CAD",
       "emoji": "📐",
-      "version": "1.1.4-pack.8",
+      "version": "1.1.4-pack.9",
       "summary": "FreeCAD parametric modelling, geometry verification and OCCT CAD viewer",
       "prerequisites": [
         "FreeCAD 1.1.4 is prepared automatically on Apple Silicon"
