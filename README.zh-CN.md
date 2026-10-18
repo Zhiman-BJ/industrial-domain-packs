@@ -51,3 +51,10 @@ FreeCAD 现声明模型、对应版本的预览、导出和诊断成果组。检
 镜像从官方历史构建下载并校验 KiCad 10.0.6，在首次 HTTPS apt 请求前准备根证书，
 并在构建时实际读写板文件、检查 DRC。`packs/pcb/validate.sh` 为每次任务启动独立
 容器进行验证。宿主网关 Python 及原有原生平台、工程验收边界见 [PCB Pack](packs/pcb/README.md)。
+
+0.5.4 修复远程报告契约迁移造成的本地验证回归：PCB 0.3.2 与 FreeCAD
+1.1.4-pack.9 在执行结果中保留已验证的请求期望。PCB 本地插件使用原生板回读与
+DRC 证据，远程入口继续强制要求 worker run report 及固定 profile/version。
+执行 `node --test tests/pcb-local-runtime.test.cjs tests/freecad-local-runtime.test.cjs`
+可回归生产 execute 到 verifier 的完整数据传递，原生进程边界使用 fixture，不能
+作为原生资格验收。已有消费者仍需审查并更新固定版本，远程镜像须用同一固定包重建。
