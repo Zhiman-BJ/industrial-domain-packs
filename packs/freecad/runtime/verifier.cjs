@@ -1,7 +1,7 @@
 const descriptor = {
   schemaVersion: "1",
   id: "cad.freecad.geometry",
-  version: "1.1.4-pack.8",
+  version: "1.1.4-pack.9",
   risk: "mutating",
   verification: ["cad.freecad.geometry"],
 };

@@ -5,7 +5,7 @@ const crypto = require('node:crypto');
 const { spawn } = require('node:child_process');
 const { validateRecipe, validateInputs, applyChanges, guides } = require('./recipe.cjs');
 const hash = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
-const VERSION = '1.1.4-pack.8';
+const VERSION = '1.1.4-pack.9';
 const { presentation } = require('./presentation.cjs');
 
 function executable(environment, managed) {
@@ -291,6 +291,7 @@ function createRuntimePlugin({ environment = process.env, managed = false } = {}
       guide: guides[`cad.freecad.${operation}`],
       execute: async ({ projectDir, inputs, signal, action }) => {
         validateInputs(operation, inputs);
+        const expect = structuredClone(inputs.expect);
         if (!available)
           throw Error(
             managed
@@ -392,6 +393,7 @@ function createRuntimePlugin({ environment = process.env, managed = false } = {}
           }));
         return {
           presentation: presentation({ operation, artifacts, sourcePath: source ? path.relative(projectDir, source).split(path.sep).join('/') : null, sourceHash, succeeded }),
+          expect,
           executionSucceeded: succeeded,
           inputUnchanged:
             (!source || hash(fs.readFileSync(source)) === sourceHash) &&
