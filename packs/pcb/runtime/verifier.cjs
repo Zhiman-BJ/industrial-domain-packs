@@ -54,19 +54,69 @@ function verify({ result, artifacts, readArtifact }) {
       reason: "Worker evidence omitted explicit board bounds.",
       metrics: {},
     };
+  return verifyEvidence(board, drc, expect, report.toolVersion === "10.0.6");
+}
+
+// This entry is registered only by the trusted native Runtime plugin. The
+// remote canonical entry above never falls back when its run report is absent.
+function verifyLocal({ result, artifacts, readArtifact }) {
+  if (!result?.executionSucceeded || result.inputUnchanged !== true)
+    return {
+      status: "insufficient_evidence",
+      reason: "Independent KiCad DRC/readback failed, timed out, was cancelled or project inputs changed.",
+      metrics: {},
+    };
+  let board;
+  let drc;
+  try {
+    board = jsonArtifact(artifacts, readArtifact, "report.pcb.readback");
+    drc = jsonArtifact(artifacts, readArtifact, "report.pcb.drc");
+  } catch (error) {
+    return {
+      status: "insufficient_evidence",
+      reason: error.message,
+      metrics: {},
+    };
+  }
+  if (
+    !board ||
+    board.schemaVersion !== 1 ||
+    !Array.isArray(board.bounds) ||
+    !Array.isArray(board.footprints) ||
+    !drc ||
+    !Array.isArray(drc.violations) ||
+    !Array.isArray(drc.unconnected_items) ||
+    !Array.isArray(drc.schematic_parity)
+  )
+    return {
+      status: "insufficient_evidence",
+      reason: "Unrecognized KiCad DRC report schema.",
+      metrics: {},
+    };
+  const expect = result.expect;
+  if (!expect || !Array.isArray(expect.bounds) || expect.bounds.length !== 4)
+    return {
+      status: "insufficient_evidence",
+      reason: "Native evidence omitted explicit board bounds.",
+      metrics: {},
+    };
+  return verifyEvidence(board, drc, expect, true, true);
+}
+
+function verifyEvidence(board, drc, expect, reportVersion, local = false) {
   const errors = drc.violations.filter((x) => x.severity === "error").length;
   const warnings = drc.violations.filter((x) => x.severity === "warning").length;
   const near = (a, b) =>
     Number.isFinite(a) && Number.isFinite(b) && Math.abs(a - b) < 0.001;
   const checks = {
     nativeVersion:
-      report.toolVersion === "10.0.6" &&
+      reportVersion &&
       board.version === "10.0.6" &&
       drc.kicad_version === "10.0.6" &&
       drc.coordinate_units === "mm",
     drcErrors: errors === 0,
     unconnected: drc.unconnected_items.length === 0,
-    noExcludedViolations: drc.violations.every((v) =>
+    [local ? "noExclusions" : "noExcludedViolations"]: drc.violations.every((v) =>
       ["error", "warning"].includes(v.severity),
     ),
     boardBounds:
@@ -90,7 +140,9 @@ function verify({ result, artifacts, readArtifact }) {
   return {
     status: passed ? "passed" : "failed",
     reason: passed
-      ? "Independent KiCad board readback satisfies explicit bounds/placement requirements; DRC has zero errors and zero unconnected items. Warnings remain visible and may be bounded."
+      ? local
+        ? "Independent KiCad board readback satisfies explicit bounds/placement requirements; DRC has zero errors, zero unconnected items and no excluded violations. Warnings retained. No schematic/electrical/manufacturing signoff is implied."
+        : "Independent KiCad board readback satisfies explicit bounds/placement requirements; DRC has zero errors and zero unconnected items. Warnings remain visible and may be bounded."
       : "PCB requirement/DRC checks failed: " +
         Object.keys(checks)
           .filter((key) => !checks[key])
@@ -104,4 +156,4 @@ function verify({ result, artifacts, readArtifact }) {
   };
 }
 
-module.exports = { ID, descriptor, verify };
+module.exports = { ID, descriptor, verify, verifyLocal };
