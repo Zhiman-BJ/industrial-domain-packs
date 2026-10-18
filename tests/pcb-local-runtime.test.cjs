@@ -9,7 +9,8 @@ const verifier = require("../packs/pcb/runtime/verifier.cjs");
 const entry = path.resolve(__dirname, "../packs/pcb/runtime/index.cjs");
 
 // Execute the unchanged production entry on every test host. Only its platform
-// view and the external native-command boundary are fixtures: no KiCad runs.
+// view, macOS-only dependency root and external native-command boundary are
+// fixtures: no KiCad runs, and the host need not contain /private/etc/ssl.
 async function execute(t, options = {}) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "pcb-local-contract-"));
   t.after(() => fs.rmSync(dir, { recursive: true, force: true }));
@@ -50,9 +51,30 @@ async function execute(t, options = {}) {
     platform: { value: "darwin" },
     arch: { value: "arm64" },
   });
+  const nativeRequire = createRequire(entry);
+  const supportEntry = path.join(path.dirname(entry), "support.cjs");
+  const supportModule = { exports: {} };
+  let mappedSslRoots = 0;
+  const fixtureFs = Object.create(fs);
+  fixtureFs.realpathSync = (file, ...args) => {
+    // This is the only platform-specific filesystem substitution. Always map
+    // it, including on macOS, so every run exercises the Linux missing-root
+    // case rather than accidentally depending on the host SSL directory.
+    if (file === "/private/etc/ssl") {
+      mappedSslRoots++;
+      return fs.realpathSync(path.dirname(bin), ...args);
+    }
+    return fs.realpathSync(file, ...args);
+  };
+  vm.runInNewContext(fs.readFileSync(supportEntry, "utf8"), {
+    require: (id) => (id === "node:fs" ? fixtureFs : nativeRequire(id)),
+    module: supportModule,
+    exports: supportModule.exports,
+  });
   const module = { exports: {} };
   vm.runInNewContext(fs.readFileSync(entry, "utf8"), {
-    require: createRequire(entry),
+    require: (id) =>
+      id === "./support.cjs" ? supportModule.exports : nativeRequire(id),
     module,
     exports: module.exports,
     __dirname: path.dirname(entry),
@@ -101,6 +123,7 @@ async function execute(t, options = {}) {
       action: { id: "contract", inputs },
       signal: controller.signal,
     });
+  assert.ok(mappedSslRoots > 0, "macOS SSL root used the portable fixture");
   return {
     result,
     expected,
