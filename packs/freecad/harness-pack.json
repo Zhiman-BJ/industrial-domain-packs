@@ -2,15 +2,15 @@
   "schemaVersion": 1,
   "id": "freecad-pack",
   "domain": "cad",
-  "version": "1.1.4-pack.9",
+  "version": "1.1.4-pack.10",
   "provider": {
     "id": "freecad-local.runtime",
     "title": "FreeCAD 1.1.4 · persistent native tools",
     "domain": "cad",
-    "version": "1.1.4-pack.9",
+    "version": "1.1.4-pack.10",
     "transport": "runtime",
     "packDirectory": "freecad",
-    "sourceSha256": "76c88fe3a3e007a8cf9303b53280150d7267f663257385dc0c25f0dd2233fd8b",
+    "sourceSha256": "89bc230220031118b45b11ce242967e291a5fdea865ef56424474c6b3ffdc72e",
     "tools": [
       {
         "id": "cad.freecad.build",
@@ -53,7 +53,7 @@
       "runtime"
     ],
     "sourceFiles": {
-      "runtime/index.cjs": "1eaea8740d330ff534007841c412729c7a3e435770d2abb9c73fee52791def4c",
+      "runtime/index.cjs": "f76116a8de7fec436c4d1989698b6cbc188d4f081040417164e2aaa45340171e",
       "runtime/native.py": "c9da3e181617403384cdeb2135480dd3f7b0bf6b238771c81898f69ba559d9dc",
       "runtime/presentation.cjs": "767c4e97d61d19b3980765c91a4d50ef3e7d4e61684d19cecf1415013facb77e",
       "runtime/recipe.cjs": "8d0f0dc69776359a590561c65c9ca51289bdb417294dddf99317438d080670f3",
@@ -171,26 +171,6 @@
         "FREECAD_USER_TEMP": "temp"
       },
       "installedSize": 2625114576
-    },
-    {
-      "id": "freecad-linux",
-      "label": "FreeCAD",
-      "version": "1.1.4",
-      "type": "linux-appimage",
-      "platform": "linux-amd64",
-      "url": "https://github.com/FreeCAD/FreeCAD/releases/download/1.1.4/FreeCAD_1.1.4-Linux-x86_64-py311.AppImage",
-      "sha256": "f6dc6ba676e5ac96a565ebc8d657232f94c6158e85b4352141bd1a46f6b43434",
-      "executable": "usr/bin/freecadcmd",
-      "versionArgs": [
-        "--keep-deprecated-paths",
-        "--version"
-      ],
-      "versionText": "1.1.4",
-      "profileEnvironment": {
-        "FREECAD_USER_HOME": "home",
-        "FREECAD_USER_DATA": "data",
-        "FREECAD_USER_TEMP": "temp"
-      }
     }
   ]
 }

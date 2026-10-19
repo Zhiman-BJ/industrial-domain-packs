@@ -58,3 +58,7 @@ DRC 证据，远程入口继续强制要求 worker run report 及固定 profile/
 执行 `node --test tests/pcb-local-runtime.test.cjs tests/freecad-local-runtime.test.cjs`
 可回归生产 execute 到 verifier 的完整数据传递，原生进程边界使用 fixture，不能
 作为原生资格验收。已有消费者仍需审查并更新固定版本，远程镜像须用同一固定包重建。
+
+0.5.5 将 Linux FreeCAD AppImage 保留在远程镜像配方中，移出桌面托管下载声明。
+FreeCAD 发行版本 1.1.4-pack.10 保留本地验证修复及已验证的 macOS 下载，Linux
+继续作为独立远程执行 profile。该发行版本必须通过 Harness Pack 归档兼容校验。
