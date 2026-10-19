@@ -89,3 +89,8 @@ entry still requires its worker run report and fixed profile/version. Run
 for production execute-to-verifier contract regressions with native-process fixtures.
 These tests do not establish native qualification. Existing consumers require a
 reviewed pin update; remote images must be rebuilt from the same pinned package.
+
+Version 0.5.5 keeps the Linux FreeCAD AppImage in the remote image recipe, outside
+the desktop managed-download manifest. FreeCAD distribution 1.1.4-pack.10 retains
+the local verifier fix and the qualified macOS download; Linux remains a separate
+remote execution profile. Harness Pack archive validation must pass on this release.
