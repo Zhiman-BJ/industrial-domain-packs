@@ -2,12 +2,12 @@
   "schemaVersion": 1,
   "id": "godot-pack",
   "domain": "godot",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "provider": {
     "id": "godot.local",
     "title": "Godot structural Runtime",
     "domain": "godot",
-    "version": "0.2.2",
+    "version": "0.3.0",
     "transport": "runtime",
     "packDirectory": "godot",
     "packId": "godot-pack",
@@ -105,6 +105,163 @@
       "verification": [
         "godot.scene.requirements.v1"
       ]
+    },
+    {
+      "id": "godot.gdscript.knowledge",
+      "domain": "godot",
+      "title": "Godot 4 GDScript, architecture and game-systems knowledge",
+      "stages": [],
+      "priority": 90,
+      "keywords": [
+        "gdscript",
+        "pattern",
+        "idiom",
+        "state machine",
+        "signal",
+        "event bus",
+        "component",
+        "scene",
+        "resource",
+        "debug",
+        "test",
+        "optimize",
+        "animation",
+        "tween",
+        "ui",
+        "input",
+        "shader",
+        "save",
+        "load",
+        "player controller",
+        "2d",
+        "3d",
+        "语法",
+        "模式",
+        "架构",
+        "信号",
+        "调试",
+        "测试",
+        "优化",
+        "动画",
+        "界面",
+        "输入",
+        "着色器",
+        "存档"
+      ],
+      "skills": [
+        {
+          "id": "godot.gdscript.patterns",
+          "summary": "Typed GDScript idioms: static typing, await/coroutines, lambdas, match, exports."
+        },
+        {
+          "id": "godot.gdscript.advanced",
+          "summary": "Production GDScript depth: performance idioms, metaprogramming, @tool lifecycle."
+        },
+        {
+          "id": "godot.code.review",
+          "summary": "Godot 4 style rules, anti-patterns and review checklist."
+        },
+        {
+          "id": "godot.state.machine",
+          "summary": "State machine patterns for player/enemy/AI states in Godot 4."
+        },
+        {
+          "id": "godot.event.bus",
+          "summary": "Signal architecture and global event bus decoupling."
+        },
+        {
+          "id": "godot.component.system",
+          "summary": "Composition over inheritance with scene-based components."
+        },
+        {
+          "id": "godot.scene.organization",
+          "summary": "Scene tree structure, naming, folders and project layout."
+        },
+        {
+          "id": "godot.resource.pattern",
+          "summary": "Custom Resource data objects, typing and reuse."
+        },
+        {
+          "id": "godot.debugging",
+          "summary": "Godot 4 debugging workflows and common failure diagnosis."
+        },
+        {
+          "id": "godot.testing",
+          "summary": "GUT/unit testing and scene test strategies."
+        },
+        {
+          "id": "godot.optimization",
+          "summary": "Profiler-driven optimization for CPU/GPU/memory."
+        },
+        {
+          "id": "godot.2d.essentials",
+          "summary": "TileMaps, parallax, 2D lights, canvas layers, custom drawing."
+        },
+        {
+          "id": "godot.3d.essentials",
+          "summary": "3D nodes, physics, navigation, cameras and import pipelines."
+        },
+        {
+          "id": "godot.animation.system",
+          "summary": "AnimationPlayer, tween workflows and state-driven animation."
+        },
+        {
+          "id": "godot.ui",
+          "summary": "Control UI system, containers, themes and responsive layout."
+        },
+        {
+          "id": "godot.input.handling",
+          "summary": "Input actions, remapping and cross-platform input."
+        },
+        {
+          "id": "godot.save.load",
+          "summary": "Save/load patterns, serialization and versioned save data."
+        },
+        {
+          "id": "godot.player.controller",
+          "summary": "2D/3D character body movement and camera-follow controllers."
+        },
+        {
+          "id": "godot.shader.basics",
+          "summary": "Godot 4 shading language fundamentals and common effects."
+        }
+      ],
+      "tools": []
+    },
+    {
+      "id": "godot.project.toolkit",
+      "domain": "godot",
+      "title": "Headless Godot project toolkit",
+      "stages": [],
+      "priority": 80,
+      "keywords": [
+        "scaffold",
+        "lint",
+        "api lookup",
+        "export",
+        "migrate",
+        "godot 3",
+        "godot3",
+        "tilemap",
+        "tileset",
+        "pixel art",
+        "sfx",
+        "music",
+        "scenario",
+        "fuzz",
+        "脚手架",
+        "迁移",
+        "导出",
+        "瓦片",
+        "音效"
+      ],
+      "skills": [
+        {
+          "id": "godot.project.toolkit",
+          "summary": "Headless scaffold/inspect/edit/lint/test/export workflows with exact installed-API lookup and text readback verification (Godot 4.7-verified upstream)."
+        }
+      ],
+      "tools": []
     }
   ],
   "runtimeAssets": [

@@ -2,28 +2,30 @@
   "schemaVersion": 1,
   "id": "pcb-pack",
   "domain": "pcb",
-  "version": "0.2.0-bench.2",
+  "version": "0.3.2",
   "provider": {
-    "id": "pcb-bench.tools",
+    "id": "pcb-design.tools",
     "title": "Public KiCad board Runtime",
     "domain": "pcb",
-    "version": "0.2.0-bench.2",
+    "version": "0.3.2",
     "transport": "runtime",
     "packDirectory": "pcb",
     "packId": "pcb-pack",
-    "sourceSha256": "d18604bb00239b85db7d8387000cd5d359eb13454e666794626395d9c0cc4c4f",
+    "sourceSha256": "b8605fb4fd210bc89dff0570927bb1a4fce669e33985d4cbe9f6277c648c72c7",
     "resourceRoots": [
       "runtime"
     ],
     "sourceFiles": {
-      "runtime/bench-gateway.cjs": "00c1643d8bce5aac87a68bf5e57039f182b3c0010874200c06f9a93a81336cf5",
-      "runtime/bench-upstream.json": "a6de0b366a17cdeb28685b8571e417f1a9a7b404bd4eac0f301f6de90c01462d",
-      "runtime/index.cjs": "dee5b9cd9192489f5709ae783dd3132c73b5f6e65a09d8afab3182654f62df0d",
+      "runtime/gateway.cjs": "02d1ed90487963c9501a4755cfc3622367b6b0e0ff6ac1d759324c7fd295e1fc",
+      "runtime/upstream-snapshot.json": "cc8293f444fa380427d4c3f46fd38077011646fef98a8581da1152f52f4e5cf4",
+      "runtime/index.cjs": "d63dc50d48a96e0a3a5ff098251c5d037f8d90aaabe81399de8898b1e1bf9571",
       "runtime/native-dependency.json": "990026ffb36aeac47a3a2e935cf00b17a068628a0a46bc1dfe120bbbf3b21c73",
-      "runtime/native.py": "8f1eb5f360ad422910266a93356a3e7609f1f26fd72c0ef96645030c1275d29b",
+      "runtime/native.py": "5446b0ffe8fa4880fb11c4357e342694a97dffff94c1e5a505defd34071a1f7c",
       "runtime/setup-native.cjs": "9c78c10560e0d651fefd3eb8722681aa995047ce2792ce192523a48bd3890457",
       "runtime/support.cjs": "27c8c2b8b7472677c007a4c7fa6e1d42651a8ef0579fc58c85878a3e986e60cc",
-      "runtime/verifier.cjs": "e6e6a2fe501b9b93f2b863b682b9a4fa07c8a08cc2ce88bb9043a66df212eb0d"
+      "runtime/verifier.cjs": "433b9b5e0bba5d3d5946c63316401050d9d4e5fa8bef9036a829b05da2c38479",
+      "runtime/kicad-packages.json": "815c19e4412bf602c921758dcb877c183d6c29cd24d167a4c2a13935ab66c9d9",
+      "runtime/verify-board.py": "845167bf9e1db169f19513c2b22d7bac91335b1e313edc95d9d97df84c6120cb"
     },
     "tools": [
       {
@@ -45,769 +47,769 @@
         ]
       },
       {
-        "id": "pcb.bench.project_status",
+        "id": "pcb.design.project_status",
         "name": "project_status",
         "risk": "read-only",
         "summary": "Inspect public requirements or a fresh check's paged tests/findings. item_id filters findings by exact object UUID; stale object locations are withheld."
       },
       {
-        "id": "pcb.bench.new_project",
+        "id": "pcb.design.new_project",
         "name": "new_project",
         "risk": "mutating",
         "summary": "Create design intent; prepared libraries are retained. Dimensions in mm, even copper layers.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.add_component",
+        "id": "pcb.design.add_component",
         "name": "add_component",
         "risk": "mutating",
         "summary": "Add a disconnected component. Legacy pin metadata cannot define connectivity.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.remove_component",
+        "id": "pcb.design.remove_component",
         "name": "remove_component",
         "risk": "mutating",
         "summary": "Remove a component; outstanding interface/power requirements stay visible.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.add_net",
+        "id": "pcb.design.add_net",
         "name": "add_net",
         "risk": "mutating",
         "summary": "Declare a net and its electrical properties explicitly.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.remove_net",
+        "id": "pcb.design.remove_net",
         "name": "remove_net",
         "risk": "mutating",
         "summary": "Remove an unused net declaration; connected pins must be disconnected first.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.rename_net",
+        "id": "pcb.design.rename_net",
         "name": "rename_net",
         "risk": "mutating",
         "summary": "Rename a net and all typed references without changing connectivity.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.connect_pin",
+        "id": "pcb.design.connect_pin",
         "name": "connect_pin",
         "risk": "mutating",
         "summary": "Connect a pin; remove its NC marker, reject unknown declared nets.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.disconnect_pin",
+        "id": "pcb.design.disconnect_pin",
         "name": "disconnect_pin",
         "risk": "mutating",
         "summary": "Disconnect a pin without declaring that leaving it open is intentional.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.add_no_connect",
+        "id": "pcb.design.add_no_connect",
         "name": "add_no_connect",
         "risk": "mutating",
         "summary": "Mark an already disconnected pin intentionally NC; never cut a wire silently.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.set_component_value",
+        "id": "pcb.design.set_component_value",
         "name": "set_component_value",
         "risk": "mutating",
         "summary": "Update value; datasheet/functional checks must be rerun.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.assign_footprint",
+        "id": "pcb.design.assign_footprint",
         "name": "assign_footprint",
         "risk": "mutating",
         "summary": "Assign a CAD footprint; optional pin-to-pad map must be explicit.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.add_power_symbol",
+        "id": "pcb.design.add_power_symbol",
         "name": "add_power_symbol",
         "risk": "mutating",
         "summary": "Add a schematic-only power symbol/PWR_FLAG after verifying the supply path.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.set_net_rule",
+        "id": "pcb.design.set_net_rule",
         "name": "set_net_rule",
         "risk": "mutating",
         "summary": "Set per-net geometry constraints; widths and spacings are in mm.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.set_requirements",
+        "id": "pcb.design.set_requirements",
         "name": "set_requirements",
         "risk": "mutating",
         "summary": "Set model intent/diagnostics for constraints, postroute, acquisition or analysis; power_tree/interfaces use {items:[...]}. Bound public task requirements stay authoritative.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.generate_schematic",
+        "id": "pcb.design.generate_schematic",
         "name": "generate_schematic",
         "risk": "mutating",
         "summary": "Generate board.kicad_sch and project tables from saved intent. Explicit overwrite archives old files and invalidates checks.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.view_design",
+        "id": "pcb.design.view_design",
         "name": "view_design",
         "risk": "mutating",
         "summary": "Render current native schematic and top PCB views with source/image hashes; MCP delivers images only when the controller enables vision. Partial views are not acceptance.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.inspect_schematic",
+        "id": "pcb.design.inspect_schematic",
         "name": "inspect_schematic",
         "risk": "read-only",
         "summary": "Read complete revision-bound sheet objects in mm. Follow next_call for remaining objects; ref/UUID/kind filters cover only their query, never the whole sheet."
       },
       {
-        "id": "pcb.bench.place_schematic_component",
+        "id": "pcb.design.place_schematic_component",
         "name": "place_schematic_component",
         "risk": "mutating",
         "summary": "Move/rotate one existing schematic unit and its attached endpoints; preserve UUIDs and netlist or reject atomically. Board placement is separate.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.set_schematic_field",
+        "id": "pcb.design.set_schematic_field",
         "name": "set_schematic_field",
         "risk": "mutating",
         "summary": "Set one schematic field's drawing pose/visibility without changing its value or connectivity.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.set_schematic_wire",
+        "id": "pcb.design.set_schematic_wire",
         "name": "set_schematic_wire",
         "risk": "mutating",
         "summary": "Create or replace one schematic wire segment with two endpoints in mm; rerun ERC and netlist parity after connectivity edits.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.remove_schematic_item",
+        "id": "pcb.design.remove_schematic_item",
         "name": "remove_schematic_item",
         "risk": "mutating",
         "summary": "Remove one native wire/label/junction/NC marker by UUID; circuit intent is unchanged, so ERC and parity must be rerun.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.set_schematic_label",
+        "id": "pcb.design.set_schematic_label",
         "name": "set_schematic_label",
         "risk": "mutating",
         "summary": "Create or replace one label for a declared net at an actual wire/pin anchor; rerun ERC and netlist parity.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.verify_schematic",
+        "id": "pcb.design.verify_schematic",
         "name": "verify_schematic",
         "risk": "mutating",
         "summary": "Fresh ERC, exact netlist, footprints, structural rules and declared electrical checks; missing datasheets remain UNKNOWN.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.generate_pcb",
+        "id": "pcb.design.generate_pcb",
         "name": "generate_pcb",
         "risk": "mutating",
         "summary": "Freshly gate schematic, then generate unrouted PCB and explicit project rules. Missing electrical evidence requires task-authorized CAD-only reason; FAIL always blocks. Overwrite archives old PCB.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.update_pcb",
+        "id": "pcb.design.update_pcb",
         "name": "update_pcb",
         "risk": "mutating",
         "summary": "Sync the schematic while retaining existing-net copper and footprint poses for local repair. True explicitly removes all tracks/vias on affected nets; orphan-net copper is always removed. Rerun DRC after ECO.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.inspect_board",
+        "id": "pcb.design.inspect_board",
         "name": "inspect_board",
         "risk": "read-only",
         "summary": "Read native board geometry. Use collection for complete revision-bound pages, bounds_mm=[[xmin,ymin],[xmax,ymax]] for envelope filtering, item_id for a UUID. inspect_tool documents type-specific output; geometry is not connectivity."
       },
       {
-        "id": "pcb.bench.configure_component",
+        "id": "pcb.design.configure_component",
         "name": "configure_component",
         "risk": "mutating",
         "summary": "Set explicit component properties; symbol changes preserve connected/NC pin numbers or reject, requiring renewed electrical review.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.lookup_component",
+        "id": "pcb.design.lookup_component",
         "name": "lookup_component",
         "risk": "read-only",
         "summary": "Read sourced exact-MPN facts; CAD name hits alone do not qualify a part."
       },
       {
-        "id": "pcb.bench.prepare_component",
+        "id": "pcb.design.prepare_component",
         "name": "prepare_component",
         "risk": "mutating",
         "summary": "Stage exact symbol, footprint, source PDFs and reviewed facts; never publish.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.bind_model",
+        "id": "pcb.design.bind_model",
         "name": "bind_model",
         "risk": "mutating",
         "summary": "Bind one exact-MPN component to an installed, requalified model; preserve bytes, terminal order and hashes.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.qualify_component",
+        "id": "pcb.design.qualify_component",
         "name": "qualify_component",
         "risk": "mutating",
         "summary": "Validate immutable artifacts, source review, resolved pins and real CAD loading.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.install_component",
+        "id": "pcb.design.install_component",
         "name": "install_component",
         "risk": "mutating",
         "summary": "Requalify then atomically publish a new library root; never overwrite.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.create_symbol",
+        "id": "pcb.design.create_symbol",
         "name": "create_symbol",
         "risk": "mutating",
         "summary": "Create an unqualified workspace symbol draft using validated pin geometry.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.add_symbol_pin",
+        "id": "pcb.design.add_symbol_pin",
         "name": "add_symbol_pin",
         "risk": "mutating",
         "summary": "Append one pin to a staged symbol, rejecting duplicate numbers and malformed data.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.create_footprint",
+        "id": "pcb.design.create_footprint",
         "name": "create_footprint",
         "risk": "mutating",
         "summary": "Create an unqualified workspace footprint draft using validated pad geometry.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.add_footprint_pad",
+        "id": "pcb.design.add_footprint_pad",
         "name": "add_footprint_pad",
         "risk": "mutating",
         "summary": "Append one pad to a staged footprint, rejecting duplicate pad numbers.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.update_symbol_pin",
+        "id": "pcb.design.update_symbol_pin",
         "name": "update_symbol_pin",
         "risk": "mutating",
         "summary": "Replace one draft pin's complete definition while preserving its number; requalification required.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.remove_symbol_pin",
+        "id": "pcb.design.remove_symbol_pin",
         "name": "remove_symbol_pin",
         "risk": "mutating",
         "summary": "Remove one draft symbol pin by number; installed CAD and existing boards are not edited.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.update_footprint_pad",
+        "id": "pcb.design.update_footprint_pad",
         "name": "update_footprint_pad",
         "risk": "mutating",
         "summary": "Replace one draft pad's complete geometry while preserving its number; requalification required.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.remove_footprint_pad",
+        "id": "pcb.design.remove_footprint_pad",
         "name": "remove_footprint_pad",
         "risk": "mutating",
         "summary": "Remove one unambiguous draft pad by number; installed CAD and existing boards are not edited.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.discover_artifacts",
+        "id": "pcb.design.discover_artifacts",
         "name": "discover_artifacts",
         "risk": "mutating",
         "summary": "Read bounded public HTML and retain link evidence; never execute scripts.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.fetch_artifact",
+        "id": "pcb.design.fetch_artifact",
         "name": "fetch_artifact",
         "risk": "mutating",
         "summary": "Download a missing CAD file or datasheet with provenance; do not install it blindly.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.read_datasheet",
+        "id": "pcb.design.read_datasheet",
         "name": "read_datasheet",
         "risk": "read-only",
         "summary": "Read bounded PDF pages from a downloaded or staged datasheet; return retained-file hash, not interpreted facts."
       },
       {
-        "id": "pcb.bench.run_analysis",
+        "id": "pcb.design.run_analysis",
         "name": "run_analysis",
         "risk": "mutating",
         "summary": "Run fixed requirement tests by default; basis=candidate runs optional design diagnostics without changing acceptance. stage=schematic defers PCB-bound analyses.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.inspect_tool",
+        "id": "pcb.design.inspect_tool",
         "name": "inspect_tool",
         "risk": "read-only",
         "summary": "Return a public tool contract or analysis/power_tree/interfaces schema without reading implementation source."
       },
       {
-        "id": "pcb.bench.list_references",
+        "id": "pcb.design.list_references",
         "name": "list_references",
         "risk": "read-only",
         "summary": "List the allowlisted PCB skill references with byte sizes and SHA-256 hashes; no filesystem scan is needed."
       },
       {
-        "id": "pcb.bench.read_reference",
+        "id": "pcb.design.read_reference",
         "name": "read_reference",
         "risk": "read-only",
         "summary": "Read a bounded allowlisted PCB skill reference; use this instead of recursive filesystem searches."
       },
       {
-        "id": "pcb.bench.add_track",
+        "id": "pcb.design.add_track",
         "name": "add_track",
         "risk": "mutating",
         "summary": "Lay one straight copper segment. Returns the created track.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.add_arc",
+        "id": "pcb.design.add_arc",
         "name": "add_arc",
         "risk": "mutating",
         "summary": "Add one native copper arc through three points; retain its UUID and rerun DRC.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.add_via",
+        "id": "pcb.design.add_via",
         "name": "add_via",
         "risk": "mutating",
         "summary": "Persist one through via, dimensions in mm; explicit diameter must exceed drill.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.unroute",
+        "id": "pcb.design.unroute",
         "name": "unroute",
         "risk": "mutating",
         "summary": "Delete tracks and vias -- all of them, or just one net's. Zones stay.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.place_component",
+        "id": "pcb.design.place_component",
         "name": "place_component",
         "risk": "mutating",
         "summary": "Set placement intent; regeneration invalidates old routing.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.lock_component",
+        "id": "pcb.design.lock_component",
         "name": "lock_component",
         "risk": "mutating",
         "summary": "Lock/unlock placement intent.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.remove_board_item",
+        "id": "pcb.design.remove_board_item",
         "name": "remove_board_item",
         "risk": "mutating",
         "summary": "Remove one track, via, zone, keepout or annotation by UUID; use set_board_outline for Edge.Cuts.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.set_track_width",
+        "id": "pcb.design.set_track_width",
         "name": "set_track_width",
         "risk": "mutating",
         "summary": "Change one track's width in mm using its UUID; vias and zones are rejected.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.set_pad_zone_connection",
+        "id": "pcb.design.set_pad_zone_connection",
         "name": "set_pad_zone_connection",
         "risk": "mutating",
         "summary": "Change one placed copper pad's zone connection by UUID on the observed board revision; refill zones and rerun DRC and affected analyses afterward.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.set_component_text",
+        "id": "pcb.design.set_component_text",
         "name": "set_component_text",
         "risk": "mutating",
         "summary": "Position one PCB reference/value field in absolute mm, with text height/angle/visibility; preserve component placement and copper.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.set_board_outline",
+        "id": "pcb.design.set_board_outline",
         "name": "set_board_outline",
         "risk": "mutating",
         "summary": "Set one closed straight polygon in mm in intent and existing PCB; replaces all Edge.Cuts including cutouts.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.set_layer_count",
+        "id": "pcb.design.set_layer_count",
         "name": "set_layer_count",
         "risk": "mutating",
         "summary": "Set native copper layer count; workspace tools validate range and existing copper.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.add_zone",
+        "id": "pcb.design.add_zone",
         "name": "add_zone",
         "risk": "mutating",
         "summary": "Add one copper zone polygon in mm; fill_zones and verification are required.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.add_keepout",
+        "id": "pcb.design.add_keepout",
         "name": "add_keepout",
         "risk": "mutating",
         "summary": "Add one copper-layer rule area forbidding tracks, vias and pours inside a polygon in mm.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.add_text",
+        "id": "pcb.design.add_text",
         "name": "add_text",
         "risk": "mutating",
         "summary": "Add one annotation in mm on a non-copper, non-Edge.Cuts layer.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.fill_zones",
+        "id": "pcb.design.fill_zones",
         "name": "fill_zones",
         "risk": "mutating",
         "summary": "Do NOT fill zones from a headless script by default.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.route_differential_pair",
+        "id": "pcb.design.route_differential_pair",
         "name": "route_differential_pair",
         "risk": "mutating",
         "summary": "Route one pair along an explicit corridor. terminals={p:[ref:pad,ref:pad],n:[ref:pad,ref:pad]}; offset endpoints must match native pad centers.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.tune_length",
+        "id": "pcb.design.tune_length",
         "name": "tune_length",
         "risk": "mutating",
         "summary": "Tune an unbranched two-pad net by replacing one straight segment. Target is total copper centerline length; pitch/amplitude in mm. Final DRC/analysis required.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.route_board",
+        "id": "pcb.design.route_board",
         "name": "route_board",
         "risk": "mutating",
         "summary": "Export DSN, run Freerouting, import SES, fill zones and run native DRC.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.checkout_board",
+        "id": "pcb.design.checkout_board",
         "name": "checkout_board",
         "risk": "mutating",
         "summary": "Continue a retained route/history PCB as an unverified working version; exact hashes and unchanged non-board inputs required. Returns a rollback candidate.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.run_drc",
+        "id": "pcb.design.run_drc",
         "name": "run_drc",
         "risk": "mutating",
         "summary": "Run full official DRC including all unconnected and parity errors.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.run_erc",
+        "id": "pcb.design.run_erc",
         "name": "run_erc",
         "risk": "mutating",
         "summary": "Run official ERC; return UNKNOWN when no fresh valid report was produced.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.export_netlist",
+        "id": "pcb.design.export_netlist",
         "name": "export_netlist",
         "risk": "mutating",
         "summary": "Export and parse KiCad XML netlist, with source fingerprint.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.compare_schematic_pcb",
+        "id": "pcb.design.compare_schematic_pcb",
         "name": "compare_schematic_pcb",
         "risk": "mutating",
         "summary": "Export the schematic, compare every physical pin/pad/net and component.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.check_component_datasheet",
+        "id": "pcb.design.check_component_datasheet",
         "name": "check_component_datasheet",
         "risk": "mutating",
         "summary": "Compare declared MPN/pins/package to supplied, source-backed datasheet facts.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.check_power_tree",
+        "id": "pcb.design.check_power_tree",
         "name": "check_power_tree",
         "risk": "mutating",
         "summary": "Check explicit rail voltages, load ranges, current budgets and dropout.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.check_interface",
+        "id": "pcb.design.check_interface",
         "name": "check_interface",
         "risk": "mutating",
         "summary": "Check exact interface pin mapping and supplied voltage ranges/requirements.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.check_footprints",
+        "id": "pcb.design.check_footprints",
         "name": "check_footprints",
         "risk": "mutating",
         "summary": "Load symbols/footprints and validate explicit pin-to-pad assignments.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.add_sheet",
+        "id": "pcb.design.add_sheet",
         "name": "add_sheet",
         "risk": "mutating",
         "summary": "Add one child schematic sheet after its parent exists; root / is implicit.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.remove_sheet",
+        "id": "pcb.design.remove_sheet",
         "name": "remove_sheet",
         "risk": "mutating",
         "summary": "Remove one empty leaf sheet; first move its components and remove scoped nets.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.assign_sheet",
+        "id": "pcb.design.assign_sheet",
         "name": "assign_sheet",
         "risk": "mutating",
         "summary": "Move one component's schematic units to a declared sheet; PCB placement is separate.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.set_sheet_port",
+        "id": "pcb.design.set_sheet_port",
         "name": "set_sheet_port",
         "risk": "mutating",
         "summary": "Define one explicit parent/child hierarchical port for a declared global intent net.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.verify_design",
+        "id": "pcb.design.verify_design",
         "name": "verify_design",
         "risk": "mutating",
         "summary": "Fresh final ERC/DRC, exact parity, electrical facts and declared postroute checks; scoped UNKNOWN is not global PASS.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.export_project",
+        "id": "pcb.design.export_project",
         "name": "export_project",
         "risk": "mutating",
         "summary": "Export a fresh verified CAD/Gerber/drill/BOM/placement bundle to a new project directory; file export and physical production readiness remain separate.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.save_project_copy",
+        "id": "pcb.design.save_project_copy",
         "name": "save_project_copy",
         "risk": "mutating",
         "summary": "Copy native CAD and portable dependencies under a requested project name; permits unfinished candidates, never asserts verification or manufacturing readiness.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.prepare_3d_model",
+        "id": "pcb.design.prepare_3d_model",
         "name": "prepare_3d_model",
         "risk": "mutating",
         "summary": "Acquire one footprint's assigned 3D bodies with provenance; standard KiCad paths use pinned upstream, custom sources need hashes. No dimensional qualification is inferred.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.export_3d",
+        "id": "pcb.design.export_3d",
         "name": "export_3d",
         "risk": "mutating",
         "summary": "Export one native KiCad assembly file or PNG view. View/size apply only to PNG; 64\u20134096 pixels. Missing bodies remain UNKNOWN; clearance/collision requires mechanical analysis.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.finalize_claims",
+        "id": "pcb.design.finalize_claims",
         "name": "finalize_claims",
         "risk": "mutating",
         "summary": "Submit scoped statuses and optional test_id/conditions_sha256 citations to fresh passing tests. Free-text engineering statements remain unverified; fixed requirements are authoritative.",
         "verification": [
-          "pcb.bench.receipts.v1"
+          "pcb.design.receipts.v1"
         ]
       },
       {
-        "id": "pcb.bench.search_components",
+        "id": "pcb.design.search_components",
         "name": "search_components",
         "risk": "read-only",
         "summary": "Search installed symbols and footprints; name hits are not datasheet qualification."
       },
       {
-        "id": "pcb.bench.inspect_symbol",
+        "id": "pcb.design.inspect_symbol",
         "name": "inspect_symbol",
         "risk": "read-only",
         "summary": "Resolve actual library pin declarations for a fully qualified symbol; no inferred MPN ratings."
       },
       {
-        "id": "pcb.bench.run_python",
+        "id": "pcb.design.run_python",
         "name": "run_python",
         "risk": "read-only",
         "summary": "Sandboxed Python calculation. Candidate files are read-only; write derived data only under PCB_EXTENSION_SCRATCH."
@@ -888,7 +890,7 @@
       ]
     },
     {
-      "id": "pcb.bench.core",
+      "id": "pcb.design.core",
       "title": "PCB \u00b7 core",
       "domain": "pcb",
       "stages": [
@@ -910,57 +912,57 @@
         {
           "id": "pcb.design.e2e",
           "summary": "Design and repair PCB projects with the pinned public tool contracts and native evidence.",
-          "reference": "The complete pcb-design-e2e Skill and its references ship inside this pack. The pcb.bench.* tools execute inside the pinned PCB-bench Linux container (see runtime/bench-upstream.json); inspection observations are not verification."
+          "reference": "The complete pcb-design-e2e Skill and its references ship inside this pack. The pcb.design.* tools execute inside the pinned upstream Linux container (see runtime/upstream-snapshot.json); inspection observations are not verification."
         }
       ],
       "tools": [
         {
-          "id": "pcb.bench.project_status",
+          "id": "pcb.design.project_status",
           "name": "project_status",
           "risk": "read-only",
           "summary": "Inspect public requirements or a fresh check's paged tests/findings. item_id filters findings by exact object UUID; stale object locations are withheld."
         },
         {
-          "id": "pcb.bench.new_project",
+          "id": "pcb.design.new_project",
           "name": "new_project",
           "risk": "mutating",
           "summary": "Create design intent; prepared libraries are retained. Dimensions in mm, even copper layers.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.set_requirements",
+          "id": "pcb.design.set_requirements",
           "name": "set_requirements",
           "risk": "mutating",
           "summary": "Set model intent/diagnostics for constraints, postroute, acquisition or analysis; power_tree/interfaces use {items:[...]}. Bound public task requirements stay authoritative.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.view_design",
+          "id": "pcb.design.view_design",
           "name": "view_design",
           "risk": "mutating",
           "summary": "Render current native schematic and top PCB views with source/image hashes; MCP delivers images only when the controller enables vision. Partial views are not acceptance.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.inspect_tool",
+          "id": "pcb.design.inspect_tool",
           "name": "inspect_tool",
           "risk": "read-only",
           "summary": "Return a public tool contract or analysis/power_tree/interfaces schema without reading implementation source."
         },
         {
-          "id": "pcb.bench.list_references",
+          "id": "pcb.design.list_references",
           "name": "list_references",
           "risk": "read-only",
           "summary": "List the allowlisted PCB skill references with byte sizes and SHA-256 hashes; no filesystem scan is needed."
         },
         {
-          "id": "pcb.bench.read_reference",
+          "id": "pcb.design.read_reference",
           "name": "read_reference",
           "risk": "read-only",
           "summary": "Read a bounded allowlisted PCB skill reference; use this instead of recursive filesystem searches."
@@ -971,7 +973,7 @@
       ]
     },
     {
-      "id": "pcb.bench.components",
+      "id": "pcb.design.components",
       "title": "PCB \u00b7 components",
       "domain": "pcb",
       "stages": [
@@ -991,237 +993,237 @@
         {
           "id": "pcb.design.e2e",
           "summary": "Design and repair PCB projects with the pinned public tool contracts and native evidence.",
-          "reference": "The complete pcb-design-e2e Skill and its references ship inside this pack. The pcb.bench.* tools execute inside the pinned PCB-bench Linux container (see runtime/bench-upstream.json); inspection observations are not verification."
+          "reference": "The complete pcb-design-e2e Skill and its references ship inside this pack. The pcb.design.* tools execute inside the pinned upstream Linux container (see runtime/upstream-snapshot.json); inspection observations are not verification."
         }
       ],
       "tools": [
         {
-          "id": "pcb.bench.project_status",
+          "id": "pcb.design.project_status",
           "name": "project_status",
           "risk": "read-only",
           "summary": "Inspect public requirements or a fresh check's paged tests/findings. item_id filters findings by exact object UUID; stale object locations are withheld."
         },
         {
-          "id": "pcb.bench.new_project",
+          "id": "pcb.design.new_project",
           "name": "new_project",
           "risk": "mutating",
           "summary": "Create design intent; prepared libraries are retained. Dimensions in mm, even copper layers.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.set_requirements",
+          "id": "pcb.design.set_requirements",
           "name": "set_requirements",
           "risk": "mutating",
           "summary": "Set model intent/diagnostics for constraints, postroute, acquisition or analysis; power_tree/interfaces use {items:[...]}. Bound public task requirements stay authoritative.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.view_design",
+          "id": "pcb.design.view_design",
           "name": "view_design",
           "risk": "mutating",
           "summary": "Render current native schematic and top PCB views with source/image hashes; MCP delivers images only when the controller enables vision. Partial views are not acceptance.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.inspect_schematic",
+          "id": "pcb.design.inspect_schematic",
           "name": "inspect_schematic",
           "risk": "read-only",
           "summary": "Read complete revision-bound sheet objects in mm. Follow next_call for remaining objects; ref/UUID/kind filters cover only their query, never the whole sheet."
         },
         {
-          "id": "pcb.bench.inspect_board",
+          "id": "pcb.design.inspect_board",
           "name": "inspect_board",
           "risk": "read-only",
           "summary": "Read native board geometry. Use collection for complete revision-bound pages, bounds_mm=[[xmin,ymin],[xmax,ymax]] for envelope filtering, item_id for a UUID. inspect_tool documents type-specific output; geometry is not connectivity."
         },
         {
-          "id": "pcb.bench.configure_component",
+          "id": "pcb.design.configure_component",
           "name": "configure_component",
           "risk": "mutating",
           "summary": "Set explicit component properties; symbol changes preserve connected/NC pin numbers or reject, requiring renewed electrical review.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.lookup_component",
+          "id": "pcb.design.lookup_component",
           "name": "lookup_component",
           "risk": "read-only",
           "summary": "Read sourced exact-MPN facts; CAD name hits alone do not qualify a part."
         },
         {
-          "id": "pcb.bench.prepare_component",
+          "id": "pcb.design.prepare_component",
           "name": "prepare_component",
           "risk": "mutating",
           "summary": "Stage exact symbol, footprint, source PDFs and reviewed facts; never publish.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.bind_model",
+          "id": "pcb.design.bind_model",
           "name": "bind_model",
           "risk": "mutating",
           "summary": "Bind one exact-MPN component to an installed, requalified model; preserve bytes, terminal order and hashes.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.qualify_component",
+          "id": "pcb.design.qualify_component",
           "name": "qualify_component",
           "risk": "mutating",
           "summary": "Validate immutable artifacts, source review, resolved pins and real CAD loading.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.install_component",
+          "id": "pcb.design.install_component",
           "name": "install_component",
           "risk": "mutating",
           "summary": "Requalify then atomically publish a new library root; never overwrite.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.create_symbol",
+          "id": "pcb.design.create_symbol",
           "name": "create_symbol",
           "risk": "mutating",
           "summary": "Create an unqualified workspace symbol draft using validated pin geometry.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.add_symbol_pin",
+          "id": "pcb.design.add_symbol_pin",
           "name": "add_symbol_pin",
           "risk": "mutating",
           "summary": "Append one pin to a staged symbol, rejecting duplicate numbers and malformed data.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.create_footprint",
+          "id": "pcb.design.create_footprint",
           "name": "create_footprint",
           "risk": "mutating",
           "summary": "Create an unqualified workspace footprint draft using validated pad geometry.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.add_footprint_pad",
+          "id": "pcb.design.add_footprint_pad",
           "name": "add_footprint_pad",
           "risk": "mutating",
           "summary": "Append one pad to a staged footprint, rejecting duplicate pad numbers.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.update_symbol_pin",
+          "id": "pcb.design.update_symbol_pin",
           "name": "update_symbol_pin",
           "risk": "mutating",
           "summary": "Replace one draft pin's complete definition while preserving its number; requalification required.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.remove_symbol_pin",
+          "id": "pcb.design.remove_symbol_pin",
           "name": "remove_symbol_pin",
           "risk": "mutating",
           "summary": "Remove one draft symbol pin by number; installed CAD and existing boards are not edited.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.update_footprint_pad",
+          "id": "pcb.design.update_footprint_pad",
           "name": "update_footprint_pad",
           "risk": "mutating",
           "summary": "Replace one draft pad's complete geometry while preserving its number; requalification required.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.remove_footprint_pad",
+          "id": "pcb.design.remove_footprint_pad",
           "name": "remove_footprint_pad",
           "risk": "mutating",
           "summary": "Remove one unambiguous draft pad by number; installed CAD and existing boards are not edited.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.discover_artifacts",
+          "id": "pcb.design.discover_artifacts",
           "name": "discover_artifacts",
           "risk": "mutating",
           "summary": "Read bounded public HTML and retain link evidence; never execute scripts.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.fetch_artifact",
+          "id": "pcb.design.fetch_artifact",
           "name": "fetch_artifact",
           "risk": "mutating",
           "summary": "Download a missing CAD file or datasheet with provenance; do not install it blindly.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.read_datasheet",
+          "id": "pcb.design.read_datasheet",
           "name": "read_datasheet",
           "risk": "read-only",
           "summary": "Read bounded PDF pages from a downloaded or staged datasheet; return retained-file hash, not interpreted facts."
         },
         {
-          "id": "pcb.bench.inspect_tool",
+          "id": "pcb.design.inspect_tool",
           "name": "inspect_tool",
           "risk": "read-only",
           "summary": "Return a public tool contract or analysis/power_tree/interfaces schema without reading implementation source."
         },
         {
-          "id": "pcb.bench.list_references",
+          "id": "pcb.design.list_references",
           "name": "list_references",
           "risk": "read-only",
           "summary": "List the allowlisted PCB skill references with byte sizes and SHA-256 hashes; no filesystem scan is needed."
         },
         {
-          "id": "pcb.bench.read_reference",
+          "id": "pcb.design.read_reference",
           "name": "read_reference",
           "risk": "read-only",
           "summary": "Read a bounded allowlisted PCB skill reference; use this instead of recursive filesystem searches."
         },
         {
-          "id": "pcb.bench.check_component_datasheet",
+          "id": "pcb.design.check_component_datasheet",
           "name": "check_component_datasheet",
           "risk": "mutating",
           "summary": "Compare declared MPN/pins/package to supplied, source-backed datasheet facts.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.search_components",
+          "id": "pcb.design.search_components",
           "name": "search_components",
           "risk": "read-only",
           "summary": "Search installed symbols and footprints; name hits are not datasheet qualification."
         },
         {
-          "id": "pcb.bench.inspect_symbol",
+          "id": "pcb.design.inspect_symbol",
           "name": "inspect_symbol",
           "risk": "read-only",
           "summary": "Resolve actual library pin declarations for a fully qualified symbol; no inferred MPN ratings."
@@ -1232,7 +1234,7 @@
       ]
     },
     {
-      "id": "pcb.bench.schematic",
+      "id": "pcb.design.schematic",
       "title": "PCB \u00b7 schematic",
       "domain": "pcb",
       "stages": [
@@ -1251,305 +1253,305 @@
         {
           "id": "pcb.design.e2e",
           "summary": "Design and repair PCB projects with the pinned public tool contracts and native evidence.",
-          "reference": "The complete pcb-design-e2e Skill and its references ship inside this pack. The pcb.bench.* tools execute inside the pinned PCB-bench Linux container (see runtime/bench-upstream.json); inspection observations are not verification."
+          "reference": "The complete pcb-design-e2e Skill and its references ship inside this pack. The pcb.design.* tools execute inside the pinned upstream Linux container (see runtime/upstream-snapshot.json); inspection observations are not verification."
         }
       ],
       "tools": [
         {
-          "id": "pcb.bench.project_status",
+          "id": "pcb.design.project_status",
           "name": "project_status",
           "risk": "read-only",
           "summary": "Inspect public requirements or a fresh check's paged tests/findings. item_id filters findings by exact object UUID; stale object locations are withheld."
         },
         {
-          "id": "pcb.bench.new_project",
+          "id": "pcb.design.new_project",
           "name": "new_project",
           "risk": "mutating",
           "summary": "Create design intent; prepared libraries are retained. Dimensions in mm, even copper layers.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.add_component",
+          "id": "pcb.design.add_component",
           "name": "add_component",
           "risk": "mutating",
           "summary": "Add a disconnected component. Legacy pin metadata cannot define connectivity.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.remove_component",
+          "id": "pcb.design.remove_component",
           "name": "remove_component",
           "risk": "mutating",
           "summary": "Remove a component; outstanding interface/power requirements stay visible.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.add_net",
+          "id": "pcb.design.add_net",
           "name": "add_net",
           "risk": "mutating",
           "summary": "Declare a net and its electrical properties explicitly.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.remove_net",
+          "id": "pcb.design.remove_net",
           "name": "remove_net",
           "risk": "mutating",
           "summary": "Remove an unused net declaration; connected pins must be disconnected first.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.rename_net",
+          "id": "pcb.design.rename_net",
           "name": "rename_net",
           "risk": "mutating",
           "summary": "Rename a net and all typed references without changing connectivity.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.connect_pin",
+          "id": "pcb.design.connect_pin",
           "name": "connect_pin",
           "risk": "mutating",
           "summary": "Connect a pin; remove its NC marker, reject unknown declared nets.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.disconnect_pin",
+          "id": "pcb.design.disconnect_pin",
           "name": "disconnect_pin",
           "risk": "mutating",
           "summary": "Disconnect a pin without declaring that leaving it open is intentional.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.add_no_connect",
+          "id": "pcb.design.add_no_connect",
           "name": "add_no_connect",
           "risk": "mutating",
           "summary": "Mark an already disconnected pin intentionally NC; never cut a wire silently.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.set_component_value",
+          "id": "pcb.design.set_component_value",
           "name": "set_component_value",
           "risk": "mutating",
           "summary": "Update value; datasheet/functional checks must be rerun.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.assign_footprint",
+          "id": "pcb.design.assign_footprint",
           "name": "assign_footprint",
           "risk": "mutating",
           "summary": "Assign a CAD footprint; optional pin-to-pad map must be explicit.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.add_power_symbol",
+          "id": "pcb.design.add_power_symbol",
           "name": "add_power_symbol",
           "risk": "mutating",
           "summary": "Add a schematic-only power symbol/PWR_FLAG after verifying the supply path.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.set_net_rule",
+          "id": "pcb.design.set_net_rule",
           "name": "set_net_rule",
           "risk": "mutating",
           "summary": "Set per-net geometry constraints; widths and spacings are in mm.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.set_requirements",
+          "id": "pcb.design.set_requirements",
           "name": "set_requirements",
           "risk": "mutating",
           "summary": "Set model intent/diagnostics for constraints, postroute, acquisition or analysis; power_tree/interfaces use {items:[...]}. Bound public task requirements stay authoritative.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.generate_schematic",
+          "id": "pcb.design.generate_schematic",
           "name": "generate_schematic",
           "risk": "mutating",
           "summary": "Generate board.kicad_sch and project tables from saved intent. Explicit overwrite archives old files and invalidates checks.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.view_design",
+          "id": "pcb.design.view_design",
           "name": "view_design",
           "risk": "mutating",
           "summary": "Render current native schematic and top PCB views with source/image hashes; MCP delivers images only when the controller enables vision. Partial views are not acceptance.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.inspect_schematic",
+          "id": "pcb.design.inspect_schematic",
           "name": "inspect_schematic",
           "risk": "read-only",
           "summary": "Read complete revision-bound sheet objects in mm. Follow next_call for remaining objects; ref/UUID/kind filters cover only their query, never the whole sheet."
         },
         {
-          "id": "pcb.bench.place_schematic_component",
+          "id": "pcb.design.place_schematic_component",
           "name": "place_schematic_component",
           "risk": "mutating",
           "summary": "Move/rotate one existing schematic unit and its attached endpoints; preserve UUIDs and netlist or reject atomically. Board placement is separate.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.set_schematic_field",
+          "id": "pcb.design.set_schematic_field",
           "name": "set_schematic_field",
           "risk": "mutating",
           "summary": "Set one schematic field's drawing pose/visibility without changing its value or connectivity.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.set_schematic_wire",
+          "id": "pcb.design.set_schematic_wire",
           "name": "set_schematic_wire",
           "risk": "mutating",
           "summary": "Create or replace one schematic wire segment with two endpoints in mm; rerun ERC and netlist parity after connectivity edits.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.remove_schematic_item",
+          "id": "pcb.design.remove_schematic_item",
           "name": "remove_schematic_item",
           "risk": "mutating",
           "summary": "Remove one native wire/label/junction/NC marker by UUID; circuit intent is unchanged, so ERC and parity must be rerun.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.set_schematic_label",
+          "id": "pcb.design.set_schematic_label",
           "name": "set_schematic_label",
           "risk": "mutating",
           "summary": "Create or replace one label for a declared net at an actual wire/pin anchor; rerun ERC and netlist parity.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.verify_schematic",
+          "id": "pcb.design.verify_schematic",
           "name": "verify_schematic",
           "risk": "mutating",
           "summary": "Fresh ERC, exact netlist, footprints, structural rules and declared electrical checks; missing datasheets remain UNKNOWN.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.update_pcb",
+          "id": "pcb.design.update_pcb",
           "name": "update_pcb",
           "risk": "mutating",
           "summary": "Sync the schematic while retaining existing-net copper and footprint poses for local repair. True explicitly removes all tracks/vias on affected nets; orphan-net copper is always removed. Rerun DRC after ECO.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.inspect_board",
+          "id": "pcb.design.inspect_board",
           "name": "inspect_board",
           "risk": "read-only",
           "summary": "Read native board geometry. Use collection for complete revision-bound pages, bounds_mm=[[xmin,ymin],[xmax,ymax]] for envelope filtering, item_id for a UUID. inspect_tool documents type-specific output; geometry is not connectivity."
         },
         {
-          "id": "pcb.bench.inspect_tool",
+          "id": "pcb.design.inspect_tool",
           "name": "inspect_tool",
           "risk": "read-only",
           "summary": "Return a public tool contract or analysis/power_tree/interfaces schema without reading implementation source."
         },
         {
-          "id": "pcb.bench.list_references",
+          "id": "pcb.design.list_references",
           "name": "list_references",
           "risk": "read-only",
           "summary": "List the allowlisted PCB skill references with byte sizes and SHA-256 hashes; no filesystem scan is needed."
         },
         {
-          "id": "pcb.bench.read_reference",
+          "id": "pcb.design.read_reference",
           "name": "read_reference",
           "risk": "read-only",
           "summary": "Read a bounded allowlisted PCB skill reference; use this instead of recursive filesystem searches."
         },
         {
-          "id": "pcb.bench.export_netlist",
+          "id": "pcb.design.export_netlist",
           "name": "export_netlist",
           "risk": "mutating",
           "summary": "Export and parse KiCad XML netlist, with source fingerprint.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.compare_schematic_pcb",
+          "id": "pcb.design.compare_schematic_pcb",
           "name": "compare_schematic_pcb",
           "risk": "mutating",
           "summary": "Export the schematic, compare every physical pin/pad/net and component.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.add_sheet",
+          "id": "pcb.design.add_sheet",
           "name": "add_sheet",
           "risk": "mutating",
           "summary": "Add one child schematic sheet after its parent exists; root / is implicit.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.remove_sheet",
+          "id": "pcb.design.remove_sheet",
           "name": "remove_sheet",
           "risk": "mutating",
           "summary": "Remove one empty leaf sheet; first move its components and remove scoped nets.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.assign_sheet",
+          "id": "pcb.design.assign_sheet",
           "name": "assign_sheet",
           "risk": "mutating",
           "summary": "Move one component's schematic units to a declared sheet; PCB placement is separate.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.set_sheet_port",
+          "id": "pcb.design.set_sheet_port",
           "name": "set_sheet_port",
           "risk": "mutating",
           "summary": "Define one explicit parent/child hierarchical port for a declared global intent net.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         }
       ],
@@ -1558,7 +1560,7 @@
       ]
     },
     {
-      "id": "pcb.bench.pcb",
+      "id": "pcb.design.pcb",
       "title": "PCB \u00b7 pcb",
       "domain": "pcb",
       "stages": [
@@ -1578,269 +1580,269 @@
         {
           "id": "pcb.design.e2e",
           "summary": "Design and repair PCB projects with the pinned public tool contracts and native evidence.",
-          "reference": "The complete pcb-design-e2e Skill and its references ship inside this pack. The pcb.bench.* tools execute inside the pinned PCB-bench Linux container (see runtime/bench-upstream.json); inspection observations are not verification."
+          "reference": "The complete pcb-design-e2e Skill and its references ship inside this pack. The pcb.design.* tools execute inside the pinned upstream Linux container (see runtime/upstream-snapshot.json); inspection observations are not verification."
         }
       ],
       "tools": [
         {
-          "id": "pcb.bench.project_status",
+          "id": "pcb.design.project_status",
           "name": "project_status",
           "risk": "read-only",
           "summary": "Inspect public requirements or a fresh check's paged tests/findings. item_id filters findings by exact object UUID; stale object locations are withheld."
         },
         {
-          "id": "pcb.bench.new_project",
+          "id": "pcb.design.new_project",
           "name": "new_project",
           "risk": "mutating",
           "summary": "Create design intent; prepared libraries are retained. Dimensions in mm, even copper layers.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.set_requirements",
+          "id": "pcb.design.set_requirements",
           "name": "set_requirements",
           "risk": "mutating",
           "summary": "Set model intent/diagnostics for constraints, postroute, acquisition or analysis; power_tree/interfaces use {items:[...]}. Bound public task requirements stay authoritative.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.view_design",
+          "id": "pcb.design.view_design",
           "name": "view_design",
           "risk": "mutating",
           "summary": "Render current native schematic and top PCB views with source/image hashes; MCP delivers images only when the controller enables vision. Partial views are not acceptance.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.inspect_schematic",
+          "id": "pcb.design.inspect_schematic",
           "name": "inspect_schematic",
           "risk": "read-only",
           "summary": "Read complete revision-bound sheet objects in mm. Follow next_call for remaining objects; ref/UUID/kind filters cover only their query, never the whole sheet."
         },
         {
-          "id": "pcb.bench.generate_pcb",
+          "id": "pcb.design.generate_pcb",
           "name": "generate_pcb",
           "risk": "mutating",
           "summary": "Freshly gate schematic, then generate unrouted PCB and explicit project rules. Missing electrical evidence requires task-authorized CAD-only reason; FAIL always blocks. Overwrite archives old PCB.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.update_pcb",
+          "id": "pcb.design.update_pcb",
           "name": "update_pcb",
           "risk": "mutating",
           "summary": "Sync the schematic while retaining existing-net copper and footprint poses for local repair. True explicitly removes all tracks/vias on affected nets; orphan-net copper is always removed. Rerun DRC after ECO.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.inspect_board",
+          "id": "pcb.design.inspect_board",
           "name": "inspect_board",
           "risk": "read-only",
           "summary": "Read native board geometry. Use collection for complete revision-bound pages, bounds_mm=[[xmin,ymin],[xmax,ymax]] for envelope filtering, item_id for a UUID. inspect_tool documents type-specific output; geometry is not connectivity."
         },
         {
-          "id": "pcb.bench.inspect_tool",
+          "id": "pcb.design.inspect_tool",
           "name": "inspect_tool",
           "risk": "read-only",
           "summary": "Return a public tool contract or analysis/power_tree/interfaces schema without reading implementation source."
         },
         {
-          "id": "pcb.bench.list_references",
+          "id": "pcb.design.list_references",
           "name": "list_references",
           "risk": "read-only",
           "summary": "List the allowlisted PCB skill references with byte sizes and SHA-256 hashes; no filesystem scan is needed."
         },
         {
-          "id": "pcb.bench.read_reference",
+          "id": "pcb.design.read_reference",
           "name": "read_reference",
           "risk": "read-only",
           "summary": "Read a bounded allowlisted PCB skill reference; use this instead of recursive filesystem searches."
         },
         {
-          "id": "pcb.bench.add_track",
+          "id": "pcb.design.add_track",
           "name": "add_track",
           "risk": "mutating",
           "summary": "Lay one straight copper segment. Returns the created track.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.add_arc",
+          "id": "pcb.design.add_arc",
           "name": "add_arc",
           "risk": "mutating",
           "summary": "Add one native copper arc through three points; retain its UUID and rerun DRC.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.add_via",
+          "id": "pcb.design.add_via",
           "name": "add_via",
           "risk": "mutating",
           "summary": "Persist one through via, dimensions in mm; explicit diameter must exceed drill.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.unroute",
+          "id": "pcb.design.unroute",
           "name": "unroute",
           "risk": "mutating",
           "summary": "Delete tracks and vias -- all of them, or just one net's. Zones stay.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.place_component",
+          "id": "pcb.design.place_component",
           "name": "place_component",
           "risk": "mutating",
           "summary": "Set placement intent; regeneration invalidates old routing.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.lock_component",
+          "id": "pcb.design.lock_component",
           "name": "lock_component",
           "risk": "mutating",
           "summary": "Lock/unlock placement intent.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.remove_board_item",
+          "id": "pcb.design.remove_board_item",
           "name": "remove_board_item",
           "risk": "mutating",
           "summary": "Remove one track, via, zone, keepout or annotation by UUID; use set_board_outline for Edge.Cuts.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.set_track_width",
+          "id": "pcb.design.set_track_width",
           "name": "set_track_width",
           "risk": "mutating",
           "summary": "Change one track's width in mm using its UUID; vias and zones are rejected.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.set_pad_zone_connection",
+          "id": "pcb.design.set_pad_zone_connection",
           "name": "set_pad_zone_connection",
           "risk": "mutating",
           "summary": "Change one placed copper pad's zone connection by UUID on the observed board revision; refill zones and rerun DRC and affected analyses afterward.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.set_component_text",
+          "id": "pcb.design.set_component_text",
           "name": "set_component_text",
           "risk": "mutating",
           "summary": "Position one PCB reference/value field in absolute mm, with text height/angle/visibility; preserve component placement and copper.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.set_board_outline",
+          "id": "pcb.design.set_board_outline",
           "name": "set_board_outline",
           "risk": "mutating",
           "summary": "Set one closed straight polygon in mm in intent and existing PCB; replaces all Edge.Cuts including cutouts.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.set_layer_count",
+          "id": "pcb.design.set_layer_count",
           "name": "set_layer_count",
           "risk": "mutating",
           "summary": "Set native copper layer count; workspace tools validate range and existing copper.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.add_zone",
+          "id": "pcb.design.add_zone",
           "name": "add_zone",
           "risk": "mutating",
           "summary": "Add one copper zone polygon in mm; fill_zones and verification are required.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.add_keepout",
+          "id": "pcb.design.add_keepout",
           "name": "add_keepout",
           "risk": "mutating",
           "summary": "Add one copper-layer rule area forbidding tracks, vias and pours inside a polygon in mm.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.add_text",
+          "id": "pcb.design.add_text",
           "name": "add_text",
           "risk": "mutating",
           "summary": "Add one annotation in mm on a non-copper, non-Edge.Cuts layer.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.fill_zones",
+          "id": "pcb.design.fill_zones",
           "name": "fill_zones",
           "risk": "mutating",
           "summary": "Do NOT fill zones from a headless script by default.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.route_differential_pair",
+          "id": "pcb.design.route_differential_pair",
           "name": "route_differential_pair",
           "risk": "mutating",
           "summary": "Route one pair along an explicit corridor. terminals={p:[ref:pad,ref:pad],n:[ref:pad,ref:pad]}; offset endpoints must match native pad centers.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.tune_length",
+          "id": "pcb.design.tune_length",
           "name": "tune_length",
           "risk": "mutating",
           "summary": "Tune an unbranched two-pad net by replacing one straight segment. Target is total copper centerline length; pitch/amplitude in mm. Final DRC/analysis required.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.route_board",
+          "id": "pcb.design.route_board",
           "name": "route_board",
           "risk": "mutating",
           "summary": "Export DSN, run Freerouting, import SES, fill zones and run native DRC.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.checkout_board",
+          "id": "pcb.design.checkout_board",
           "name": "checkout_board",
           "risk": "mutating",
           "summary": "Continue a retained route/history PCB as an unverified working version; exact hashes and unchanged non-board inputs required. Returns a rollback candidate.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         }
       ],
@@ -1849,7 +1851,7 @@
       ]
     },
     {
-      "id": "pcb.bench.verification",
+      "id": "pcb.design.verification",
       "title": "PCB \u00b7 verification",
       "domain": "pcb",
       "stages": [
@@ -1868,170 +1870,170 @@
         {
           "id": "pcb.design.e2e",
           "summary": "Design and repair PCB projects with the pinned public tool contracts and native evidence.",
-          "reference": "The complete pcb-design-e2e Skill and its references ship inside this pack. The pcb.bench.* tools execute inside the pinned PCB-bench Linux container (see runtime/bench-upstream.json); inspection observations are not verification."
+          "reference": "The complete pcb-design-e2e Skill and its references ship inside this pack. The pcb.design.* tools execute inside the pinned upstream Linux container (see runtime/upstream-snapshot.json); inspection observations are not verification."
         }
       ],
       "tools": [
         {
-          "id": "pcb.bench.project_status",
+          "id": "pcb.design.project_status",
           "name": "project_status",
           "risk": "read-only",
           "summary": "Inspect public requirements or a fresh check's paged tests/findings. item_id filters findings by exact object UUID; stale object locations are withheld."
         },
         {
-          "id": "pcb.bench.new_project",
+          "id": "pcb.design.new_project",
           "name": "new_project",
           "risk": "mutating",
           "summary": "Create design intent; prepared libraries are retained. Dimensions in mm, even copper layers.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.set_requirements",
+          "id": "pcb.design.set_requirements",
           "name": "set_requirements",
           "risk": "mutating",
           "summary": "Set model intent/diagnostics for constraints, postroute, acquisition or analysis; power_tree/interfaces use {items:[...]}. Bound public task requirements stay authoritative.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.view_design",
+          "id": "pcb.design.view_design",
           "name": "view_design",
           "risk": "mutating",
           "summary": "Render current native schematic and top PCB views with source/image hashes; MCP delivers images only when the controller enables vision. Partial views are not acceptance.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.inspect_schematic",
+          "id": "pcb.design.inspect_schematic",
           "name": "inspect_schematic",
           "risk": "read-only",
           "summary": "Read complete revision-bound sheet objects in mm. Follow next_call for remaining objects; ref/UUID/kind filters cover only their query, never the whole sheet."
         },
         {
-          "id": "pcb.bench.verify_schematic",
+          "id": "pcb.design.verify_schematic",
           "name": "verify_schematic",
           "risk": "mutating",
           "summary": "Fresh ERC, exact netlist, footprints, structural rules and declared electrical checks; missing datasheets remain UNKNOWN.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.inspect_board",
+          "id": "pcb.design.inspect_board",
           "name": "inspect_board",
           "risk": "read-only",
           "summary": "Read native board geometry. Use collection for complete revision-bound pages, bounds_mm=[[xmin,ymin],[xmax,ymax]] for envelope filtering, item_id for a UUID. inspect_tool documents type-specific output; geometry is not connectivity."
         },
         {
-          "id": "pcb.bench.run_analysis",
+          "id": "pcb.design.run_analysis",
           "name": "run_analysis",
           "risk": "mutating",
           "summary": "Run fixed requirement tests by default; basis=candidate runs optional design diagnostics without changing acceptance. stage=schematic defers PCB-bound analyses.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.inspect_tool",
+          "id": "pcb.design.inspect_tool",
           "name": "inspect_tool",
           "risk": "read-only",
           "summary": "Return a public tool contract or analysis/power_tree/interfaces schema without reading implementation source."
         },
         {
-          "id": "pcb.bench.list_references",
+          "id": "pcb.design.list_references",
           "name": "list_references",
           "risk": "read-only",
           "summary": "List the allowlisted PCB skill references with byte sizes and SHA-256 hashes; no filesystem scan is needed."
         },
         {
-          "id": "pcb.bench.read_reference",
+          "id": "pcb.design.read_reference",
           "name": "read_reference",
           "risk": "read-only",
           "summary": "Read a bounded allowlisted PCB skill reference; use this instead of recursive filesystem searches."
         },
         {
-          "id": "pcb.bench.run_drc",
+          "id": "pcb.design.run_drc",
           "name": "run_drc",
           "risk": "mutating",
           "summary": "Run full official DRC including all unconnected and parity errors.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.run_erc",
+          "id": "pcb.design.run_erc",
           "name": "run_erc",
           "risk": "mutating",
           "summary": "Run official ERC; return UNKNOWN when no fresh valid report was produced.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.compare_schematic_pcb",
+          "id": "pcb.design.compare_schematic_pcb",
           "name": "compare_schematic_pcb",
           "risk": "mutating",
           "summary": "Export the schematic, compare every physical pin/pad/net and component.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.check_component_datasheet",
+          "id": "pcb.design.check_component_datasheet",
           "name": "check_component_datasheet",
           "risk": "mutating",
           "summary": "Compare declared MPN/pins/package to supplied, source-backed datasheet facts.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.check_power_tree",
+          "id": "pcb.design.check_power_tree",
           "name": "check_power_tree",
           "risk": "mutating",
           "summary": "Check explicit rail voltages, load ranges, current budgets and dropout.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.check_interface",
+          "id": "pcb.design.check_interface",
           "name": "check_interface",
           "risk": "mutating",
           "summary": "Check exact interface pin mapping and supplied voltage ranges/requirements.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.check_footprints",
+          "id": "pcb.design.check_footprints",
           "name": "check_footprints",
           "risk": "mutating",
           "summary": "Load symbols/footprints and validate explicit pin-to-pad assignments.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.verify_design",
+          "id": "pcb.design.verify_design",
           "name": "verify_design",
           "risk": "mutating",
           "summary": "Fresh final ERC/DRC, exact parity, electrical facts and declared postroute checks; scoped UNKNOWN is not global PASS.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.finalize_claims",
+          "id": "pcb.design.finalize_claims",
           "name": "finalize_claims",
           "risk": "mutating",
           "summary": "Submit scoped statuses and optional test_id/conditions_sha256 citations to fresh passing tests. Free-text engineering statements remain unverified; fixed requirements are authoritative.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         }
       ],
@@ -2040,7 +2042,7 @@
       ]
     },
     {
-      "id": "pcb.bench.delivery",
+      "id": "pcb.design.delivery",
       "title": "PCB \u00b7 delivery",
       "domain": "pcb",
       "stages": [
@@ -2058,116 +2060,116 @@
         {
           "id": "pcb.design.e2e",
           "summary": "Design and repair PCB projects with the pinned public tool contracts and native evidence.",
-          "reference": "The complete pcb-design-e2e Skill and its references ship inside this pack. The pcb.bench.* tools execute inside the pinned PCB-bench Linux container (see runtime/bench-upstream.json); inspection observations are not verification."
+          "reference": "The complete pcb-design-e2e Skill and its references ship inside this pack. The pcb.design.* tools execute inside the pinned upstream Linux container (see runtime/upstream-snapshot.json); inspection observations are not verification."
         }
       ],
       "tools": [
         {
-          "id": "pcb.bench.project_status",
+          "id": "pcb.design.project_status",
           "name": "project_status",
           "risk": "read-only",
           "summary": "Inspect public requirements or a fresh check's paged tests/findings. item_id filters findings by exact object UUID; stale object locations are withheld."
         },
         {
-          "id": "pcb.bench.new_project",
+          "id": "pcb.design.new_project",
           "name": "new_project",
           "risk": "mutating",
           "summary": "Create design intent; prepared libraries are retained. Dimensions in mm, even copper layers.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.set_requirements",
+          "id": "pcb.design.set_requirements",
           "name": "set_requirements",
           "risk": "mutating",
           "summary": "Set model intent/diagnostics for constraints, postroute, acquisition or analysis; power_tree/interfaces use {items:[...]}. Bound public task requirements stay authoritative.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.view_design",
+          "id": "pcb.design.view_design",
           "name": "view_design",
           "risk": "mutating",
           "summary": "Render current native schematic and top PCB views with source/image hashes; MCP delivers images only when the controller enables vision. Partial views are not acceptance.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.inspect_schematic",
+          "id": "pcb.design.inspect_schematic",
           "name": "inspect_schematic",
           "risk": "read-only",
           "summary": "Read complete revision-bound sheet objects in mm. Follow next_call for remaining objects; ref/UUID/kind filters cover only their query, never the whole sheet."
         },
         {
-          "id": "pcb.bench.inspect_board",
+          "id": "pcb.design.inspect_board",
           "name": "inspect_board",
           "risk": "read-only",
           "summary": "Read native board geometry. Use collection for complete revision-bound pages, bounds_mm=[[xmin,ymin],[xmax,ymax]] for envelope filtering, item_id for a UUID. inspect_tool documents type-specific output; geometry is not connectivity."
         },
         {
-          "id": "pcb.bench.inspect_tool",
+          "id": "pcb.design.inspect_tool",
           "name": "inspect_tool",
           "risk": "read-only",
           "summary": "Return a public tool contract or analysis/power_tree/interfaces schema without reading implementation source."
         },
         {
-          "id": "pcb.bench.list_references",
+          "id": "pcb.design.list_references",
           "name": "list_references",
           "risk": "read-only",
           "summary": "List the allowlisted PCB skill references with byte sizes and SHA-256 hashes; no filesystem scan is needed."
         },
         {
-          "id": "pcb.bench.read_reference",
+          "id": "pcb.design.read_reference",
           "name": "read_reference",
           "risk": "read-only",
           "summary": "Read a bounded allowlisted PCB skill reference; use this instead of recursive filesystem searches."
         },
         {
-          "id": "pcb.bench.export_project",
+          "id": "pcb.design.export_project",
           "name": "export_project",
           "risk": "mutating",
           "summary": "Export a fresh verified CAD/Gerber/drill/BOM/placement bundle to a new project directory; file export and physical production readiness remain separate.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.save_project_copy",
+          "id": "pcb.design.save_project_copy",
           "name": "save_project_copy",
           "risk": "mutating",
           "summary": "Copy native CAD and portable dependencies under a requested project name; permits unfinished candidates, never asserts verification or manufacturing readiness.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.prepare_3d_model",
+          "id": "pcb.design.prepare_3d_model",
           "name": "prepare_3d_model",
           "risk": "mutating",
           "summary": "Acquire one footprint's assigned 3D bodies with provenance; standard KiCad paths use pinned upstream, custom sources need hashes. No dimensional qualification is inferred.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.export_3d",
+          "id": "pcb.design.export_3d",
           "name": "export_3d",
           "risk": "mutating",
           "summary": "Export one native KiCad assembly file or PNG view. View/size apply only to PNG; 64\u20134096 pixels. Missing bodies remain UNKNOWN; clearance/collision requires mechanical analysis.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.finalize_claims",
+          "id": "pcb.design.finalize_claims",
           "name": "finalize_claims",
           "risk": "mutating",
           "summary": "Submit scoped statuses and optional test_id/conditions_sha256 citations to fresh passing tests. Free-text engineering statements remain unverified; fixed requirements are authoritative.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         }
       ],
@@ -2176,7 +2178,7 @@
       ]
     },
     {
-      "id": "pcb.bench.operate",
+      "id": "pcb.design.operate",
       "title": "PCB \u00b7 end-to-end design and repair",
       "domain": "pcb",
       "stages": [
@@ -2206,774 +2208,774 @@
         {
           "id": "pcb.design.e2e",
           "summary": "Design and repair PCB projects with the pinned public tool contracts and native evidence.",
-          "reference": "The complete pcb-design-e2e Skill and its references ship inside this pack. The pcb.bench.* tools execute inside the pinned PCB-bench Linux container (see runtime/bench-upstream.json); inspection observations are not verification."
+          "reference": "The complete pcb-design-e2e Skill and its references ship inside this pack. The pcb.design.* tools execute inside the pinned upstream Linux container (see runtime/upstream-snapshot.json); inspection observations are not verification."
         }
       ],
       "tools": [
         {
-          "id": "pcb.bench.project_status",
+          "id": "pcb.design.project_status",
           "name": "project_status",
           "risk": "read-only",
           "summary": "Inspect public requirements or a fresh check's paged tests/findings. item_id filters findings by exact object UUID; stale object locations are withheld."
         },
         {
-          "id": "pcb.bench.new_project",
+          "id": "pcb.design.new_project",
           "name": "new_project",
           "risk": "mutating",
           "summary": "Create design intent; prepared libraries are retained. Dimensions in mm, even copper layers.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.add_component",
+          "id": "pcb.design.add_component",
           "name": "add_component",
           "risk": "mutating",
           "summary": "Add a disconnected component. Legacy pin metadata cannot define connectivity.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.remove_component",
+          "id": "pcb.design.remove_component",
           "name": "remove_component",
           "risk": "mutating",
           "summary": "Remove a component; outstanding interface/power requirements stay visible.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.add_net",
+          "id": "pcb.design.add_net",
           "name": "add_net",
           "risk": "mutating",
           "summary": "Declare a net and its electrical properties explicitly.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.remove_net",
+          "id": "pcb.design.remove_net",
           "name": "remove_net",
           "risk": "mutating",
           "summary": "Remove an unused net declaration; connected pins must be disconnected first.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.rename_net",
+          "id": "pcb.design.rename_net",
           "name": "rename_net",
           "risk": "mutating",
           "summary": "Rename a net and all typed references without changing connectivity.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.connect_pin",
+          "id": "pcb.design.connect_pin",
           "name": "connect_pin",
           "risk": "mutating",
           "summary": "Connect a pin; remove its NC marker, reject unknown declared nets.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.disconnect_pin",
+          "id": "pcb.design.disconnect_pin",
           "name": "disconnect_pin",
           "risk": "mutating",
           "summary": "Disconnect a pin without declaring that leaving it open is intentional.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.add_no_connect",
+          "id": "pcb.design.add_no_connect",
           "name": "add_no_connect",
           "risk": "mutating",
           "summary": "Mark an already disconnected pin intentionally NC; never cut a wire silently.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.set_component_value",
+          "id": "pcb.design.set_component_value",
           "name": "set_component_value",
           "risk": "mutating",
           "summary": "Update value; datasheet/functional checks must be rerun.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.assign_footprint",
+          "id": "pcb.design.assign_footprint",
           "name": "assign_footprint",
           "risk": "mutating",
           "summary": "Assign a CAD footprint; optional pin-to-pad map must be explicit.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.add_power_symbol",
+          "id": "pcb.design.add_power_symbol",
           "name": "add_power_symbol",
           "risk": "mutating",
           "summary": "Add a schematic-only power symbol/PWR_FLAG after verifying the supply path.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.set_net_rule",
+          "id": "pcb.design.set_net_rule",
           "name": "set_net_rule",
           "risk": "mutating",
           "summary": "Set per-net geometry constraints; widths and spacings are in mm.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.set_requirements",
+          "id": "pcb.design.set_requirements",
           "name": "set_requirements",
           "risk": "mutating",
           "summary": "Set model intent/diagnostics for constraints, postroute, acquisition or analysis; power_tree/interfaces use {items:[...]}. Bound public task requirements stay authoritative.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.generate_schematic",
+          "id": "pcb.design.generate_schematic",
           "name": "generate_schematic",
           "risk": "mutating",
           "summary": "Generate board.kicad_sch and project tables from saved intent. Explicit overwrite archives old files and invalidates checks.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.view_design",
+          "id": "pcb.design.view_design",
           "name": "view_design",
           "risk": "mutating",
           "summary": "Render current native schematic and top PCB views with source/image hashes; MCP delivers images only when the controller enables vision. Partial views are not acceptance.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.inspect_schematic",
+          "id": "pcb.design.inspect_schematic",
           "name": "inspect_schematic",
           "risk": "read-only",
           "summary": "Read complete revision-bound sheet objects in mm. Follow next_call for remaining objects; ref/UUID/kind filters cover only their query, never the whole sheet."
         },
         {
-          "id": "pcb.bench.place_schematic_component",
+          "id": "pcb.design.place_schematic_component",
           "name": "place_schematic_component",
           "risk": "mutating",
           "summary": "Move/rotate one existing schematic unit and its attached endpoints; preserve UUIDs and netlist or reject atomically. Board placement is separate.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.set_schematic_field",
+          "id": "pcb.design.set_schematic_field",
           "name": "set_schematic_field",
           "risk": "mutating",
           "summary": "Set one schematic field's drawing pose/visibility without changing its value or connectivity.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.set_schematic_wire",
+          "id": "pcb.design.set_schematic_wire",
           "name": "set_schematic_wire",
           "risk": "mutating",
           "summary": "Create or replace one schematic wire segment with two endpoints in mm; rerun ERC and netlist parity after connectivity edits.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.remove_schematic_item",
+          "id": "pcb.design.remove_schematic_item",
           "name": "remove_schematic_item",
           "risk": "mutating",
           "summary": "Remove one native wire/label/junction/NC marker by UUID; circuit intent is unchanged, so ERC and parity must be rerun.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.set_schematic_label",
+          "id": "pcb.design.set_schematic_label",
           "name": "set_schematic_label",
           "risk": "mutating",
           "summary": "Create or replace one label for a declared net at an actual wire/pin anchor; rerun ERC and netlist parity.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.verify_schematic",
+          "id": "pcb.design.verify_schematic",
           "name": "verify_schematic",
           "risk": "mutating",
           "summary": "Fresh ERC, exact netlist, footprints, structural rules and declared electrical checks; missing datasheets remain UNKNOWN.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.generate_pcb",
+          "id": "pcb.design.generate_pcb",
           "name": "generate_pcb",
           "risk": "mutating",
           "summary": "Freshly gate schematic, then generate unrouted PCB and explicit project rules. Missing electrical evidence requires task-authorized CAD-only reason; FAIL always blocks. Overwrite archives old PCB.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.update_pcb",
+          "id": "pcb.design.update_pcb",
           "name": "update_pcb",
           "risk": "mutating",
           "summary": "Sync the schematic while retaining existing-net copper and footprint poses for local repair. True explicitly removes all tracks/vias on affected nets; orphan-net copper is always removed. Rerun DRC after ECO.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.inspect_board",
+          "id": "pcb.design.inspect_board",
           "name": "inspect_board",
           "risk": "read-only",
           "summary": "Read native board geometry. Use collection for complete revision-bound pages, bounds_mm=[[xmin,ymin],[xmax,ymax]] for envelope filtering, item_id for a UUID. inspect_tool documents type-specific output; geometry is not connectivity."
         },
         {
-          "id": "pcb.bench.configure_component",
+          "id": "pcb.design.configure_component",
           "name": "configure_component",
           "risk": "mutating",
           "summary": "Set explicit component properties; symbol changes preserve connected/NC pin numbers or reject, requiring renewed electrical review.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.lookup_component",
+          "id": "pcb.design.lookup_component",
           "name": "lookup_component",
           "risk": "read-only",
           "summary": "Read sourced exact-MPN facts; CAD name hits alone do not qualify a part."
         },
         {
-          "id": "pcb.bench.prepare_component",
+          "id": "pcb.design.prepare_component",
           "name": "prepare_component",
           "risk": "mutating",
           "summary": "Stage exact symbol, footprint, source PDFs and reviewed facts; never publish.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.bind_model",
+          "id": "pcb.design.bind_model",
           "name": "bind_model",
           "risk": "mutating",
           "summary": "Bind one exact-MPN component to an installed, requalified model; preserve bytes, terminal order and hashes.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.qualify_component",
+          "id": "pcb.design.qualify_component",
           "name": "qualify_component",
           "risk": "mutating",
           "summary": "Validate immutable artifacts, source review, resolved pins and real CAD loading.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.install_component",
+          "id": "pcb.design.install_component",
           "name": "install_component",
           "risk": "mutating",
           "summary": "Requalify then atomically publish a new library root; never overwrite.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.create_symbol",
+          "id": "pcb.design.create_symbol",
           "name": "create_symbol",
           "risk": "mutating",
           "summary": "Create an unqualified workspace symbol draft using validated pin geometry.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.add_symbol_pin",
+          "id": "pcb.design.add_symbol_pin",
           "name": "add_symbol_pin",
           "risk": "mutating",
           "summary": "Append one pin to a staged symbol, rejecting duplicate numbers and malformed data.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.create_footprint",
+          "id": "pcb.design.create_footprint",
           "name": "create_footprint",
           "risk": "mutating",
           "summary": "Create an unqualified workspace footprint draft using validated pad geometry.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.add_footprint_pad",
+          "id": "pcb.design.add_footprint_pad",
           "name": "add_footprint_pad",
           "risk": "mutating",
           "summary": "Append one pad to a staged footprint, rejecting duplicate pad numbers.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.update_symbol_pin",
+          "id": "pcb.design.update_symbol_pin",
           "name": "update_symbol_pin",
           "risk": "mutating",
           "summary": "Replace one draft pin's complete definition while preserving its number; requalification required.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.remove_symbol_pin",
+          "id": "pcb.design.remove_symbol_pin",
           "name": "remove_symbol_pin",
           "risk": "mutating",
           "summary": "Remove one draft symbol pin by number; installed CAD and existing boards are not edited.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.update_footprint_pad",
+          "id": "pcb.design.update_footprint_pad",
           "name": "update_footprint_pad",
           "risk": "mutating",
           "summary": "Replace one draft pad's complete geometry while preserving its number; requalification required.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.remove_footprint_pad",
+          "id": "pcb.design.remove_footprint_pad",
           "name": "remove_footprint_pad",
           "risk": "mutating",
           "summary": "Remove one unambiguous draft pad by number; installed CAD and existing boards are not edited.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.discover_artifacts",
+          "id": "pcb.design.discover_artifacts",
           "name": "discover_artifacts",
           "risk": "mutating",
           "summary": "Read bounded public HTML and retain link evidence; never execute scripts.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.fetch_artifact",
+          "id": "pcb.design.fetch_artifact",
           "name": "fetch_artifact",
           "risk": "mutating",
           "summary": "Download a missing CAD file or datasheet with provenance; do not install it blindly.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.read_datasheet",
+          "id": "pcb.design.read_datasheet",
           "name": "read_datasheet",
           "risk": "read-only",
           "summary": "Read bounded PDF pages from a downloaded or staged datasheet; return retained-file hash, not interpreted facts."
         },
         {
-          "id": "pcb.bench.run_analysis",
+          "id": "pcb.design.run_analysis",
           "name": "run_analysis",
           "risk": "mutating",
           "summary": "Run fixed requirement tests by default; basis=candidate runs optional design diagnostics without changing acceptance. stage=schematic defers PCB-bound analyses.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.inspect_tool",
+          "id": "pcb.design.inspect_tool",
           "name": "inspect_tool",
           "risk": "read-only",
           "summary": "Return a public tool contract or analysis/power_tree/interfaces schema without reading implementation source."
         },
         {
-          "id": "pcb.bench.list_references",
+          "id": "pcb.design.list_references",
           "name": "list_references",
           "risk": "read-only",
           "summary": "List the allowlisted PCB skill references with byte sizes and SHA-256 hashes; no filesystem scan is needed."
         },
         {
-          "id": "pcb.bench.read_reference",
+          "id": "pcb.design.read_reference",
           "name": "read_reference",
           "risk": "read-only",
           "summary": "Read a bounded allowlisted PCB skill reference; use this instead of recursive filesystem searches."
         },
         {
-          "id": "pcb.bench.add_track",
+          "id": "pcb.design.add_track",
           "name": "add_track",
           "risk": "mutating",
           "summary": "Lay one straight copper segment. Returns the created track.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.add_arc",
+          "id": "pcb.design.add_arc",
           "name": "add_arc",
           "risk": "mutating",
           "summary": "Add one native copper arc through three points; retain its UUID and rerun DRC.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.add_via",
+          "id": "pcb.design.add_via",
           "name": "add_via",
           "risk": "mutating",
           "summary": "Persist one through via, dimensions in mm; explicit diameter must exceed drill.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.unroute",
+          "id": "pcb.design.unroute",
           "name": "unroute",
           "risk": "mutating",
           "summary": "Delete tracks and vias -- all of them, or just one net's. Zones stay.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.place_component",
+          "id": "pcb.design.place_component",
           "name": "place_component",
           "risk": "mutating",
           "summary": "Set placement intent; regeneration invalidates old routing.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.lock_component",
+          "id": "pcb.design.lock_component",
           "name": "lock_component",
           "risk": "mutating",
           "summary": "Lock/unlock placement intent.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.remove_board_item",
+          "id": "pcb.design.remove_board_item",
           "name": "remove_board_item",
           "risk": "mutating",
           "summary": "Remove one track, via, zone, keepout or annotation by UUID; use set_board_outline for Edge.Cuts.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.set_track_width",
+          "id": "pcb.design.set_track_width",
           "name": "set_track_width",
           "risk": "mutating",
           "summary": "Change one track's width in mm using its UUID; vias and zones are rejected.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.set_pad_zone_connection",
+          "id": "pcb.design.set_pad_zone_connection",
           "name": "set_pad_zone_connection",
           "risk": "mutating",
           "summary": "Change one placed copper pad's zone connection by UUID on the observed board revision; refill zones and rerun DRC and affected analyses afterward.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.set_component_text",
+          "id": "pcb.design.set_component_text",
           "name": "set_component_text",
           "risk": "mutating",
           "summary": "Position one PCB reference/value field in absolute mm, with text height/angle/visibility; preserve component placement and copper.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.set_board_outline",
+          "id": "pcb.design.set_board_outline",
           "name": "set_board_outline",
           "risk": "mutating",
           "summary": "Set one closed straight polygon in mm in intent and existing PCB; replaces all Edge.Cuts including cutouts.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.set_layer_count",
+          "id": "pcb.design.set_layer_count",
           "name": "set_layer_count",
           "risk": "mutating",
           "summary": "Set native copper layer count; workspace tools validate range and existing copper.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.add_zone",
+          "id": "pcb.design.add_zone",
           "name": "add_zone",
           "risk": "mutating",
           "summary": "Add one copper zone polygon in mm; fill_zones and verification are required.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.add_keepout",
+          "id": "pcb.design.add_keepout",
           "name": "add_keepout",
           "risk": "mutating",
           "summary": "Add one copper-layer rule area forbidding tracks, vias and pours inside a polygon in mm.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.add_text",
+          "id": "pcb.design.add_text",
           "name": "add_text",
           "risk": "mutating",
           "summary": "Add one annotation in mm on a non-copper, non-Edge.Cuts layer.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.fill_zones",
+          "id": "pcb.design.fill_zones",
           "name": "fill_zones",
           "risk": "mutating",
           "summary": "Do NOT fill zones from a headless script by default.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.route_differential_pair",
+          "id": "pcb.design.route_differential_pair",
           "name": "route_differential_pair",
           "risk": "mutating",
           "summary": "Route one pair along an explicit corridor. terminals={p:[ref:pad,ref:pad],n:[ref:pad,ref:pad]}; offset endpoints must match native pad centers.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.tune_length",
+          "id": "pcb.design.tune_length",
           "name": "tune_length",
           "risk": "mutating",
           "summary": "Tune an unbranched two-pad net by replacing one straight segment. Target is total copper centerline length; pitch/amplitude in mm. Final DRC/analysis required.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.route_board",
+          "id": "pcb.design.route_board",
           "name": "route_board",
           "risk": "mutating",
           "summary": "Export DSN, run Freerouting, import SES, fill zones and run native DRC.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.checkout_board",
+          "id": "pcb.design.checkout_board",
           "name": "checkout_board",
           "risk": "mutating",
           "summary": "Continue a retained route/history PCB as an unverified working version; exact hashes and unchanged non-board inputs required. Returns a rollback candidate.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.run_drc",
+          "id": "pcb.design.run_drc",
           "name": "run_drc",
           "risk": "mutating",
           "summary": "Run full official DRC including all unconnected and parity errors.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.run_erc",
+          "id": "pcb.design.run_erc",
           "name": "run_erc",
           "risk": "mutating",
           "summary": "Run official ERC; return UNKNOWN when no fresh valid report was produced.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.export_netlist",
+          "id": "pcb.design.export_netlist",
           "name": "export_netlist",
           "risk": "mutating",
           "summary": "Export and parse KiCad XML netlist, with source fingerprint.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.compare_schematic_pcb",
+          "id": "pcb.design.compare_schematic_pcb",
           "name": "compare_schematic_pcb",
           "risk": "mutating",
           "summary": "Export the schematic, compare every physical pin/pad/net and component.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.check_component_datasheet",
+          "id": "pcb.design.check_component_datasheet",
           "name": "check_component_datasheet",
           "risk": "mutating",
           "summary": "Compare declared MPN/pins/package to supplied, source-backed datasheet facts.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.check_power_tree",
+          "id": "pcb.design.check_power_tree",
           "name": "check_power_tree",
           "risk": "mutating",
           "summary": "Check explicit rail voltages, load ranges, current budgets and dropout.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.check_interface",
+          "id": "pcb.design.check_interface",
           "name": "check_interface",
           "risk": "mutating",
           "summary": "Check exact interface pin mapping and supplied voltage ranges/requirements.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.check_footprints",
+          "id": "pcb.design.check_footprints",
           "name": "check_footprints",
           "risk": "mutating",
           "summary": "Load symbols/footprints and validate explicit pin-to-pad assignments.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.add_sheet",
+          "id": "pcb.design.add_sheet",
           "name": "add_sheet",
           "risk": "mutating",
           "summary": "Add one child schematic sheet after its parent exists; root / is implicit.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.remove_sheet",
+          "id": "pcb.design.remove_sheet",
           "name": "remove_sheet",
           "risk": "mutating",
           "summary": "Remove one empty leaf sheet; first move its components and remove scoped nets.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.assign_sheet",
+          "id": "pcb.design.assign_sheet",
           "name": "assign_sheet",
           "risk": "mutating",
           "summary": "Move one component's schematic units to a declared sheet; PCB placement is separate.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.set_sheet_port",
+          "id": "pcb.design.set_sheet_port",
           "name": "set_sheet_port",
           "risk": "mutating",
           "summary": "Define one explicit parent/child hierarchical port for a declared global intent net.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.verify_design",
+          "id": "pcb.design.verify_design",
           "name": "verify_design",
           "risk": "mutating",
           "summary": "Fresh final ERC/DRC, exact parity, electrical facts and declared postroute checks; scoped UNKNOWN is not global PASS.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.export_project",
+          "id": "pcb.design.export_project",
           "name": "export_project",
           "risk": "mutating",
           "summary": "Export a fresh verified CAD/Gerber/drill/BOM/placement bundle to a new project directory; file export and physical production readiness remain separate.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.save_project_copy",
+          "id": "pcb.design.save_project_copy",
           "name": "save_project_copy",
           "risk": "mutating",
           "summary": "Copy native CAD and portable dependencies under a requested project name; permits unfinished candidates, never asserts verification or manufacturing readiness.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.prepare_3d_model",
+          "id": "pcb.design.prepare_3d_model",
           "name": "prepare_3d_model",
           "risk": "mutating",
           "summary": "Acquire one footprint's assigned 3D bodies with provenance; standard KiCad paths use pinned upstream, custom sources need hashes. No dimensional qualification is inferred.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.export_3d",
+          "id": "pcb.design.export_3d",
           "name": "export_3d",
           "risk": "mutating",
           "summary": "Export one native KiCad assembly file or PNG view. View/size apply only to PNG; 64\u20134096 pixels. Missing bodies remain UNKNOWN; clearance/collision requires mechanical analysis.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.finalize_claims",
+          "id": "pcb.design.finalize_claims",
           "name": "finalize_claims",
           "risk": "mutating",
           "summary": "Submit scoped statuses and optional test_id/conditions_sha256 citations to fresh passing tests. Free-text engineering statements remain unverified; fixed requirements are authoritative.",
           "verification": [
-            "pcb.bench.receipts.v1"
+            "pcb.design.receipts.v1"
           ]
         },
         {
-          "id": "pcb.bench.search_components",
+          "id": "pcb.design.search_components",
           "name": "search_components",
           "risk": "read-only",
           "summary": "Search installed symbols and footprints; name hits are not datasheet qualification."
         },
         {
-          "id": "pcb.bench.inspect_symbol",
+          "id": "pcb.design.inspect_symbol",
           "name": "inspect_symbol",
           "risk": "read-only",
           "summary": "Resolve actual library pin declarations for a fully qualified symbol; no inferred MPN ratings."
         },
         {
-          "id": "pcb.bench.run_python",
+          "id": "pcb.design.run_python",
           "name": "run_python",
           "risk": "read-only",
           "summary": "Sandboxed Python calculation. Candidate files are read-only; write derived data only under PCB_EXTENSION_SCRATCH."

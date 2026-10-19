@@ -18,16 +18,16 @@ const {
   number,
   applyFiles,
 } = s;
-const { ID, verify } = require("./verifier.cjs");
-const benchSnapshot = require("./bench-upstream.json");
-const VERSION = "0.2.0-bench.2";
-const BENCH_PROFILE =
-  "Executes inside the pinned PCB-bench Linux container (image " +
-  benchSnapshot.imageTag +
+const { ID, verifyLocal } = require("./verifier.cjs");
+const upstreamSnapshot = require("./upstream-snapshot.json");
+const VERSION = "0.3.2";
+const CONTAINER_PROFILE =
+  "Executes inside the pinned upstream Linux container (image " +
+  upstreamSnapshot.imageTag +
   ", upstream commit " +
-  benchSnapshot.sourceCommit.slice(0, 12) +
+  upstreamSnapshot.sourceCommit.slice(0, 12) +
   "). The actor sources ship inside this pack; prepare the container image " +
-  "(docker build --platform linux/amd64 -f Dockerfile.local-dev -t industrial-pcb-bench <packDir>, " +
+  "(docker build --platform linux/amd64 -f Dockerfile.local-dev -t industrial-pcb-runtime <packDir>, " +
   "then set INDUSTRIAL_HARNESS_PCB_DEV_IMAGE_ID) and the gateway Python environment " +
   "(uv sync --frozen --no-dev inside packs/pcb).";
 const guides = {
@@ -40,7 +40,7 @@ const guides = {
       timeoutMs: 60000,
     },
     description:
-      "Change a single rectangular board outline or move existing footprints with native KiCad on a protected snapshot, then hash-checked source replacement. No library authoring, routing or private PCB-bench environment. Rerun pcb.kicad.verify afterwards.",
+      "Change a single rectangular board outline or move existing footprints with native KiCad on a protected snapshot, then hash-checked source replacement. No library authoring, routing or private upstream environment. Rerun pcb.kicad.verify afterwards.",
   },
   "pcb.kicad.verify": {
     inputs: {
@@ -148,8 +148,8 @@ function dependencies(environment) {
     ],
   };
 }
-const benchTools = (environment) =>
-  benchSnapshot.tools.map((tool) => ({
+const upstreamTools = (environment) =>
+  upstreamSnapshot.tools.map((tool) => ({
   descriptor: {
     schemaVersion: "1",
     id: tool.id,
@@ -159,17 +159,17 @@ const benchTools = (environment) =>
     verification: tool.verification || [],
   },
   guide: {
-    description: tool.summary + " " + BENCH_PROFILE,
+    description: tool.summary + " " + CONTAINER_PROFILE,
   },
   execute: async ({ projectDir, inputs, signal }) => {
-    const { gatewaySession } = require("./bench-gateway.cjs");
+    const { gatewaySession } = require("./gateway.cjs");
     const session = await gatewaySession({ projectDir, environment });
     const payload = await session.callTool(
       "domain_tool_call",
       { toolId: tool.id, arguments: inputs ?? {} },
       signal,
     );
-    // The full observation payload rides in diagnostics: bench observations
+    // The full observation payload rides in diagnostics: container observations
     // (paged requirements, board collections, receipts) are the model-facing
     // result of this action. callTool throws on gateway/native errors, so
     // reaching here means the transport accepted the call.
@@ -226,6 +226,10 @@ function createRuntimePlugin({ environment = process.env, runtimeApi } = {}) {
             "This native profile is qualified only on macOS Apple Silicon.",
           );
         validate(operation, inputs);
+        // Bind acceptance to the validated request before native awaits.
+        const expect = operation === "verify"
+          ? structuredClone(inputs.expect)
+          : undefined;
         const source = projectFile(projectDir, inputs.file),
           bytes = readBytes(source);
         if (operation === "edit" && hash(bytes) !== inputs.expectedSha256)
@@ -320,6 +324,7 @@ function createRuntimePlugin({ environment = process.env, runtimeApi } = {}) {
         }
         return {
           executionSucceeded: succeeded,
+          ...(operation === "verify" ? { expect } : {}),
           inputUnchanged:
             operation === "edit"
               ? undefined
@@ -330,20 +335,20 @@ function createRuntimePlugin({ environment = process.env, runtimeApi } = {}) {
         };
       },
     })),
-      ...benchTools(environment),
+      ...upstreamTools(environment),
     ],
     verifiers: {
-      [ID]: verify,
+      [ID]: verifyLocal,
       "pcb.kicad.source.v1": () => ({
         status: "not_run",
         reason:
           "Source edit preserved; rerun independent board requirements and DRC.",
         metrics: {},
       }),
-      "pcb.bench.receipts.v1": () => ({
+      "pcb.design.receipts.v1": () => ({
         status: "not_run",
         reason:
-          "Bench controller receipts live inside the container session; execution is not acceptance.",
+          "Container controller receipts live inside the session; execution is not acceptance.",
         metrics: {},
       }),
     },

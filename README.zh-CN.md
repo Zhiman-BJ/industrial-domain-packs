@@ -46,3 +46,19 @@ FreeCAD 现声明模型、对应版本的预览、导出和诊断成果组。检
 0.5.1 合并托管安装配方与 0.5.0 成果声明。FreeCAD 发行版本 1.1.4-pack.7 保留 pack.6 的完整安装配方和 pack.5 的成果呈现源码，已发布旧版本的内容保持不变。PCB、Godot 版本与平台资格范围不变。消费者须更新不可变版本固定值，并验证合并后的应用。
 
 0.5.2 保留托管安装配方和 FreeCAD 成果声明，同时合入最新 Godot 场景编辑类型校验与工具说明。Godot 发行版本 0.2.2 将已审查的 Runtime 源码与现有托管原生配方组合；其他 Pack 的版本及内容均保持不变。旧发行版本仍保留各自不可变身份。
+
+0.5.3 为 PCB 发行版 0.3.1 补齐 GitHub Release tarball 构建与验证：Linux AMD64
+镜像从官方历史构建下载并校验 KiCad 10.0.6，在首次 HTTPS apt 请求前准备根证书，
+并在构建时实际读写板文件、检查 DRC。`packs/pcb/validate.sh` 为每次任务启动独立
+容器进行验证。宿主网关 Python 及原有原生平台、工程验收边界见 [PCB Pack](packs/pcb/README.md)。
+
+0.5.4 修复远程报告契约迁移造成的本地验证回归：PCB 0.3.2 与 FreeCAD
+1.1.4-pack.9 在执行结果中保留已验证的请求期望。PCB 本地插件使用原生板回读与
+DRC 证据，远程入口继续强制要求 worker run report 及固定 profile/version。
+执行 `node --test tests/pcb-local-runtime.test.cjs tests/freecad-local-runtime.test.cjs`
+可回归生产 execute 到 verifier 的完整数据传递，原生进程边界使用 fixture，不能
+作为原生资格验收。已有消费者仍需审查并更新固定版本，远程镜像须用同一固定包重建。
+
+0.5.5 将 Linux FreeCAD AppImage 保留在远程镜像配方中，移出桌面托管下载声明。
+FreeCAD 发行版本 1.1.4-pack.10 保留本地验证修复及已验证的 macOS 下载，Linux
+继续作为独立远程执行 profile。该发行版本必须通过 Harness Pack 归档兼容校验。

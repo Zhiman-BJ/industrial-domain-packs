@@ -9,16 +9,60 @@
     "skills/pcb-kicad-native/SKILL.md",
     "skills/pcb-layout-inspect/SKILL.md"
   ],
-  "profiles": [],
+  "profiles": [
+    {
+      "id": "pcb-verify-cpu",
+      "platform": "linux/amd64",
+      "recipe": "packs/pcb/images/Dockerfile.pcb-verify",
+      "status": "qualification-pending",
+      "worker": {
+        "executor": "packs/pcb/runtime/verify-board.py",
+        "arguments": "object",
+        "successField": "executionSucceeded",
+        "toolIds": [
+          "pcb.kicad.verify"
+        ]
+      },
+      "entry": [
+        "python3",
+        "/opt/domain-packs/packs/pcb/runtime/verify-board.py"
+      ],
+      "inputProfile": "pcb.yaml-declared board.kicad_pcb; kicad-cli DRC + native readback; no execution overrides",
+      "artifacts": [
+        [
+          "tool.log",
+          "log.tool",
+          2097152
+        ],
+        [
+          "report.json",
+          "report.pcb.run",
+          65536
+        ],
+        [
+          "drc.json",
+          "report.pcb.drc",
+          8388608
+        ],
+        [
+          "readback.json",
+          "report.pcb.readback",
+          5242880
+        ]
+      ],
+      "canonicalEntry": "packs/pcb/runtime/verifier.cjs",
+      "runtimeDigest": "sha256:62ee1ce7ed0058bcc8cab1ff61d6cb278c30cbbb811334529ba0b966030ac8a6"
+    }
+  ],
   "runtime": {
     "entry": "runtime/index.cjs"
   },
   "externalDependencies": [
     "Official KiCad 10.0.6 app (kicad-cli and bundled pcbnew Python); prepared by a compatible Harness Pack Manager on macOS Apple Silicon",
-    "Optional pcb.bench.* container profile: Docker with the image built from the vendored actor sources (packs/pcb/Dockerfile.local-dev) and the gateway Python environment (uv sync --frozen --no-dev)"
+    "Optional pcb.design.* container profile: Docker with the image built from the vendored actor sources (packs/pcb/Dockerfile.local-dev) and the gateway Python environment (uv sync --frozen --no-dev)"
   ],
   "remoteStatus": "not-qualified",
-  "releaseVersion": "0.2.0-bench.2",
+  "releaseVersion": "0.3.2",
   "nativePlatforms": [
     "darwin-arm64"
   ]

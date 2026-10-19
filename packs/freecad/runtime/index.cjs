@@ -5,7 +5,7 @@ const crypto = require('node:crypto');
 const { spawn } = require('node:child_process');
 const { validateRecipe, validateInputs, applyChanges, guides } = require('./recipe.cjs');
 const hash = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
-const VERSION = '1.1.4-pack.8';
+const VERSION = '1.1.4-pack.10';
 const { presentation } = require('./presentation.cjs');
 
 function executable(environment, managed) {
@@ -212,7 +212,8 @@ function verify({ result, artifacts, readArtifact, action }) {
       metrics: {},
     };
   const original = JSON.parse(readArtifact(originalArtifact)).original;
-  const tolerance = action.inputs.expect?.tolerance || 0.00001;
+  const expected = result.expect || {};
+  const tolerance = expected.tolerance || 0.00001;
   const near = (a, b) => Number.isFinite(a) && Number.isFinite(b) && Math.abs(a - b) <= tolerance;
   const checks = {
     nativeValid: data.native?.valid === true,
@@ -242,7 +243,6 @@ function verify({ result, artifacts, readArtifact, action }) {
     ].every(kind => artifacts.some(a => a.kind === kind)),
     inputUnchanged: result.inputUnchanged !== false,
   };
-  const expected = action.inputs.expect || {};
   if (expected.volume !== undefined)
     checks.expectedVolume = near(data.native.volume, expected.volume);
   if (expected.solids !== undefined) checks.expectedSolids = data.native.solids === expected.solids;
@@ -291,6 +291,7 @@ function createRuntimePlugin({ environment = process.env, managed = false } = {}
       guide: guides[`cad.freecad.${operation}`],
       execute: async ({ projectDir, inputs, signal, action }) => {
         validateInputs(operation, inputs);
+        const expect = structuredClone(inputs.expect);
         if (!available)
           throw Error(
             managed
@@ -392,6 +393,7 @@ function createRuntimePlugin({ environment = process.env, managed = false } = {}
           }));
         return {
           presentation: presentation({ operation, artifacts, sourcePath: source ? path.relative(projectDir, source).split(path.sep).join('/') : null, sourceHash, succeeded }),
+          expect,
           executionSucceeded: succeeded,
           inputUnchanged:
             (!source || hash(fs.readFileSync(source)) === sourceHash) &&

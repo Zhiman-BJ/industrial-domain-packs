@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "packages": [
+    {
+      "package": "kicad",
+      "version": "10.0.6~ubuntu24.04.1",
+      "url": "https://launchpad.net/~kicad/+archive/ubuntu/kicad-10.0-releases/+build/33552541/+files/kicad_10.0.6~ubuntu24.04.1_amd64.deb",
+      "sha256": "a4920d3fc7b5719b8d5efa4ee24603a4313b50a53409bb5417f50770ce73926d",
+      "bytes": 47507892,
+      "changesUrl": "https://launchpad.net/~kicad/+archive/ubuntu/kicad-10.0-releases/+build/33552541/+files/kicad_10.0.6~ubuntu24.04.1_amd64.changes"
+    },
+    {
+      "package": "kicad-symbols",
+      "version": "10.0.6~ubuntu24.04.1",
+      "url": "https://launchpad.net/~kicad/+archive/ubuntu/kicad-10.0-releases/+build/33552412/+files/kicad-symbols_10.0.6~ubuntu24.04.1_all.deb",
+      "sha256": "7ba3be78336f3c11a1ffbdc00a6010772c2a54cdac5a249a6c18c67e10921577",
+      "bytes": 2723382,
+      "changesUrl": "https://launchpad.net/~kicad/+archive/ubuntu/kicad-10.0-releases/+build/33552412/+files/kicad-library-symbols_10.0.6~ubuntu24.04.1_amd64.changes"
+    },
+    {
+      "package": "kicad-footprints",
+      "version": "10.0.6~ubuntu24.04.1",
+      "url": "https://launchpad.net/~kicad/+archive/ubuntu/kicad-10.0-releases/+build/33552413/+files/kicad-footprints_10.0.6~ubuntu24.04.1_all.deb",
+      "sha256": "4b9751a5bcaf4eefb56c061b4c7387a3e06e213a4ff4c5c6ff77ce9e39c9a8e1",
+      "bytes": 6919004,
+      "changesUrl": "https://launchpad.net/~kicad/+archive/ubuntu/kicad-10.0-releases/+build/33552413/+files/kicad-library-footprints_10.0.6~ubuntu24.04.1_amd64.changes"
+    },
+    {
+      "package": "kicad-packages3d",
+      "version": "10.0.6~ubuntu24.04.1",
+      "url": "https://launchpad.net/~kicad/+archive/ubuntu/kicad-10.0-releases/+build/33552452/+files/kicad-packages3d_10.0.6~ubuntu24.04.1_all.deb",
+      "sha256": "01e796065e54b1715e6196617526573f14be0ac1f87d65921075a94ac30db8c6",
+      "bytes": 280216908,
+      "changesUrl": "https://launchpad.net/~kicad/+archive/ubuntu/kicad-10.0-releases/+build/33552452/+files/kicad-library-packages3d_10.0.6~ubuntu24.04.1_amd64.changes"
+    }
+  ]
+}

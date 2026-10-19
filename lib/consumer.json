@@ -5,7 +5,7 @@
     {
       "id": "chip",
       "label": "Chip",
-      "emoji": "\ud83d\udca0",
+      "emoji": "💠",
       "version": "0.6.2",
       "summary": "EDA skills, viewers and the Chip MCP service",
       "prerequisites": [
@@ -16,12 +16,12 @@
     {
       "id": "pcb",
       "label": "PCB",
-      "emoji": "\ud83d\udd0c",
-      "version": "0.2.0-bench.2",
-      "summary": "PCB design and repair on the pinned PCB-bench atomic tool surface (89 tools) plus bounded native KiCad edits",
+      "emoji": "🔌",
+      "version": "0.3.2",
+      "summary": "PCB design and repair on the pinned upstream atomic tool surface (89 tools) plus bounded native KiCad edits",
       "prerequisites": [
         "KiCad 10.0.6 and its bundled pcbnew Python are prepared automatically by a compatible Harness on Apple Silicon",
-        "pcb.bench.* container tools additionally need Docker with the image built from the vendored sources (Dockerfile.local-dev) and the gateway Python (uv sync --frozen --no-dev)"
+        "pcb.design.* container tools additionally need Docker with the image built from the vendored sources (Dockerfile.local-dev) and the gateway Python (uv sync --frozen --no-dev)"
       ],
       "qualifiedBundlePlatforms": [
         "darwin-arm64"
@@ -30,9 +30,9 @@
     {
       "id": "godot",
       "label": "Godot",
-      "emoji": "\ud83c\udfae",
-      "version": "0.2.2",
-      "summary": "Scene transforms, BoxMesh geometry and independent Godot structural verification",
+      "emoji": "🎮",
+      "version": "0.3.0",
+      "summary": "Scene transforms, BoxMesh geometry, independent Godot structural verification and vendored GDScript/game-systems skills",
       "prerequisites": [
         "Godot 4.7.2 is prepared automatically by a compatible Harness on Apple Silicon; export templates are separate and not needed for the qualified structural task"
       ],
@@ -43,8 +43,8 @@
     {
       "id": "cad",
       "label": "CAD",
-      "emoji": "\ud83d\udcd0",
-      "version": "1.1.4-pack.8",
+      "emoji": "📐",
+      "version": "1.1.4-pack.10",
       "summary": "FreeCAD parametric modelling, geometry verification and OCCT CAD viewer",
       "prerequisites": [
         "FreeCAD 1.1.4 is prepared automatically on Apple Silicon"
@@ -56,7 +56,7 @@
     {
       "id": "cuda",
       "label": "CUDA",
-      "emoji": "\u26a1",
+      "emoji": "⚡",
       "version": "0.1.0",
       "summary": "Remote CUDA Compiler and RTX 4090 Evaluator MCP with kernel optimization Skill",
       "prerequisites": [
@@ -122,6 +122,166 @@
       "enabledByDefault": true,
       "packId": "pcb-pack",
       "resourcePath": "skills/pcb-design-e2e"
+    },
+    {
+      "id": "godot.2d.essentials",
+      "domain": "godot",
+      "title": "Use when working with 2D-specific systems",
+      "enabledByDefault": true,
+      "packId": "godot-pack",
+      "resourcePath": "skills/2d-essentials"
+    },
+    {
+      "id": "godot.3d.essentials",
+      "domain": "godot",
+      "title": "Use when working with 3D-specific systems",
+      "enabledByDefault": true,
+      "packId": "godot-pack",
+      "resourcePath": "skills/3d-essentials"
+    },
+    {
+      "id": "godot.animation.system",
+      "domain": "godot",
+      "title": "Use when implementing animations",
+      "enabledByDefault": true,
+      "packId": "godot-pack",
+      "resourcePath": "skills/animation-system"
+    },
+    {
+      "id": "godot.code.review",
+      "domain": "godot",
+      "title": "Use when reviewing GDScript or C# Godot code",
+      "enabledByDefault": true,
+      "packId": "godot-pack",
+      "resourcePath": "skills/godot-code-review"
+    },
+    {
+      "id": "godot.component.system",
+      "domain": "godot",
+      "title": "Use when building reusable node components",
+      "enabledByDefault": true,
+      "packId": "godot-pack",
+      "resourcePath": "skills/component-system"
+    },
+    {
+      "id": "godot.debugging",
+      "domain": "godot",
+      "title": "Use when debugging Godot projects",
+      "enabledByDefault": true,
+      "packId": "godot-pack",
+      "resourcePath": "skills/godot-debugging"
+    },
+    {
+      "id": "godot.event.bus",
+      "domain": "godot",
+      "title": "Use when implementing decoupled communication between nod…",
+      "enabledByDefault": true,
+      "packId": "godot-pack",
+      "resourcePath": "skills/event-bus"
+    },
+    {
+      "id": "godot.gdscript.advanced",
+      "domain": "godot",
+      "title": "Use when writing production-grade GDScript",
+      "enabledByDefault": true,
+      "packId": "godot-pack",
+      "resourcePath": "skills/gdscript-advanced"
+    },
+    {
+      "id": "godot.gdscript.patterns",
+      "domain": "godot",
+      "title": "Use when writing GDScript",
+      "enabledByDefault": true,
+      "packId": "godot-pack",
+      "resourcePath": "skills/gdscript-patterns"
+    },
+    {
+      "id": "godot.input.handling",
+      "domain": "godot",
+      "title": "Use when implementing input",
+      "enabledByDefault": true,
+      "packId": "godot-pack",
+      "resourcePath": "skills/input-handling"
+    },
+    {
+      "id": "godot.optimization",
+      "domain": "godot",
+      "title": "Use when optimizing Godot games",
+      "enabledByDefault": true,
+      "packId": "godot-pack",
+      "resourcePath": "skills/godot-optimization"
+    },
+    {
+      "id": "godot.player.controller",
+      "domain": "godot",
+      "title": "Use when implementing player movement",
+      "enabledByDefault": true,
+      "packId": "godot-pack",
+      "resourcePath": "skills/player-controller"
+    },
+    {
+      "id": "godot.project.toolkit",
+      "domain": "godot",
+      "title": "Godot 4.x game development (verified on 4.7)",
+      "enabledByDefault": true,
+      "packId": "godot-pack",
+      "resourcePath": "skills/godot-project-toolkit"
+    },
+    {
+      "id": "godot.resource.pattern",
+      "domain": "godot",
+      "title": "Use when creating data containers in Godot",
+      "enabledByDefault": true,
+      "packId": "godot-pack",
+      "resourcePath": "skills/resource-pattern"
+    },
+    {
+      "id": "godot.save.load",
+      "domain": "godot",
+      "title": "Use when implementing save/load systems",
+      "enabledByDefault": true,
+      "packId": "godot-pack",
+      "resourcePath": "skills/save-load"
+    },
+    {
+      "id": "godot.scene.organization",
+      "domain": "godot",
+      "title": "Use when designing scene tree structure",
+      "enabledByDefault": true,
+      "packId": "godot-pack",
+      "resourcePath": "skills/scene-organization"
+    },
+    {
+      "id": "godot.shader.basics",
+      "domain": "godot",
+      "title": "Use when implementing shaders",
+      "enabledByDefault": true,
+      "packId": "godot-pack",
+      "resourcePath": "skills/shader-basics"
+    },
+    {
+      "id": "godot.state.machine",
+      "domain": "godot",
+      "title": "Use when implementing state machines in Godot",
+      "enabledByDefault": true,
+      "packId": "godot-pack",
+      "resourcePath": "skills/state-machine"
+    },
+    {
+      "id": "godot.testing",
+      "domain": "godot",
+      "title": "Use when writing tests for Godot projects",
+      "enabledByDefault": true,
+      "packId": "godot-pack",
+      "resourcePath": "skills/godot-testing"
+    },
+    {
+      "id": "godot.ui",
+      "domain": "godot",
+      "title": "Use when building user interfaces",
+      "enabledByDefault": true,
+      "packId": "godot-pack",
+      "resourcePath": "skills/godot-ui"
     },
     {
       "id": "godot.game.inspect",
@@ -194,9 +354,9 @@
         "netlist",
         "logic",
         "signal",
-        "\u7f51\u8868",
-        "\u903b\u8f91",
-        "\u4fe1\u53f7"
+        "网表",
+        "逻辑",
+        "信号"
       ],
       "skills": [
         {
@@ -232,9 +392,9 @@
         "simulation",
         "timing",
         "vcd",
-        "\u6ce2\u5f62",
-        "\u4eff\u771f",
-        "\u65f6\u5e8f"
+        "波形",
+        "仿真",
+        "时序"
       ],
       "skills": [
         {
@@ -268,9 +428,9 @@
         "layout",
         "gds",
         "layer",
-        "\u7248\u56fe",
-        "\u7269\u7406",
-        "\u56fe\u5c42"
+        "版图",
+        "物理",
+        "图层"
       ],
       "skills": [
         {
@@ -307,10 +467,10 @@
         "ezdxf",
         "spec",
         "dimension",
-        "\u56fe\u7eb8",
-        "\u4e8c\u7ef4",
-        "\u5236\u56fe",
-        "\u6807\u6ce8"
+        "图纸",
+        "二维",
+        "制图",
+        "标注"
       ],
       "skills": [
         {
@@ -346,10 +506,10 @@
         "step",
         "fcstd",
         "solid",
-        "\u5efa\u6a21",
-        "\u4e09\u7ef4",
-        "\u53c2\u6570\u5316",
-        "\u8349\u56fe"
+        "建模",
+        "三维",
+        "参数化",
+        "草图"
       ],
       "skills": [
         {
@@ -359,8 +519,8 @@
         },
         {
           "id": "cad.freecad.headless",
-          "summary": "FreeCAD headless via freecadcmd for parametric 2D sketches and 3D solids: build\u2192readback\u2192verify loop, fully-constrained gate, analytic volume checks, Sketcher API traps.",
-          "reference": "Route by deliverable: 2D drawing files go to ezdxf; FreeCAD serves parametric sketches and 3D models (FCStd/STEP). Its DXF paths are weak links \u2014 never the acceptance reader."
+          "summary": "FreeCAD headless via freecadcmd for parametric 2D sketches and 3D solids: build→readback→verify loop, fully-constrained gate, analytic volume checks, Sketcher API traps.",
+          "reference": "Route by deliverable: 2D drawing files go to ezdxf; FreeCAD serves parametric sketches and 3D models (FCStd/STEP). Its DXF paths are weak links — never the acceptance reader."
         }
       ],
       "tools": [],
@@ -384,9 +544,9 @@
         "lisp",
         "drawing",
         "drafting",
-        "\u56fe\u7eb8",
-        "\u5236\u56fe",
-        "\u7ed8\u56fe"
+        "图纸",
+        "制图",
+        "绘图"
       ],
       "skills": [
         {

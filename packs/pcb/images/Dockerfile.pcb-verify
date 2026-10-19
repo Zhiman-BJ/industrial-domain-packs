@@ -1,0 +1,54 @@
+# syntax=docker/dockerfile:1
+# Protected PCB verification worker. The pack owns this recipe; the service
+# only pins the resulting immutable image digest in its RuntimeProfile.
+FROM eclipse-temurin:25-jre@sha256:fd4b1c02c64eef378212e23656fc0b0caa41a357876fa0b60e51ceda94a3db64 AS java
+FROM ubuntu:24.04@sha256:534baea6a22c03a63003dbc8dbe78fe34bc0d7e595d9a9dc9834884ff530eb55
+
+ARG DEBIAN_FRONTEND=noninteractive
+ARG PCB_DEV_INSECURE_APT_TLS=0
+ARG PCB_RUNTIME_DIGEST=sha256:62ee1ce7ed0058bcc8cab1ff61d6cb278c30cbbb811334529ba0b966030ac8a6
+
+COPY --from=java /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+RUN if [ "$PCB_DEV_INSECURE_APT_TLS" = 1 ]; then \
+      printf 'Acquire::https::Verify-Peer "false";\nAcquire::https::Verify-Host "false";\n' > /etc/apt/apt.conf.d/99local-dev-proxy; \
+    fi \
+    && sed -i 's#http://archive.ubuntu.com#https://archive.ubuntu.com#g; s#http://security.ubuntu.com#https://security.ubuntu.com#g' /etc/apt/sources.list.d/ubuntu.sources \
+    && apt-get update -qq \
+    && apt-get install -y --no-install-recommends \
+      ca-certificates=20260601~24.04.1 software-properties-common=0.99.49.4 \
+      python3=3.12.3-0ubuntu2.1 python3-numpy=1:1.26.4+ds-6ubuntu1 \
+      python3-scipy=1.11.4-6build1 python3-shapely=2.0.3-1build2 \
+      python3-yaml=6.0.1-2build2 python3-cairosvg=2.7.1-1 \
+      curl=8.5.0-2ubuntu10.16 git=1:2.43.0-1ubuntu7.3 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Fetch the signed KiCad 10.0.6 package set selected by the pack lock.
+COPY packs/pcb/runtime/kicad-packages.json packs/pcb/scripts/fetch-kicad.py /opt/industrial-pcb/
+RUN python3 /opt/industrial-pcb/fetch-kicad.py /opt/industrial-pcb/kicad-packages.json /tmp/kicad-debs \
+    && apt-get update -qq \
+    && apt-get install -y --no-install-recommends /tmp/kicad-debs/*.deb \
+    && test "$(kicad-cli version)" = 10.0.6 \
+    && python3 -c 'import pcbnew; assert pcbnew.Version() == "10.0.6"' \
+    && rm -rf /tmp/kicad-debs /var/lib/apt/lists/*
+
+# Keep the generic protocol wrapper and the profile-specific executor inside
+# the pack image. No request can override this path or its environment.
+COPY lib/worker-http.py /opt/domain-packs/lib/worker-http.py
+COPY packs/pcb/pack.json /opt/domain-packs/packs/pcb/pack.json
+COPY packs/pcb/runtime/verify-board.py /opt/domain-packs/packs/pcb/runtime/verify-board.py
+
+ENV WORKER_RUNTIME_DIGEST=${PCB_RUNTIME_DIGEST} \
+    WORKER_PACK=pcb \
+    WORKER_PROFILE_ID=pcb-verify-cpu \
+    HOME=/tmp \
+    PYTHONDONTWRITEBYTECODE=1
+
+# envd is the only management/data-plane bridge. It is copied from the pinned
+# AGS reference image and runs as the same unprivileged user as the worker.
+COPY --from=ccr.ccs.tencentyun.com/ags-image/envd:v0.5.14 --chmod=755 /usr/bin/envd /usr/bin/envd
+RUN mkdir -p /input /work/requests /tmp/.cache/kicad \
+    && chown -R 1000:1000 /input /work /tmp/.cache
+EXPOSE 8080 49983
+WORKDIR /work
+USER 1000:1000
+ENTRYPOINT ["/bin/bash", "-l", "-c", "/usr/bin/envd > /tmp/envd.log 2>&1 & exec python3 /opt/domain-packs/lib/worker-http.py"]

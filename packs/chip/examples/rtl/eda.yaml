@@ -1,6 +1,23 @@
 name: remote-counter
-top: counter_tb
+top: counter
+inputs:
+  rtl: [counter.sv]
+  testbench: [counter_tb.sv]
+runtime:
+  kind: docker
+  image: eda-harness-tools:dev
+  resources:
+    cpu: 2
+    memory_gb: 2
+    timeout_seconds: 120
 actions:
+  # lint 只覆盖 RTL 本体；testbench 含 # 延时，归 testbench 输入类、不参与 lint
+  rtl.lint:
+    parameters:
+      operation: lint
+      top: counter
+      sources:
+        - path: counter.sv
   rtl.simulate:
     parameters:
       operation: simulate
@@ -9,3 +26,6 @@ actions:
       sources:
         - path: counter.sv
         - path: counter_tb.sv
+constraints:
+  lint.errors: {op: '==', value: 0, unit: count}
+required_verification: [rtl.lint, rtl.simulate]

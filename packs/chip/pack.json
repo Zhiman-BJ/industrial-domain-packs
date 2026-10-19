@@ -22,6 +22,12 @@
       "platform": "linux/amd64",
       "recipe": "packs/chip/images/Dockerfile.rtl-cpu",
       "status": "qualification-pending",
+      "worker": {
+        "executor": "packs/chip/runtime/native-profile.py",
+        "arguments": "none",
+        "successField": "completed",
+        "toolIds": ["chip.rtl.verify"]
+      },
       "entry": [
         "python3",
         "/opt/domain-packs/packs/chip/runtime/native-profile.py"

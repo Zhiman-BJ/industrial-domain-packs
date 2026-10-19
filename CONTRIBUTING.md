@@ -47,6 +47,9 @@ consumer pin bump — Harness and the remote service pin an exact Git commit, so
 a pack change lands with its consumer PRs planned. Manifest `version` bumps
 and `sourceFiles` hashes follow
 [docs/release-format.md](docs/release-format.md); never hand-edit a hash.
+Container image releases follow [docs/release-runbook.md](docs/release-runbook.md);
+`provenance/runtime-distribution.json` is updated only by the release
+workflow's lock PR, never by hand.
 
 ## Pull requests
 

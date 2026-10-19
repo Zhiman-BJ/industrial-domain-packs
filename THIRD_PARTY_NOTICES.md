@@ -18,3 +18,7 @@ Godot source/bridge, PCB public bridge, FreeCAD PR29 runtime, CAD/domain Skills 
 ## CUDA adapter
 
 The CUDA MCP transport, runtime client, Verifier and Skill are original MIT contributions. CUDA-Agent-Harbor is a private external execution dependency; no upstream implementation or task corpus is redistributed. Its source and worker image identities are recorded under `packs/cuda/locks/`. Native dependencies retain their own terms.
+
+## Godot community Skills
+
+The Godot Pack vendors two public MIT Skill sets as static knowledge content: GodotPrompter (commit `d68ea7f6e87163489af071e6440840ee105c4285`, notice in `licenses/godotprompter.MIT`) and haxqer/godot-skill (commit `037c03e9858ae748bf66c010aeb9942dbe9b93d6`, notice in `licenses/haxqer-godot-skill.MIT`). Exact import scope and adaptations are recorded in [Godot provenance](packs/godot/PROVENANCE.md). They add no runtime tools or native dependencies and do not widen the Pack's qualified acceptance path.

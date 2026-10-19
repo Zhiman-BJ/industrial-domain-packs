@@ -73,3 +73,24 @@ FreeCAD now declares version-bound result groups for models, previews, exports a
 Version 0.5.1 combines these managed installation recipes with the 0.5.0 result declarations. FreeCAD distribution 1.1.4-pack.7 retains the complete installation recipe from pack.6 and the source presentation behavior from pack.5; published earlier Pack versions keep their original bytes. PCB and Godot versions and qualified platform limits are unchanged. Consumers must update their immutable pin and qualify the combined application.
 
 Version 0.5.2 retains the managed installation recipes and FreeCAD result declarations while incorporating the latest Godot typed scene-edit checks and tool guidance. Godot distribution 0.2.2 combines those reviewed Runtime sources with the existing managed native recipe; other Pack versions and contents are unchanged. Earlier distribution versions keep their original immutable identities.
+
+Version 0.5.3 prepares PCB distribution 0.3.1 for the GitHub Release tarball channel:
+the Linux AMD64 recipe preserves KiCad 10.0.6 using verified historical official
+packages, bootstraps HTTPS trust before apt, and runs a real board round-trip and
+DRC during the build. `packs/pcb/validate.sh` provides isolated per-task validation.
+The host gateway Python and existing native/engineering qualification boundaries
+remain as documented in the [PCB Pack](packs/pcb/README.md).
+
+Version 0.5.4 restores local verification after the remote report-contract migration:
+PCB 0.3.2 and FreeCAD 1.1.4-pack.9 retain validated request expectations in the
+execution result. PCB's local plugin verifies native board/DRC evidence; the remote
+entry still requires its worker run report and fixed profile/version. Run
+`node --test tests/pcb-local-runtime.test.cjs tests/freecad-local-runtime.test.cjs`
+for production execute-to-verifier contract regressions with native-process fixtures.
+These tests do not establish native qualification. Existing consumers require a
+reviewed pin update; remote images must be rebuilt from the same pinned package.
+
+Version 0.5.5 keeps the Linux FreeCAD AppImage in the remote image recipe, outside
+the desktop managed-download manifest. FreeCAD distribution 1.1.4-pack.10 retains
+the local verifier fix and the qualified macOS download; Linux remains a separate
+remote execution profile. Harness Pack archive validation must pass on this release.

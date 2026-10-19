@@ -5,8 +5,28 @@
   "sourceVersion": "0.1.0",
   "status": "local-runtime",
   "skills": [
+    "skills/2d-essentials/SKILL.md",
+    "skills/3d-essentials/SKILL.md",
+    "skills/animation-system/SKILL.md",
+    "skills/component-system/SKILL.md",
+    "skills/event-bus/SKILL.md",
+    "skills/gdscript-advanced/SKILL.md",
+    "skills/gdscript-patterns/SKILL.md",
+    "skills/godot-code-review/SKILL.md",
+    "skills/godot-debugging/SKILL.md",
     "skills/godot-game-develop/SKILL.md",
-    "skills/godot-game-inspect/SKILL.md"
+    "skills/godot-game-inspect/SKILL.md",
+    "skills/godot-optimization/SKILL.md",
+    "skills/godot-project-toolkit/SKILL.md",
+    "skills/godot-testing/SKILL.md",
+    "skills/godot-ui/SKILL.md",
+    "skills/input-handling/SKILL.md",
+    "skills/player-controller/SKILL.md",
+    "skills/resource-pattern/SKILL.md",
+    "skills/save-load/SKILL.md",
+    "skills/scene-organization/SKILL.md",
+    "skills/shader-basics/SKILL.md",
+    "skills/state-machine/SKILL.md"
   ],
   "profiles": [],
   "runtime": {
@@ -16,7 +36,7 @@
     "Official Godot 4.7.2 app; prepared by a compatible Harness Pack Manager on macOS Apple Silicon"
   ],
   "remoteStatus": "not-qualified",
-  "releaseVersion": "0.2.2",
+  "releaseVersion": "0.3.0",
   "nativePlatforms": [
     "darwin-arm64"
   ]

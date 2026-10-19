@@ -1,0 +1,3 @@
+# Content-locked files must hash identically on every platform.
+# Force LF checkout so content-lock.json verification passes on Windows.
+* text=auto eol=lf

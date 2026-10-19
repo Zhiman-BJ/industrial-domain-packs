@@ -1,10 +1,10 @@
 "use strict";
 // Minimal newline-delimited JSON-RPC stand-in for bridge/pcb-gateway.py.
-// Speaks just enough MCP for packs/pcb/runtime/bench-gateway.cjs tests.
+// Speaks just enough MCP for packs/pcb/runtime/gateway.cjs tests.
 const readline = require("node:readline");
 
 const PAGED_DOC = JSON.stringify({
-  toolId: "pcb.bench.inspect_board",
+  toolId: "pcb.design.inspect_board",
   result: { status: "ok", collection: ["x".repeat(40), "y".repeat(40)] },
   isError: false,
 });
@@ -30,7 +30,7 @@ rl.on("line", (line) => {
   if (request.method === "tools/call") {
     const name = request.params.name;
     const arguments_ = request.params.arguments || {};
-    if (name === "domain_tool_call" && arguments_.toolId === "pcb.bench.project_status")
+    if (name === "domain_tool_call" && arguments_.toolId === "pcb.design.project_status")
       return send({
         jsonrpc: "2.0",
         id: request.id,
@@ -39,8 +39,8 @@ rl.on("line", (line) => {
             {
               type: "text",
               text: JSON.stringify({
-                providerId: "pcb-bench.tools",
-                toolId: "pcb.bench.project_status",
+                providerId: "pcb-design.tools",
+                toolId: "pcb.design.project_status",
                 result: { status: "ok", requirements: "paged" },
                 isError: false,
               }),
@@ -49,7 +49,7 @@ rl.on("line", (line) => {
           isError: false,
         },
       });
-    if (name === "domain_tool_call" && arguments_.toolId === "pcb.bench.inspect_board")
+    if (name === "domain_tool_call" && arguments_.toolId === "pcb.design.inspect_board")
       return send({
         jsonrpc: "2.0",
         id: request.id,
@@ -58,7 +58,7 @@ rl.on("line", (line) => {
             {
               type: "text",
               text: JSON.stringify({
-                providerId: "pcb-bench.tools",
+                providerId: "pcb-design.tools",
                 responseId: "paged-1",
                 paged: true,
                 bytes: PAGED_DOC.length,

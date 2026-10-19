@@ -61,3 +61,22 @@ The new runtime/, typed tools, Verifiers and examples are original public MIT co
 - 快照 `runtime/bench-upstream.json` 的 112 个哈希现同时承担 vendored 文件的完整性校验
   （bridge 启动时逐文件核对包内资源）；分发范围仍为自有私有仓库内部分发（见上方 2026-10-10 决定）。
 - 派发自检：缺镜像/缺 venv 在任何进程启动前报出带构建指引的 setup 错误。
+
+## First public PCB runtime tarball (2026-10-15)
+
+The maintainer requested publication of the missing PCB runtime through this
+repository's existing GitHub Release tarball channel (issue #38). It packages the
+already vendored actor/Skill inventory and the pinned third-party tools; evaluation
+tasks, reference answers, customer inputs and host gateway environments are excluded.
+Earlier entries above describe historical distribution boundaries.
+
+KiCad 10.0.6 and its standard symbols, footprints and 3D libraries come from the
+official KiCad Launchpad archive. `runtime/kicad-packages.json` records immutable build
+URLs, byte counts, SHA-256 values and the official `.changes` records supplying
+those values. KiCad retains GPL-3.0-or-later, libraries retain their upstream
+licenses, and installed package copyright notices remain under `/usr/share/doc`.
+Source package version is `10.0.6~ubuntu24.04.1` in the same official archive.
+Freerouting 2.4.1 retains its upstream license and jar SHA-256; Java and Ubuntu
+retain their original terms. Validation scripts and the existing mounting-board
+input are original MIT contributions. Release smoke does not replace the upstream
+qualification snapshot or qualify arbitrary PCB designs.

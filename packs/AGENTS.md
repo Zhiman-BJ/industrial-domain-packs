@@ -30,5 +30,10 @@ limits live in each pack's README.
 - Engineering acceptance requires native reports plus explicit task
   expectations; source edits return `not_run` and invalidate prior evidence.
   Never reinterpret an old run with a new Verifier.
+- Container recipes pin every external input: base images as
+  `name:tag@sha256:<manifest-list digest>` (so `--platform` still resolves),
+  apt packages as exact `package=version` including any epoch, and downloaded
+  artifacts by sha256. A floating tag or an unpinned `apt-get install` line is
+  a reproducibility defect; bump pins deliberately, one lock per change.
 - Vendor complete sources with their licenses; a pack must be self-contained —
   no external checkout is required to run it.
