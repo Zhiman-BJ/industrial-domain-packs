@@ -2,28 +2,28 @@
   "schemaVersion": 1,
   "id": "pcb-pack",
   "domain": "pcb",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "provider": {
     "id": "pcb-design.tools",
     "title": "Public KiCad board Runtime",
     "domain": "pcb",
-    "version": "0.3.1",
+    "version": "0.3.2",
     "transport": "runtime",
     "packDirectory": "pcb",
     "packId": "pcb-pack",
-    "sourceSha256": "b4618eafe4905c43ecfc096a071ef7fb2f4b671694ae22f0ead04355356fa59e",
+    "sourceSha256": "b8605fb4fd210bc89dff0570927bb1a4fce669e33985d4cbe9f6277c648c72c7",
     "resourceRoots": [
       "runtime"
     ],
     "sourceFiles": {
       "runtime/gateway.cjs": "02d1ed90487963c9501a4755cfc3622367b6b0e0ff6ac1d759324c7fd295e1fc",
       "runtime/upstream-snapshot.json": "cc8293f444fa380427d4c3f46fd38077011646fef98a8581da1152f52f4e5cf4",
-      "runtime/index.cjs": "bd864669017a3254e918dbee74b6af42e4e8816e0c5f44d150f64ec4f244123f",
+      "runtime/index.cjs": "d63dc50d48a96e0a3a5ff098251c5d037f8d90aaabe81399de8898b1e1bf9571",
       "runtime/native-dependency.json": "990026ffb36aeac47a3a2e935cf00b17a068628a0a46bc1dfe120bbbf3b21c73",
       "runtime/native.py": "5446b0ffe8fa4880fb11c4357e342694a97dffff94c1e5a505defd34071a1f7c",
       "runtime/setup-native.cjs": "9c78c10560e0d651fefd3eb8722681aa995047ce2792ce192523a48bd3890457",
       "runtime/support.cjs": "27c8c2b8b7472677c007a4c7fa6e1d42651a8ef0579fc58c85878a3e986e60cc",
-      "runtime/verifier.cjs": "6ab2b0f1f746b461b74b3d27ed807650eac4046a1b2ccad9a9be4554f745d687",
+      "runtime/verifier.cjs": "433b9b5e0bba5d3d5946c63316401050d9d4e5fa8bef9036a829b05da2c38479",
       "runtime/kicad-packages.json": "815c19e4412bf602c921758dcb877c183d6c29cd24d167a4c2a13935ab66c9d9",
       "runtime/verify-board.py": "845167bf9e1db169f19513c2b22d7bac91335b1e313edc95d9d97df84c6120cb"
     },

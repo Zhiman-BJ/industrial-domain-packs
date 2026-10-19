@@ -80,3 +80,12 @@ packages, bootstraps HTTPS trust before apt, and runs a real board round-trip an
 DRC during the build. `packs/pcb/validate.sh` provides isolated per-task validation.
 The host gateway Python and existing native/engineering qualification boundaries
 remain as documented in the [PCB Pack](packs/pcb/README.md).
+
+Version 0.5.4 restores local verification after the remote report-contract migration:
+PCB 0.3.2 and FreeCAD 1.1.4-pack.9 retain validated request expectations in the
+execution result. PCB's local plugin verifies native board/DRC evidence; the remote
+entry still requires its worker run report and fixed profile/version. Run
+`node --test tests/pcb-local-runtime.test.cjs tests/freecad-local-runtime.test.cjs`
+for production execute-to-verifier contract regressions with native-process fixtures.
+These tests do not establish native qualification. Existing consumers require a
+reviewed pin update; remote images must be rebuilt from the same pinned package.

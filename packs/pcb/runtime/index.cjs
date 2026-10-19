@@ -18,9 +18,9 @@ const {
   number,
   applyFiles,
 } = s;
-const { ID, verify } = require("./verifier.cjs");
+const { ID, verifyLocal } = require("./verifier.cjs");
 const upstreamSnapshot = require("./upstream-snapshot.json");
-const VERSION = "0.3.1";
+const VERSION = "0.3.2";
 const CONTAINER_PROFILE =
   "Executes inside the pinned upstream Linux container (image " +
   upstreamSnapshot.imageTag +
@@ -226,6 +226,10 @@ function createRuntimePlugin({ environment = process.env, runtimeApi } = {}) {
             "This native profile is qualified only on macOS Apple Silicon.",
           );
         validate(operation, inputs);
+        // Bind acceptance to the validated request before native awaits.
+        const expect = operation === "verify"
+          ? structuredClone(inputs.expect)
+          : undefined;
         const source = projectFile(projectDir, inputs.file),
           bytes = readBytes(source);
         if (operation === "edit" && hash(bytes) !== inputs.expectedSha256)
@@ -320,6 +324,7 @@ function createRuntimePlugin({ environment = process.env, runtimeApi } = {}) {
         }
         return {
           executionSucceeded: succeeded,
+          ...(operation === "verify" ? { expect } : {}),
           inputUnchanged:
             operation === "edit"
               ? undefined
@@ -333,7 +338,7 @@ function createRuntimePlugin({ environment = process.env, runtimeApi } = {}) {
       ...upstreamTools(environment),
     ],
     verifiers: {
-      [ID]: verify,
+      [ID]: verifyLocal,
       "pcb.kicad.source.v1": () => ({
         status: "not_run",
         reason:

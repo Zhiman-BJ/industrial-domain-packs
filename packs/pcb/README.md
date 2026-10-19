@@ -48,6 +48,16 @@ The first public task is a real KiCad rectangular board with existing mounting f
 
 The self-authored `examples/mounting-board` has two mounting holes and a 40×30 mm rectangular outline. Its unattached `Harness` footprint library produces two recorded library warnings; the task explicitly permits at most two. Co-locating the holes creates real `holes_co_located`/silk overlap warnings and fails that bound. Repair restores independent acceptance. Native reports use project rules/defaults, never ambient user KiCad preferences; denied personal-config reads stay in the log. The private upstream actor implementation is neither used nor redistributed by the native profile; the pcb-design-e2e Skill documents are vendored in-pack (see PROVENANCE, 2026-10-10).
 
+Distribution 0.3.2 restores local verification after the remote report-contract
+migration. Local execution retains validated expectations in `result.expect` and
+registers a native verifier for its board readback/DRC artifacts. The remote
+canonical verifier still requires `report.pcb.run`, `pcb-verify-cpu`, schema 1 and
+KiCad 10.0.6; a missing worker report never selects the local verifier. Both paths
+share the existing geometry and DRC checks. Run
+`node --test tests/pcb-local-runtime.test.cjs` from the repository root for the
+execute-to-verifier contract regressions. Synthetic native-process fixtures do
+not qualify an execution profile.
+
 ## Design tool surface (pcb.design.*, declared)
 
 The pack declares the upstream model surface for parity: 89 `pcb.design.*` tools (88 canonical + `run_python`) grouped into seven stage capabilities (`core`, `components`, `schematic`, `pcb`, `verification`, `delivery`, `operate`) and the complete upstream `pcb-design-e2e` Skill (SKILL.md + nine references + one asset) shipped under `skills/pcb-design-e2e/`. The bounded native profile above keeps its own guidance in the `pcb-kicad-native` Skill.
