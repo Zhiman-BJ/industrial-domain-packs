@@ -80,3 +80,25 @@ Freerouting 2.4.1 retains its upstream license and jar SHA-256; Java and Ubuntu
 retain their original terms. Validation scripts and the existing mounting-board
 input are original MIT contributions. Release smoke does not replace the upstream
 qualification snapshot or qualify arbitrary PCB designs.
+
+## Optional official KiCad 3D catalog (2026-10-20)
+
+`resources/kicad-3d-10.0.7.json` is generated from the official KiCad
+`kicad/libraries/kicad-packages3D` tag `10.0.7`, immutable commit
+`8d4070daa0fa3f7a7f3c176f4ca7bffc4df392be`. The full official tree's normalized
+SHA-256 is recorded in the generator and catalog. All 7,252 exact STEP paths are
+included; WRL aliases and guessed replacement mappings are excluded.
+
+The Debian original source archive is a reproducible byte transport:
+`https://deb.debian.org/debian/pool/main/k/kicad-packages3d/kicad-packages3d_10.0.7.orig.tar.xz`,
+313,340,588 bytes, SHA-256
+`82bd1384887935a06b7bcb1f6be895fe2813556a6972bcf403022da53819547e`.
+The generator checks that receipt, streams each original STEP, matches its Git
+blob SHA-1 against the official pinned tree, then independently computes its raw
+SHA-256 and size. No model is unpacked, changed or bundled in this repository.
+The packaged catalog is immutable metadata for an optional read-only host cache;
+it cannot change engineering facts or the existing native runtime qualification.
+
+The original upstream `LICENSE.md` is separately Git-blob verified and retained
+as `resources/licenses/kicad-3d-LICENSE.md`: CC BY-SA 4.0 with the KiCad libraries
+exception. On-demand models retain those terms and their original notices.

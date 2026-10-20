@@ -39,3 +39,28 @@ FreeCAD 1.1.4-pack.7, PCB 0.1.0-kicad.2, Chip and CUDA retain their previous Pac
 The CD never merges or auto-merges the bump pull request; the coordinated consumer-merge rule from [release identity](release-format.md) is unchanged. The workflow reads pnpm's version from `harness/package.json`, requires a changed lockfile, and runs the consumer architecture boundary tests before pushing. A mismatched existing adapter pin aborts before writing any manifests. The consumer's frozen-lockfile CI remains the acceptance gate.
 
 Setup requirement: a fine-grained personal access token with repository `Contents: read/write` and `Pull requests: read/write` on `Zhiman-BJ/industrial-agent-harness`, stored as the `PACK_BUMP_PAT` secret in this repository. Both repositories are public, so tarball downloads in the workflow need no credentials. If the secret is missing the workflow fails closed (no pull request is opened) and a manual pin bump remains possible at any time.
+
+## Optional data libraries: consumer release 0.5.6
+
+PCB distribution 0.3.3 adds the top-level `dataLibraries` declaration to its host
+manifest. Native KiCad remains 10.0.6 with its existing platform qualification.
+`hostPacks()` carries this declaration unchanged; it is independent of provider
+execution resources, Tools and `runtimeAssets` installation readiness.
+
+Each declaration binds `id`, `version`, `label`, immutable HTTPS `baseUrl`, a
+Pack-relative `catalog`, `catalogSha256`, and exact `referencePrefixes`. The PCB
+catalog is `resources/kicad-3d-10.0.7.json`; its SHA-256 binds the complete list of
+original paths, byte counts and raw-content SHA-256 values. The original license
+notice resides alongside it under `resources/licenses/`. Both are npm package and
+content-lock resources. A distribution builder must copy these resources and
+rebase catalog paths to its own fixed Pack resource directory.
+
+A compatible host may resolve eligible missing references against that exact
+catalog and fetch only admitted files into a bounded, versioned read-only cache.
+The domain owner supplies library identity and reference semantics; the host
+owns network/cancellation, scope checks, byte/time/memory budgets, hash checking,
+cache health and viewer presentation. Matching a prefix does not authorize path
+guessing or changing extensions. This catalog contains STEP only; existing WRL
+references require their actual local model and cannot be silently replaced.
+Unknown, missing, invalid and over-budget models must remain explicit. Optional
+data failures cannot make an installed native application appear uninstalled.

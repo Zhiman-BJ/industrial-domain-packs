@@ -62,3 +62,12 @@ DRC 证据，远程入口继续强制要求 worker run report 及固定 profile/
 0.5.5 将 Linux FreeCAD AppImage 保留在远程镜像配方中，移出桌面托管下载声明。
 FreeCAD 发行版本 1.1.4-pack.10 保留本地验证修复及已验证的 macOS 下载，Linux
 继续作为独立远程执行 profile。该发行版本必须通过 Harness Pack 归档兼容校验。
+
+## 可选 PCB 模型数据
+
+包版本 0.5.6 / PCB Pack 0.3.3 将官方 KiCad 三维库 **10.0.7** 声明为可选的只读数据，独立于
+KiCad 10.0.6 原生应用依赖。随包目录包含固定官方 Git 提交中的全部
+**7,252 个原始 STEP 路径**、实际字节数及从原始内容独立计算的 SHA256。
+兼容的 Viewer 可以只获取版图实际引用的模型，并应用自身的资源限制。
+包内分发元数据与上游许可声明，不打包整个模型库；不会将 WRL 路径改写成
+STEP 路径。来源校验、复现方式及边界见 [PCB Pack](packs/pcb/README.md#optional-official-3d-model-data)。
