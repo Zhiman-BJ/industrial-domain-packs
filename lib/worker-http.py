@@ -1,9 +1,9 @@
 """Narrow pack worker: one shared HTTP wrapper for remote sandbox profiles.
 
 The long-running entrypoint that adapts a pack's trusted one-shot batch
-executor to the gateway's worker protocol: exactly one endpoint
-(POST /v1/worker/invoke), one JSON body carrying the server-created
-invocation context, and nothing else. The wrapper never accepts commands,
+executor to the gateway's worker protocol: legacy blocking invoke and
+recoverable execution submission/query, with one fixed JSON body carrying
+the server-created invocation context. The wrapper never accepts commands,
 paths, images, mounts, environments, or working directories from the
 request; it verifies the materialized input snapshot against the
 referenced manifest digest, runs the pack profile's executor once per
@@ -37,6 +37,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 ENDPOINT = "/v1/worker/invoke"
+EXECUTIONS_ENDPOINT = "/v1/worker/executions"
 PROTOCOL_VERSION = 1
 MAX_BODY_BYTES = 1024 * 1024
 MAX_LOG_LINES = 200
@@ -125,6 +126,7 @@ CONFIG = config()
 # One execution at a time: a sandbox runs a single leased run; a concurrent
 # second invocation gets a clean 409 rejection.
 IN_FLIGHT = threading.Lock()
+ACCEPT_LOCK = threading.Lock()
 
 
 def canonical_manifest_bytes(files):
@@ -246,7 +248,7 @@ def build_observation(work_dir, exit_code, timed_out, timeout_seconds):
 def prune_work_dirs(work_root):
     if not work_root.is_dir():
         return
-    entries = [e for e in work_root.iterdir() if e.is_dir()]
+    entries = [e for e in work_root.iterdir() if e.is_dir() and not (e / "execution.json").exists()]
     if len(entries) <= CONFIG["max_work_dirs"]:
         return
     entries.sort(key=lambda entry: entry.stat().st_mtime)
@@ -297,6 +299,74 @@ def validate_request(body):
     return None
 
 
+def run_execution(body, work_dir):
+    started = time.monotonic()
+    timed_out = False
+    process = subprocess.Popen(
+        [
+            sys.executable,
+            CONFIG["executor"],
+            str(CONFIG["input_dir"]),
+            str(work_dir),
+        ],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        env={
+            "PATH": os.environ.get("PATH", ""),
+            "HOME": "/tmp",
+            "LANG": "C.UTF-8",
+            "PYTHONDONTWRITEBYTECODE": "1",
+            "CCACHE_DISABLE": "1",
+        },
+        # The executor trees out (python -> verilator -> g++/make); own
+        # the whole tree as a session so a deadline kill reaches the
+        # grandchildren too. Orphaned toolchain processes would otherwise
+        # outlive the lease and burn a pooled instance's CPU.
+        start_new_session=True,
+    )
+    try:
+        exit_code = process.wait(timeout=CONFIG["timeout_seconds"])
+    except subprocess.TimeoutExpired:
+        timed_out = True
+        try:
+            os.killpg(os.getpgid(process.pid), signal.SIGKILL)
+        except (ProcessLookupError, PermissionError):
+            process.kill()
+        exit_code = process.wait()
+    observation = build_observation(
+        work_dir, exit_code, timed_out, CONFIG["timeout_seconds"]
+    )
+    print(
+        "pack worker: request %s finished in %.1fs (ok=%s)"
+        % (body["requestId"], time.monotonic() - started, observation["ok"]),
+        flush=True,
+    )
+    return observation
+
+
+def write_execution(path, state):
+    temporary = path.with_suffix(".tmp")
+    with temporary.open("w") as output:
+        json.dump(state, output)
+        output.flush()
+        os.fsync(output.fileno())
+    os.replace(temporary, path)
+
+
+def execute_detached(body, work_dir, state):
+    try:
+        observation = run_execution(body, work_dir)
+        state = dict(state, status="completed", observation=observation)
+    except Exception:
+        # Never relaunch after an uncertain executor failure.
+        state = dict(state, status="unknown")
+    finally:
+        try:
+            write_execution(work_dir / "execution.json", state)
+        finally:
+            IN_FLIGHT.release()
+
+
 class WorkerHandler(BaseHTTPRequestHandler):
     protocol_version = "HTTP/1.1"
     server_version = "pack-worker/1"
@@ -317,17 +387,34 @@ class WorkerHandler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     def reject_unknown_path(self):
-        if self.path.split("?", 1)[0] != ENDPOINT:
+        if self.path.split("?", 1)[0] not in (ENDPOINT, EXECUTIONS_ENDPOINT):
             self.send_json(404, {"code": "NOT_FOUND"})
             return True
         return False
 
     def do_GET(self):
+        if self.path.startswith(EXECUTIONS_ENDPOINT + "/"):
+            if not self.authorize():
+                return
+            request_id = self.path[len(EXECUTIONS_ENDPOINT) + 1:]
+            if not UUID_RE.fullmatch(request_id):
+                self.send_json(400, {"code": "WORKER_REQUEST_INVALID"})
+                return
+            path = CONFIG["work_root"] / request_id / "execution.json"
+            if not path.is_file():
+                self.send_json(404, {"code": "EXECUTION_NOT_FOUND"})
+                return
+            self.send_json(200, json.loads(path.read_text()))
+            return
         if self.reject_unknown_path():
             return
         self.send_json(405, {"code": "METHOD_NOT_ALLOWED"})
 
-    do_PUT = do_DELETE = do_PATCH = do_GET
+    def reject_method(self):
+        self.close_connection = True
+        self.send_json(405, {"code": "METHOD_NOT_ALLOWED"})
+
+    do_PUT = do_DELETE = do_PATCH = reject_method
 
     def do_POST(self):
         if self.reject_unknown_path():
@@ -414,6 +501,9 @@ class WorkerHandler(BaseHTTPRequestHandler):
                 },
             )
             return
+        if self.path == EXECUTIONS_ENDPOINT:
+            self.accept_execution(body)
+            return
         if not IN_FLIGHT.acquire(blocking=False):
             self.send_json(409, {"code": "INVOCATION_IN_FLIGHT"})
             return
@@ -421,6 +511,48 @@ class WorkerHandler(BaseHTTPRequestHandler):
             self.execute(body)
         finally:
             IN_FLIGHT.release()
+
+    def accept_execution(self, body):
+        # Serialize disk identity checks and admission; the executor holds
+        # IN_FLIGHT independently of the connection that submitted it.
+        with ACCEPT_LOCK:
+            root = CONFIG["work_root"]
+            work = root / body["requestId"]
+            state_file = work / "execution.json"
+            fingerprint = hashlib.sha256(json.dumps(body, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+            if state_file.is_file():
+                state = json.loads(state_file.read_text())
+                if state["inputDigest"] != fingerprint:
+                    self.send_json(409, {"code": "REQUEST_ID_CONFLICT"})
+                else:
+                    self.send_json(200, state)
+                return
+            if work.exists():
+                self.send_json(409, {"code": "DUPLICATE_REQUEST"})
+                return
+            root.mkdir(parents=True, exist_ok=True)
+            if sum(1 for _ in root.glob("*/execution.json")) >= CONFIG["max_work_dirs"]:
+                self.send_json(409, {"code": "RESULT_RETENTION_FULL"})
+                return
+            if not IN_FLIGHT.acquire(blocking=False):
+                self.send_json(409, {"code": "INVOCATION_IN_FLIGHT"})
+                return
+            transferred = False
+            try:
+                if not verify_snapshot(CONFIG["input_dir"], body["snapshotRef"]["manifestSha256"]):
+                    self.send_json(422, {"code": "SNAPSHOT_MISMATCH"})
+                    return
+                work.mkdir()
+                (work / "request.json").write_text(json.dumps({"requestId": body["requestId"], "toolId": body["toolId"], "arguments": body["arguments"]}))
+                state = {"requestId": body["requestId"], "runtimeDigest": body["runtimeDigest"], "snapshotRef": body["snapshotRef"], "inputDigest": fingerprint, "status": "working"}
+                write_execution(state_file, state)
+                thread = threading.Thread(target=execute_detached, args=(body, work, state), daemon=True)
+                thread.start()
+                transferred = True
+                self.send_json(202, state)
+            finally:
+                if not transferred:
+                    IN_FLIGHT.release()
 
     def execute(self, body):
         work_root = CONFIG["work_root"]
@@ -454,48 +586,8 @@ class WorkerHandler(BaseHTTPRequestHandler):
             )
             + "\n"
         )
-        started = time.monotonic()
-        timed_out = False
-        process = subprocess.Popen(
-            [
-                sys.executable,
-                CONFIG["executor"],
-                str(CONFIG["input_dir"]),
-                str(work_dir),
-            ],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-            env={
-                "PATH": os.environ.get("PATH", ""),
-                "HOME": "/tmp",
-                "LANG": "C.UTF-8",
-                "PYTHONDONTWRITEBYTECODE": "1",
-                "CCACHE_DISABLE": "1",
-            },
-            # The executor trees out (python -> verilator -> g++/make); own
-            # the whole tree as a session so a deadline kill reaches the
-            # grandchildren too. Orphaned toolchain processes would otherwise
-            # outlive the lease and burn a pooled instance's CPU.
-            start_new_session=True,
-        )
-        try:
-            exit_code = process.wait(timeout=CONFIG["timeout_seconds"])
-        except subprocess.TimeoutExpired:
-            timed_out = True
-            try:
-                os.killpg(os.getpgid(process.pid), signal.SIGKILL)
-            except (ProcessLookupError, PermissionError):
-                process.kill()
-            exit_code = process.wait()
-        observation = build_observation(
-            work_dir, exit_code, timed_out, CONFIG["timeout_seconds"]
-        )
+        observation = run_execution(body, work_dir)
         prune_work_dirs(work_root)
-        print(
-            "pack worker: request %s finished in %.1fs (ok=%s)"
-            % (body["requestId"], time.monotonic() - started, observation["ok"]),
-            flush=True,
-        )
         self.send_json(200, observation)
 
 
