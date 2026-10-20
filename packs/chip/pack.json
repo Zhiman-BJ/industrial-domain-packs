@@ -26,7 +26,9 @@
         "executor": "packs/chip/runtime/native-profile.py",
         "arguments": "none",
         "successField": "completed",
-        "toolIds": ["chip.rtl.verify"]
+        "toolIds": [
+          "chip.rtl.verify"
+        ]
       },
       "entry": [
         "python3",
@@ -62,5 +64,5 @@
     "toolId": "chip.rtl.verify",
     "toolVersion": "0.6.1-core.2"
   },
-  "releaseVersion": "0.6.2"
+  "releaseVersion": "0.6.3"
 }

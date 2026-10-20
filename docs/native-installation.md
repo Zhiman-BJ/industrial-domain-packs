@@ -17,3 +17,22 @@ The original KiCad and Godot bundles passed `codesign --verify --deep --strict`,
 Chip has no managed native asset recipe in this release. Local RTL verification requires Python 3.13, Verilator and a C++ toolchain; broader EDA flows need their own tools, images and PDK. Pack presence must not be presented as complete EDA readiness. CUDA remains a developer remote-service client requiring both authenticated role-specific MCP endpoints and a matching fixed reference model. Remote clients need no local GPU, while service provisioning and credentials remain administrator prerequisites. CUDA keeps an empty `qualifiedBundlePlatforms` list and does not enter automatic desktop bundles. Godot export templates and AutoCAD are also outside these managed declarations.
 
 The execution scope remains the previously qualified FreeCAD bounded modelling, KiCad rectangular mounting-board edits/DRC/geometry and Godot structural scene checks. There is no new remote, Linux, Windows, Intel Mac, full PCB manufacturing or unrestricted game QA qualification.
+
+## Viewer-only Python environments
+
+Consumer package 0.5.7 / Chip distribution 0.6.3 independently declares a
+`pythonEnvironments` entry for the read-only KLayout layout viewer. It is not a
+`runtimeAssets` native EDA recipe and does not change the preceding Chip RTL
+prerequisites. A compatible generic Harness manager acquires a complete fixed
+CPython 3.12.15 / Astral PBS 20261013 `install_only` tree, including pip, then
+installs the exact KLayout 0.30.12 CPython 3.12 wheel without dependency or index
+resolution. No host Python, uv, relocated virtual environment or complete EDA
+installation is implied. The dedicated environment variable is
+`INDUSTRIAL_HARNESS_KLAYOUT_PYTHON`.
+
+The owner supplies immutable URLs, SHA-256/byte sizes, executable paths and an
+inline, bounded synthetic GDS-to-64×64-PNG probe. The host owns downloads,
+staging/final-path probe execution, cache integrity, cancellation and readiness.
+The declaration lists macOS ARM64, Linux glibc x64/ARM64 and Windows x64 assets;
+only macOS ARM64 was executed locally. See the
+[Chip viewer declaration and installation-budget definition](../packs/chip/README.md#optional-layout-viewer-environment).

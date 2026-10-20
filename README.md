@@ -105,3 +105,21 @@ compatible viewer can fetch only referenced models and apply its own resource
 limits. The package includes metadata and the upstream license notice; it does
 not bundle the model library. WRL paths are never rewritten to STEP paths.
 See [source verification, reproduction and limits](packs/pcb/README.md#optional-official-3d-model-data).
+
+## Optional layout viewer Python
+
+Package **0.5.7 / Chip distribution 0.6.3** declares a private, viewer-only
+CPython **3.12.15** environment with KLayout **0.30.12**. A compatible Harness
+manager can acquire the fixed official Astral PBS **20261013** `install_only`
+archive and the exact CPython 3.12 PyPI wheel for macOS ARM64, Linux x64,
+Linux ARM64 or Windows x64. The source package contains metadata and a synthetic
+GDS-to-PNG installation probe; it contains no Python or KLayout binaries.
+The managed path needs neither host Python nor uv, and uses its complete private
+Python tree rather than a relocated virtual environment. See
+[asset provenance, installation budgets and validation](packs/chip/README.md#optional-layout-viewer-environment).
+
+This declaration prepares only the read-only layout viewer. It does not prepare
+RTL execution or change Chip's existing Python 3.13, Verilator, C++ toolchain,
+other EDA/PDK prerequisites or engineering qualification. The macOS ARM64
+archive/wheel and 64×64 PNG probe were exercised; the other three platform assets
+were downloaded and hash-checked, without asserting native execution support.
