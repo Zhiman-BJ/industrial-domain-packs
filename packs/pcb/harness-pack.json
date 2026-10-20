@@ -2,29 +2,29 @@
   "schemaVersion": 1,
   "id": "pcb-pack",
   "domain": "pcb",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "provider": {
     "id": "pcb-design.tools",
     "title": "Public KiCad board Runtime",
     "domain": "pcb",
-    "version": "0.3.2",
+    "version": "0.3.3",
     "transport": "runtime",
     "packDirectory": "pcb",
     "packId": "pcb-pack",
-    "sourceSha256": "b8605fb4fd210bc89dff0570927bb1a4fce669e33985d4cbe9f6277c648c72c7",
+    "sourceSha256": "49cf6983109e32fbb260ba06b7ccd9f399e1a2d73c8a9675581ed65285a81fe9",
     "resourceRoots": [
       "runtime"
     ],
     "sourceFiles": {
       "runtime/gateway.cjs": "02d1ed90487963c9501a4755cfc3622367b6b0e0ff6ac1d759324c7fd295e1fc",
-      "runtime/upstream-snapshot.json": "cc8293f444fa380427d4c3f46fd38077011646fef98a8581da1152f52f4e5cf4",
-      "runtime/index.cjs": "d63dc50d48a96e0a3a5ff098251c5d037f8d90aaabe81399de8898b1e1bf9571",
+      "runtime/index.cjs": "a73c52665b16c11b219507047574ce90082b3d5605dd742d3d3b31a50751fdfd",
+      "runtime/kicad-packages.json": "815c19e4412bf602c921758dcb877c183d6c29cd24d167a4c2a13935ab66c9d9",
       "runtime/native-dependency.json": "990026ffb36aeac47a3a2e935cf00b17a068628a0a46bc1dfe120bbbf3b21c73",
       "runtime/native.py": "5446b0ffe8fa4880fb11c4357e342694a97dffff94c1e5a505defd34071a1f7c",
       "runtime/setup-native.cjs": "9c78c10560e0d651fefd3eb8722681aa995047ce2792ce192523a48bd3890457",
       "runtime/support.cjs": "27c8c2b8b7472677c007a4c7fa6e1d42651a8ef0579fc58c85878a3e986e60cc",
+      "runtime/upstream-snapshot.json": "cc8293f444fa380427d4c3f46fd38077011646fef98a8581da1152f52f4e5cf4",
       "runtime/verifier.cjs": "433b9b5e0bba5d3d5946c63316401050d9d4e5fa8bef9036a829b05da2c38479",
-      "runtime/kicad-packages.json": "815c19e4412bf602c921758dcb877c183d6c29cd24d167a4c2a13935ab66c9d9",
       "runtime/verify-board.py": "845167bf9e1db169f19513c2b22d7bac91335b1e313edc95d9d97df84c6120cb"
     },
     "tools": [
@@ -782,7 +782,7 @@
         "id": "pcb.design.export_3d",
         "name": "export_3d",
         "risk": "mutating",
-        "summary": "Export one native KiCad assembly file or PNG view. View/size apply only to PNG; 64\u20134096 pixels. Missing bodies remain UNKNOWN; clearance/collision requires mechanical analysis.",
+        "summary": "Export one native KiCad assembly file or PNG view. View/size apply only to PNG; 64–4096 pixels. Missing bodies remain UNKNOWN; clearance/collision requires mechanical analysis.",
         "verification": [
           "pcb.design.receipts.v1"
         ]
@@ -841,15 +841,15 @@
         "layout",
         "placement",
         "PCB",
-        "\u677f\u6846",
-        "\u5143\u4ef6",
-        "\u5e03\u7ebf",
-        "\u7535\u8def\u677f",
+        "板框",
+        "元件",
+        "布线",
+        "电路板",
         "edit",
         "modify",
-        "\u5c3a\u5bf8",
-        "\u4fee\u6539",
-        "\u9a8c\u8bc1"
+        "尺寸",
+        "修改",
+        "验证"
       ],
       "skills": [
         {
@@ -891,7 +891,7 @@
     },
     {
       "id": "pcb.design.core",
-      "title": "PCB \u00b7 core",
+      "title": "PCB · core",
       "domain": "pcb",
       "stages": [
         "requirements",
@@ -902,10 +902,10 @@
       "priority": 20,
       "keywords": [
         "project status",
-        "\u9879\u76ee\u72b6\u6001",
+        "项目状态",
         "pcb status",
-        "kicad\u73af\u5883",
-        "pcb\u73af\u5883",
+        "kicad环境",
+        "pcb环境",
         "inspect_tool"
       ],
       "skills": [
@@ -974,7 +974,7 @@
     },
     {
       "id": "pcb.design.components",
-      "title": "PCB \u00b7 components",
+      "title": "PCB · components",
       "domain": "pcb",
       "stages": [
         "requirements",
@@ -985,9 +985,9 @@
         "prepare_component",
         "lookup_component",
         "datasheet",
-        "\u5668\u4ef6",
-        "\u5143\u4ef6\u5e93",
-        "\u5c01\u88c5\u5e93"
+        "器件",
+        "元件库",
+        "封装库"
       ],
       "skills": [
         {
@@ -1235,18 +1235,18 @@
     },
     {
       "id": "pcb.design.schematic",
-      "title": "PCB \u00b7 schematic",
+      "title": "PCB · schematic",
       "domain": "pcb",
       "stages": [
         "schematic"
       ],
       "priority": 20,
       "keywords": [
-        "\u539f\u7406\u56fe\u7f16\u8f91",
+        "原理图编辑",
         "schematic edit",
         "generate_schematic",
         "update_pcb",
-        "\u8fde\u63a5\u5f15\u811a",
+        "连接引脚",
         "schematic mcp"
       ],
       "skills": [
@@ -1561,7 +1561,7 @@
     },
     {
       "id": "pcb.design.pcb",
-      "title": "PCB \u00b7 pcb",
+      "title": "PCB · pcb",
       "domain": "pcb",
       "stages": [
         "layout"
@@ -1572,8 +1572,8 @@
         "inspect_board",
         "pcb edit",
         "add_track",
-        "\u5e03\u7ebf",
-        "\u8c03\u957f",
+        "布线",
+        "调长",
         "layout repair"
       ],
       "skills": [
@@ -1852,7 +1852,7 @@
     },
     {
       "id": "pcb.design.verification",
-      "title": "PCB \u00b7 verification",
+      "title": "PCB · verification",
       "domain": "pcb",
       "stages": [
         "verification"
@@ -1862,9 +1862,9 @@
         "run_drc",
         "run_erc",
         "verify_design",
-        "pcb\u9a8c\u8bc1",
+        "pcb验证",
         "pcb verification",
-        "\u56fe\u677f\u4e00\u81f4\u6027"
+        "图板一致性"
       ],
       "skills": [
         {
@@ -2043,7 +2043,7 @@
     },
     {
       "id": "pcb.design.delivery",
-      "title": "PCB \u00b7 delivery",
+      "title": "PCB · delivery",
       "domain": "pcb",
       "stages": [
         "delivery"
@@ -2053,7 +2053,7 @@
         "export_project",
         "export_3d",
         "gerber",
-        "pcb\u4ea4\u4ed8",
+        "pcb交付",
         "pcb export"
       ],
       "skills": [
@@ -2158,7 +2158,7 @@
           "id": "pcb.design.export_3d",
           "name": "export_3d",
           "risk": "mutating",
-          "summary": "Export one native KiCad assembly file or PNG view. View/size apply only to PNG; 64\u20134096 pixels. Missing bodies remain UNKNOWN; clearance/collision requires mechanical analysis.",
+          "summary": "Export one native KiCad assembly file or PNG view. View/size apply only to PNG; 64–4096 pixels. Missing bodies remain UNKNOWN; clearance/collision requires mechanical analysis.",
           "verification": [
             "pcb.design.receipts.v1"
           ]
@@ -2179,7 +2179,7 @@
     },
     {
       "id": "pcb.design.operate",
-      "title": "PCB \u00b7 end-to-end design and repair",
+      "title": "PCB · end-to-end design and repair",
       "domain": "pcb",
       "stages": [
         "requirements",
@@ -2191,18 +2191,18 @@
       "priority": 25,
       "keywords": [
         "pcb mcp",
-        "pcb\u5de5\u5177",
-        "\u8bbe\u8ba1pcb",
+        "pcb工具",
+        "设计pcb",
         "design pcb",
         "pcb design",
-        "\u4fee\u590dpcb",
+        "修复pcb",
         "repair pcb",
         "design a kicad project",
         "repair the supplied kicad project",
         "design kicad",
         "repair kicad",
         "end-to-end pcb",
-        "\u5b8c\u6574pcb"
+        "完整pcb"
       ],
       "skills": [
         {
@@ -2948,7 +2948,7 @@
           "id": "pcb.design.export_3d",
           "name": "export_3d",
           "risk": "mutating",
-          "summary": "Export one native KiCad assembly file or PNG view. View/size apply only to PNG; 64\u20134096 pixels. Missing bodies remain UNKNOWN; clearance/collision requires mechanical analysis.",
+          "summary": "Export one native KiCad assembly file or PNG view. View/size apply only to PNG; 64–4096 pixels. Missing bodies remain UNKNOWN; clearance/collision requires mechanical analysis.",
           "verification": [
             "pcb.design.receipts.v1"
           ]
@@ -3008,6 +3008,24 @@
       "environmentExecutables": {
         "INDUSTRIAL_HARNESS_KICAD_PYTHON": "Contents/Frameworks/Python.framework/Versions/3.9/bin/python3.9"
       }
+    }
+  ],
+  "dataLibraries": [
+    {
+      "id": "kicad-3d",
+      "version": "10.0.7",
+      "label": "KiCad official 3D models",
+      "baseUrl": "https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/8d4070daa0fa3f7a7f3c176f4ca7bffc4df392be/",
+      "catalog": "resources/kicad-3d-10.0.7.json",
+      "catalogSha256": "f1a20d5edadd4f1dbac403d78591127f01c91bf22a3741d17b4e86b6be82a4e6",
+      "referencePrefixes": [
+        "${KICAD10_3DMODEL_DIR}/",
+        "${KICAD9_3DMODEL_DIR}/",
+        "${KICAD8_3DMODEL_DIR}/",
+        "${KICAD7_3DMODEL_DIR}/",
+        "${KICAD6_3DMODEL_DIR}/",
+        "${KISYS3DMOD}/"
+      ]
     }
   ]
 }

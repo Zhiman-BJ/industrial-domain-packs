@@ -22,3 +22,14 @@ The CUDA MCP transport, runtime client, Verifier and Skill are original MIT cont
 ## Godot community Skills
 
 The Godot Pack vendors two public MIT Skill sets as static knowledge content: GodotPrompter (commit `d68ea7f6e87163489af071e6440840ee105c4285`, notice in `licenses/godotprompter.MIT`) and haxqer/godot-skill (commit `037c03e9858ae748bf66c010aeb9942dbe9b93d6`, notice in `licenses/haxqer-godot-skill.MIT`). Exact import scope and adaptations are recorded in [Godot provenance](packs/godot/PROVENANCE.md). They add no runtime tools or native dependencies and do not widen the Pack's qualified acceptance path.
+
+## Optional KiCad 3D model catalog
+
+The PCB Pack includes a complete metadata catalog for the official KiCad 3D
+library 10.0.7, commit `8d4070daa0fa3f7a7f3c176f4ca7bffc4df392be`. It preserves
+exact original STEP paths and verifies each model's original size and content
+identity. The upstream notice is retained in
+`packs/pcb/resources/licenses/kicad-3d-LICENSE.md` (CC BY-SA 4.0 with the KiCad
+libraries exception). Model binaries are not bundled; a compatible host fetches
+only referenced models from the pinned official source. These models retain
+their upstream terms and notices. See [PCB provenance](packs/pcb/PROVENANCE.md).

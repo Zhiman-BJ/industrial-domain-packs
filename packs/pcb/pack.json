@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "pcb-pack",
   "domain": "pcb",
-  "sourceVersion": "2026.10.10",
+  "sourceVersion": "2026.10.20",
   "status": "local-runtime",
   "skills": [
     "skills/pcb-design-e2e/SKILL.md",
@@ -62,7 +62,7 @@
     "Optional pcb.design.* container profile: Docker with the image built from the vendored actor sources (packs/pcb/Dockerfile.local-dev) and the gateway Python environment (uv sync --frozen --no-dev)"
   ],
   "remoteStatus": "not-qualified",
-  "releaseVersion": "0.3.2",
+  "releaseVersion": "0.3.3",
   "nativePlatforms": [
     "darwin-arm64"
   ]

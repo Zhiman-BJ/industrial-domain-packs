@@ -78,3 +78,58 @@ Each prints environment variables and saves provenance. Set `INDUSTRIAL_HARNESS_
 Projects are bounded to 128 MiB, 16 MiB per input/output, 10,000 scan entries and depth 24. Symlinks, hardlinks, escaping paths, stale/cross-project scopes and undeclared tools fail closed. The reserved top-level `runtime-identity` input namespace cannot be shadowed. Native actions use a 1..120000 ms timeout per phase (default 60000); multi-phase verification may take several phase budgets. Input snapshots are immutable, writable native caches/output stay under the action run directory, and network access is denied.
 
 The frozen `legacy-harness-pack.json` and bridge/src files remain standalone transport diagnostic references. They are not disclosed or loaded by the integrated host. Native engineering acceptance is tested through the canonical Runtime.
+
+## Optional official 3D model data
+
+`harness-pack.json.dataLibraries` declares the official KiCad library 10.0.7 as
+optional read-only viewer data. `resources/kicad-3d-10.0.7.json` contains all
+7,252 exact STEP paths, original byte counts and raw-content SHA-256 values from
+official commit `8d4070daa0fa3f7a7f3c176f4ca7bffc4df392be`. The model library itself
+is not bundled: a compatible host downloads referenced models from that immutable
+official GitLab URL, verifies size and hash, and owns its cache and resource limits.
+The catalog and original upstream license notice are packaged and content locked.
+
+This data is separate from `runtimeAssets` and never gates native KiCad app
+installation or readiness. It grants no Tool execution, engineering verification
+or additional platform qualification. It is not a new native dependency version.
+Recognized `${KICAD6_3DMODEL_DIR}` through `${KICAD10_3DMODEL_DIR}` and
+`${KISYS3DMOD}` prefixes resolve only exact catalog paths. No filename guessing,
+WRL-to-STEP extension replacement, third-party substitute or project rewrite is
+performed. Existing local project models remain project resources; absent or
+unsupported model references must remain visible as unavailable.
+
+Catalog completeness is separate from viewer admission: some real STEP files
+are larger than 8 MiB. Consumers must retain their explicit per-model, per-open,
+memory, time and cancellation budgets and report models they do not admit.
+
+### Reproduce the catalog
+
+The generator uses Python's standard library. It can download missing source
+inputs once or consume an existing cache:
+
+```sh
+python3 packs/pcb/scripts/generate-kicad-3d-catalog.py \
+  --cache /path/to/external-kicad-source-cache --download
+python3 tests/pcb-model-catalog.test.py
+node --test tests/pcb-model-catalog.test.cjs
+```
+
+The fixed Debian 10.0.7 original-source archive is 313,340,588 bytes (about
+313 MB); its `.dsc` SHA-256 is checked before scanning. Debian supplies transport
+bytes; the official KiCad Git tree determines model identity. The generator
+streams the XZ/TAR archive, verifies **every** STEP's Git blob SHA-1 against the
+pinned official tree, independently hashes its original bytes with SHA-256, and
+writes the catalog only after all 7,252 files and the license match. Git blob
+SHA-1 is never converted into, or used as a substitute for, raw SHA-256.
+
+No library is extracted to disk. Bounds include 512 MiB compressed input,
+4 GiB streamed expansion, 512 MiB per model, 20,000 archive entries, a 256 MiB XZ
+dictionary limit and a 600-second scan limit. Downloads have bounded response
+sizes, a 15-second socket timeout and a 600-second total budget with no automatic
+retry. Missing, altered, repeated, linked or over-budget data fails generation.
+The larger generation limits do not enlarge a product viewer's admission limits.
+
+中文：该目录覆盖官方固定版本的全部原始 STEP，只分发目录和许可声明。
+下载、缓存与 Viewer 展示均为可选只读能力，不影响原生 KiCad 的安装状态，
+不改版图引用，也不会把 WRL 自动替换成 STEP。生成时逐个验证官方 Git blob，
+再从原始内容计算 SHA256；缺文件、内容不符和资源超限都会拒绝生成。

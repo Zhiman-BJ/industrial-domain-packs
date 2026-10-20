@@ -94,3 +94,14 @@ Version 0.5.5 keeps the Linux FreeCAD AppImage in the remote image recipe, outsi
 the desktop managed-download manifest. FreeCAD distribution 1.1.4-pack.10 retains
 the local verifier fix and the qualified macOS download; Linux remains a separate
 remote execution profile. Harness Pack archive validation must pass on this release.
+
+## Optional PCB model data
+
+Package 0.5.6 / PCB Pack 0.3.3 declares the official KiCad 3D library **10.0.7** as optional,
+read-only data, independently of the KiCad 10.0.6 native application dependency.
+Its packaged catalog contains all **7,252 original STEP paths**, byte sizes and
+independently computed SHA-256 values, bound to one official Git commit. A
+compatible viewer can fetch only referenced models and apply its own resource
+limits. The package includes metadata and the upstream license notice; it does
+not bundle the model library. WRL paths are never rewritten to STEP paths.
+See [source verification, reproduction and limits](packs/pcb/README.md#optional-official-3d-model-data).

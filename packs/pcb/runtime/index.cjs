@@ -20,7 +20,7 @@ const {
 } = s;
 const { ID, verifyLocal } = require("./verifier.cjs");
 const upstreamSnapshot = require("./upstream-snapshot.json");
-const VERSION = "0.3.2";
+const VERSION = "0.3.3";
 const CONTAINER_PROFILE =
   "Executes inside the pinned upstream Linux container (image " +
   upstreamSnapshot.imageTag +

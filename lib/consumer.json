@@ -17,7 +17,7 @@
       "id": "pcb",
       "label": "PCB",
       "emoji": "🔌",
-      "version": "0.3.2",
+      "version": "0.3.3",
       "summary": "PCB design and repair on the pinned upstream atomic tool surface (89 tools) plus bounded native KiCad edits",
       "prerequisites": [
         "KiCad 10.0.6 and its bundled pcbnew Python are prepared automatically by a compatible Harness on Apple Silicon",
