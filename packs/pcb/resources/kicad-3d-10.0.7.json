@@ -1,8 +1,13 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "id": "kicad-3d",
   "version": "10.0.7",
-  "baseUrl": "https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/8d4070daa0fa3f7a7f3c176f4ca7bffc4df392be/",
+  "baseUrl": "https://gitlab.com/api/v4/",
+  "download": {
+    "type": "gitlab-repository-files",
+    "project": "kicad/libraries/kicad-packages3D",
+    "ref": "8d4070daa0fa3f7a7f3c176f4ca7bffc4df392be"
+  },
   "source": {
     "repository": "https://gitlab.com/kicad/libraries/kicad-packages3D",
     "revision": "8d4070daa0fa3f7a7f3c176f4ca7bffc4df392be",

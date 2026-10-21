@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "pcb-pack",
   "domain": "pcb",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "provider": {
     "id": "pcb-design.tools",
     "title": "Public KiCad board Runtime",
@@ -3015,9 +3015,9 @@
       "id": "kicad-3d",
       "version": "10.0.7",
       "label": "KiCad official 3D models",
-      "baseUrl": "https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/8d4070daa0fa3f7a7f3c176f4ca7bffc4df392be/",
+      "baseUrl": "https://gitlab.com/api/v4/",
       "catalog": "resources/kicad-3d-10.0.7.json",
-      "catalogSha256": "f1a20d5edadd4f1dbac403d78591127f01c91bf22a3741d17b4e86b6be82a4e6",
+      "catalogSha256": "b2387e749197c029a5f61319bd07d2fb9a62a290fe32eab9afa5de39e9f8a83a",
       "referencePrefixes": [
         "${KICAD10_3DMODEL_DIR}/",
         "${KICAD9_3DMODEL_DIR}/",
@@ -3025,7 +3025,12 @@
         "${KICAD7_3DMODEL_DIR}/",
         "${KICAD6_3DMODEL_DIR}/",
         "${KISYS3DMOD}/"
-      ]
+      ],
+      "download": {
+        "type": "gitlab-repository-files",
+        "project": "kicad/libraries/kicad-packages3D",
+        "ref": "8d4070daa0fa3f7a7f3c176f4ca7bffc4df392be"
+      }
     }
   ]
 }
