@@ -33,3 +33,17 @@ identity. The upstream notice is retained in
 libraries exception). Model binaries are not bundled; a compatible host fetches
 only referenced models from the pinned official source. These models retain
 their upstream terms and notices. See [PCB provenance](packs/pcb/PROVENANCE.md).
+
+## Optional KLayout layout viewer Python
+
+The Chip distribution 0.6.3 declaration references official CPython 3.12.15 /
+Astral python-build-standalone 20261013 archives and KLayout 0.30.12 PyPI wheels.
+This source package does not contain those binaries. CPython retains its PSF
+License Version 2 and historical notices, pip retains MIT and its vendor notices,
+and bundled native libraries retain their upstream terms. The PBS build
+repository itself uses MPL-2.0; this must not be presented as a blanket runtime
+license. KLayout's published package license is GPL-3.0-or-later. Preserve the
+complete installed license trees and corresponding source/license references.
+Exact fixed URLs, license metadata and artifact hashes are recorded in
+`packs/chip/resources/klayout-viewer/assets.json` and
+[Chip provenance](packs/chip/PROVENANCE.md).

@@ -71,3 +71,17 @@ KiCad 10.0.6 原生应用依赖。随包目录包含固定官方 Git 提交中�
 兼容的 Viewer 可以只获取版图实际引用的模型，并应用自身的资源限制。
 包内分发元数据与上游许可声明，不打包整个模型库；不会将 WRL 路径改写成
 STEP 路径。来源校验、复现方式及边界见 [PCB Pack](packs/pcb/README.md#optional-official-3d-model-data)。
+
+## 可选的版图 Viewer Python 环境
+
+**包 0.5.7 / Chip 分发版 0.6.3** 声明独立的、仅用于只读版图预览的
+CPython **3.12.15** 与 KLayout **0.30.12**。兼容的 Harness 管理器可按固定
+URL、SHA-256 和字节数下载官方 Astral PBS **20261013** `install_only` 归档，
+并安装对应 macOS ARM64、Linux x64、Linux ARM64 或 Windows x64 的 CPython 3.12
+PyPI wheel。源码包只包含声明、来源记录和临时 GDS→PNG 安装探针，不包含原生二进制。
+该路径无需系统 Python 或 uv，保留完整私有 Python 树，不搬迁虚拟环境。详见
+[固定资产、安装预算和验证边界](packs/chip/README.md#optional-layout-viewer-environment)。
+
+该环境仅准备 Viewer，不准备 RTL 执行，不改变 Chip 原有 Python 3.13、Verilator、
+C++ 工具链、其他 EDA/PDK 前提及工程验收边界。macOS ARM64 已运行固定归档、wheel
+和 64×64 PNG 探针；其余三个平台只下载并核验了真实资产，不据此声明原生执行支持。

@@ -6,7 +6,7 @@
       "id": "chip",
       "label": "Chip",
       "emoji": "💠",
-      "version": "0.6.2",
+      "version": "0.6.3",
       "summary": "EDA skills, viewers and the Chip MCP service",
       "prerequisites": [
         "Local RTL verification requires Python 3.13, Verilator and a C++ toolchain; prepare these separately",
