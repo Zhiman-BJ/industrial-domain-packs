@@ -137,8 +137,11 @@ test("production local execute feeds its registered verifier without a CPU run r
   const e = await execute(t);
   assert.equal(
     e.result.toolVersion,
-    require("../packs/pcb/pack.json").releaseVersion,
+    require("../packs/pcb/harness-pack.json").provider.version,
   );
+  assert.equal(e.result.toolVersion, "0.3.3");
+  assert.equal(require("../packs/pcb/harness-pack.json").version, "0.3.3");
+  assert.equal(require("../packs/pcb/pack.json").releaseVersion, "0.3.4");
   assert.deepEqual(JSON.parse(JSON.stringify(e.result.expect)), e.expected);
   assert.equal(e.verify(e).status, "passed");
   assert.equal(e.verify(e).metrics.noExclusions, true);

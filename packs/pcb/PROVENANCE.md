@@ -112,3 +112,8 @@ it. This changes only the transport metadata: every original path, size and
 SHA-256, the official commit/tree, source archive receipt and license notice are
 unchanged. The generator emits the same API binding when reproducing the catalog.
 No fresh network reachability or new native/platform qualification is asserted.
+
+The host `harness-pack.json` version remains 0.3.3, equal to its engineering
+provider version. Distribution 0.3.4 is recorded separately in `pack.json`
+`releaseVersion` and consumer domain metadata; a data-only transport change
+must not replace the host Runtime identity with a distribution version.

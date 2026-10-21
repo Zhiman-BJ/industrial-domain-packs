@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contentSha256": "a145c04ebc0c4128dee29c148c36a3046a211386458ab3cdb00f358f6a9d77b5",
+  "contentSha256": "27d14b3eb5734da0c720ea5103e48438e9e119cf7014340a50541bc5c61e183b",
   "files": {
     "lib/consumer.cjs": "4d670732dbf3d5a3da33cac41007573e1f47b514a7165ac1df1748c9c2f960ab",
     "lib/consumer.json": "6648e4205c510820a67e8a07788ef777b038269e473747e68a00ea6398015719",
@@ -441,13 +441,13 @@
     "packs/godot/src/inspect_scene.gd": "89a4fc583b90af71d697692a87c32c1daff635a4453b6cd354740c9414575201",
     "packs/godot/src/runtime.cjs": "e6977d490ac5ac85753693a8af4db42fc58ce20f976259fa0d9ff8e220032074",
     "packs/pcb/Dockerfile.local-dev": "765ec9e40672562a18819176c9ea6030c65ced6ea2b444d0ee2b9d54ebd834eb",
-    "packs/pcb/PROVENANCE.md": "e3035cbad2357812626ee4ed5ffa898a0c74def62e4491ab60c1fb06da47fcac",
+    "packs/pcb/PROVENANCE.md": "b1ac0a9e54f4b4cd7284222b0835b44869637df5515a415eb4fd587320d97cd2",
     "packs/pcb/README.md": "d5909daa39bcad4651458fc84ccc4c569f5da9574d515ef02cc82d8bc47753f3",
     "packs/pcb/bridge/pcb-controller.py": "e7571ef15f9d71685938aa0ec46cf9c921edf0d1fa75acf6b259bb5686198e84",
     "packs/pcb/bridge/pcb-gateway.py": "aef380f4c7392b7fde35977060c1172047759e34aecf97a7db54eda2d55a5b1c",
     "packs/pcb/bridge/pcb-runtime.cjs": "2ba920c0e2baa23e4a43d05ed4b01699c777777f21ef45c2e017af482e3356f7",
     "packs/pcb/examples/mounting-board/board.kicad_pcb": "a892beb0e25094c3c55cb859a22b9811bb1b6c0615f4856b588660cec846ff9e",
-    "packs/pcb/harness-pack.json": "134be6ee2dc38f314d43d95211b9b89c8a6c64c795f0e5cd68652453cc395397",
+    "packs/pcb/harness-pack.json": "51a39f335a34533f06b0159e6dadbe2eb8e90d302fcfee71568eec31280f1cad",
     "packs/pcb/images/Dockerfile.pcb-verify": "7e3bc2bd1618b43b3eb835ef81c0eb4de796c07dff711dc9f224e84dea250542",
     "packs/pcb/legacy-harness-pack.json": "64be47af2b24d1a6a059db65e39344d60221f161afa8384e8c2c8f14b6edc95c",
     "packs/pcb/pack.json": "2faa5d691651fcfbe2630ec6b47200b407c927340cff24822511f20f798ac4c8",

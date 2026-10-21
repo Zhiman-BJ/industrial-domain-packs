@@ -38,7 +38,7 @@ test("optional official KiCad data has a complete immutable catalog and independ
     "5e2ea499ceaa96327b3756e45619ed9d06f21f825ea657d83f38324743d611ee",
     "changing download transport preserves every original path, byte count and checksum",
   );
-  assert.equal(manifest.version, "0.3.4");
+  assert.equal(manifest.version, "0.3.3", "host Runtime identity is unchanged");
   assert.equal(manifest.provider.version, "0.3.3", "engineering provider identity is unchanged");
   for (const file of catalog.files) {
     assert.match(file.path, /^[^\\\0]+\.step$/);

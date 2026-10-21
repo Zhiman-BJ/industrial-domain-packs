@@ -75,3 +75,8 @@ schema-1 directory catalogs retain their old behavior. Unsupported consumers,
 including beta.7, reject schema 2 during catalog validation; consumer migration
 must accompany publication of this new Pack. File sizes/hashes and the model
 library version remain unchanged.
+
+PCB's host manifest and engineering provider both remain version 0.3.3. The
+distribution version 0.3.4 belongs to `pack.json.releaseVersion` and the consumer
+domain metadata, as with Chip's separate host and distribution identities.
+Consumers retain the host-manifest/provider version equality check.
