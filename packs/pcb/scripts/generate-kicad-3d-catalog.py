@@ -21,7 +21,9 @@ import urllib.request
 VERSION = "10.0.7"
 REVISION = "8d4070daa0fa3f7a7f3c176f4ca7bffc4df392be"
 REPOSITORY = "https://gitlab.com/kicad/libraries/kicad-packages3D"
-BASE_URL = f"{REPOSITORY}/-/raw/{REVISION}/"
+BASE_URL = "https://gitlab.com/api/v4/"
+DOWNLOAD = {"type": "gitlab-repository-files", "project": "kicad/libraries/kicad-packages3D", "ref": REVISION}
+LICENSE_URL = f"{REPOSITORY}/-/raw/{REVISION}/LICENSE.md"
 TREE_SHA256 = "6dd8d088e42f8a4cce5dae97daf0d6b8308c1c187497aac41f519edf9145e277"
 MODEL_COUNT = 7252
 ARCHIVE_NAME = f"kicad-packages3d_{VERSION}.orig.tar.xz"
@@ -238,6 +240,17 @@ def scan_archive(archive, tree, expected_count=MODEL_COUNT, model_limit=MAX_MODE
     return files, license_bytes
 
 
+def build_catalog(files, receipt):
+    return {"schemaVersion": 2, "id": "kicad-3d", "version": VERSION, "baseUrl": BASE_URL,
+            "download": dict(DOWNLOAD),
+            "source": {"repository": REPOSITORY, "revision": REVISION, "tag": VERSION,
+                       "treeSha256": TREE_SHA256, "archive": receipt,
+                       "verification": "All original STEP bytes match their pinned official Git blob SHA1; SHA256 is computed independently from those bytes."},
+            "license": {"spdx": "CC-BY-SA-4.0", "url": LICENSE_URL,
+                        "notice": "licenses/kicad-3d-LICENSE.md", "exception": "KiCad libraries exception; see the original upstream notice."},
+            "files": files}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--cache", type=Path, required=True)
@@ -263,13 +276,7 @@ def main():
     if archive.stat().st_size != receipt["size"] or digest_file(archive) != receipt["sha256"]:
         raise ValueError("Cached archive differs from the Debian source receipt")
     files, license_bytes = scan_archive(archive, tree)
-    catalog = {"schemaVersion": 1, "id": "kicad-3d", "version": VERSION, "baseUrl": BASE_URL,
-               "source": {"repository": REPOSITORY, "revision": REVISION, "tag": VERSION,
-                          "treeSha256": TREE_SHA256, "archive": receipt,
-                          "verification": "All original STEP bytes match their pinned official Git blob SHA1; SHA256 is computed independently from those bytes."},
-               "license": {"spdx": "CC-BY-SA-4.0", "url": BASE_URL + "LICENSE.md",
-                           "notice": "licenses/kicad-3d-LICENSE.md", "exception": "KiCad libraries exception; see the original upstream notice."},
-               "files": files}
+    catalog = build_catalog(files, receipt)
     output = (json.dumps(catalog, indent=2, ensure_ascii=False) + "\n").encode()
     args.output.parent.mkdir(parents=True, exist_ok=True)
     notices = args.output.parent / "licenses"

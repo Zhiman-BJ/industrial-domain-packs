@@ -55,7 +55,8 @@ test("bench tool registry is well formed and unique", () => {
 
 test("provider declares the bench surface verbatim plus the native profile", () => {
   const provider = manifest.provider;
-  assert.equal(manifest.version, provider.version);
+  assert.equal(manifest.version, "0.3.3");
+  assert.equal(provider.version, "0.3.3", "data transport does not change execution identity");
   const bench = provider.tools.filter((t) => t.id.startsWith("pcb.design."));
   const native = provider.tools.filter((t) => !t.id.startsWith("pcb.design."));
   assert.equal(bench.length, 89);
@@ -130,7 +131,8 @@ test("vendored actor and skill files match the pinned upstream hashes", () => {
 test("consumer metadata routes the new skill and version", () => {
   const metadata = owner.consumerMetadata();
   const domain = metadata.domains.find((d) => d.id === "pcb");
-  assert.equal(domain.version, manifest.version);
+  assert.equal(domain.version, owner.getPack(manifest.id).releaseVersion);
+  assert.equal(domain.version, "0.3.4");
   for (const id of ["pcb.design.e2e", "pcb.kicad.native", "pcb.layout.inspect"]) {
     const skill = metadata.skills.find((s) => s.id === id);
     assert.ok(skill, id);

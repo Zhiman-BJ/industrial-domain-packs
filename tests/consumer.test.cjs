@@ -71,6 +71,18 @@ test("consumer metadata cannot mutate the pinned registry through a caller refer
   assert.throws(() => packs.skillResource("unknown-skill"));
 });
 
+test("PCB model transport advances distribution identity without changing the host runtime version", () => {
+  const pcb = packs.hostPacks().find((item) => item.id === "pcb-pack");
+  const distribution = packs.getPack(pcb.id);
+  const domain = packs.consumerMetadata().domains.find((item) => item.id === pcb.domain);
+  assert.equal(pcb.version, "0.3.3");
+  assert.equal(pcb.provider.version, pcb.version);
+  assert.equal(distribution.releaseVersion, "0.3.4");
+  assert.equal(domain.version, distribution.releaseVersion);
+  assert.notEqual(pcb.version, domain.version);
+  assert.equal(pcb.dataLibraries[0].download.type, "gitlab-repository-files");
+});
+
 test("gateway transport implementations belong to the pinned owner release", () => {
   for (const pack of packs
     .hostPacks()

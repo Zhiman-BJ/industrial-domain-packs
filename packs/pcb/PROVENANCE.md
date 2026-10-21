@@ -102,3 +102,18 @@ it cannot change engineering facts or the existing native runtime qualification.
 The original upstream `LICENSE.md` is separately Git-blob verified and retained
 as `resources/licenses/kicad-3d-LICENSE.md`: CC BY-SA 4.0 with the KiCad libraries
 exception. On-demand models retain those terms and their original notices.
+
+### API transport revision (2026-10-21)
+
+PCB distribution 0.3.4 / owner package 0.5.8 switches the download declaration to
+`https://gitlab.com/api/v4/` plus a typed repository-files API project/ref binding.
+The catalog uses schema 2 to require a supporting Harness consumer; beta.7 rejects
+it. This changes only the transport metadata: every original path, size and
+SHA-256, the official commit/tree, source archive receipt and license notice are
+unchanged. The generator emits the same API binding when reproducing the catalog.
+No fresh network reachability or new native/platform qualification is asserted.
+
+The host `harness-pack.json` version remains 0.3.3, equal to its engineering
+provider version. Distribution 0.3.4 is recorded separately in `pack.json`
+`releaseVersion` and consumer domain metadata; a data-only transport change
+must not replace the host Runtime identity with a distribution version.

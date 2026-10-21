@@ -62,7 +62,7 @@
     "Optional pcb.design.* container profile: Docker with the image built from the vendored actor sources (packs/pcb/Dockerfile.local-dev) and the gateway Python environment (uv sync --frozen --no-dev)"
   ],
   "remoteStatus": "not-qualified",
-  "releaseVersion": "0.3.3",
+  "releaseVersion": "0.3.4",
   "nativePlatforms": [
     "darwin-arm64"
   ]

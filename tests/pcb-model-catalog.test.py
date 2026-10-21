@@ -18,6 +18,22 @@ spec.loader.exec_module(catalog)
 
 
 class CatalogTests(unittest.TestCase):
+    def test_generated_transport_is_api_pinned_without_changing_license_or_models(self):
+        files = [{"path": "Fixture.3dshapes/A.step", "size": 10, "sha256": "a" * 64}]
+        receipt = {"url": "https://example.invalid/original.tar.xz"}
+        value = catalog.build_catalog(files, receipt)
+        self.assertEqual(value["schemaVersion"], 2)
+        self.assertEqual(value["baseUrl"], "https://gitlab.com/api/v4/")
+        self.assertEqual(value["download"], {
+            "type": "gitlab-repository-files",
+            "project": "kicad/libraries/kicad-packages3D",
+            "ref": catalog.REVISION,
+        })
+        self.assertEqual(value["download"]["ref"], value["source"]["revision"])
+        self.assertEqual(value["license"]["url"], catalog.REPOSITORY + "/-/raw/" + catalog.REVISION + "/LICENSE.md")
+        self.assertIs(value["files"], files)
+        self.assertIs(value["source"]["archive"], receipt)
+
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary.cleanup)

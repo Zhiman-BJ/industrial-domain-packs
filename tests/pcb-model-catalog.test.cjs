@@ -18,12 +18,28 @@ test("optional official KiCad data has a complete immutable catalog and independ
   const bytes = fs.readFileSync(path.join(root, library.catalog));
   assert.equal(crypto.createHash("sha256").update(bytes).digest("hex"), library.catalogSha256);
   const catalog = JSON.parse(bytes);
+  assert.equal(catalog.schemaVersion, 2, "API transport requires an updated Harness consumer");
   assert.equal(catalog.id, "kicad-3d");
   assert.equal(catalog.version, "10.0.7");
   assert.equal(catalog.baseUrl, library.baseUrl);
+  assert.equal(library.baseUrl, "https://gitlab.com/api/v4/");
+  assert.deepEqual(library.download, {
+    type: "gitlab-repository-files",
+    project: "kicad/libraries/kicad-packages3D",
+    ref: "8d4070daa0fa3f7a7f3c176f4ca7bffc4df392be",
+  });
+  assert.deepEqual(catalog.download, library.download);
+  assert.equal(catalog.download.ref, catalog.source.revision);
   assert.equal(catalog.source.revision, "8d4070daa0fa3f7a7f3c176f4ca7bffc4df392be");
   assert.equal(catalog.files.length, 7252);
   assert.equal(new Set(catalog.files.map(file => file.path)).size, 7252);
+  assert.equal(
+    crypto.createHash("sha256").update(JSON.stringify(catalog.files)).digest("hex"),
+    "5e2ea499ceaa96327b3756e45619ed9d06f21f825ea657d83f38324743d611ee",
+    "changing download transport preserves every original path, byte count and checksum",
+  );
+  assert.equal(manifest.version, "0.3.3", "host Runtime identity is unchanged");
+  assert.equal(manifest.provider.version, "0.3.3", "engineering provider identity is unchanged");
   for (const file of catalog.files) {
     assert.match(file.path, /^[^\\\0]+\.step$/);
     assert.ok(!file.path.split("/").includes("..") && !file.path.startsWith("/"));

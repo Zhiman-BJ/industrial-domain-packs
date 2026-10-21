@@ -26,12 +26,12 @@ test("installed professional Packs export the exact qualified native downloads a
       asset.installedSize,
       domain === "pcb" ? 5104942382 : 353682925,
     );
+    assert.equal(manifest.version, manifest.provider.version);
     assert.equal(
-      manifest.version,
       owner.consumerMetadata().domains.find((item) => item.id === domain)
         .version,
+      owner.getPack(manifest.id).releaseVersion,
     );
-    assert.equal(manifest.version, owner.getPack(manifest.id).releaseVersion);
   }
   const pcb = owner.hostPacks().find((pack) => pack.domain === "pcb")
     .runtimeAssets[0];

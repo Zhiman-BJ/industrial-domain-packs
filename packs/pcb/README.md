@@ -89,6 +89,16 @@ is not bundled: a compatible host downloads referenced models from that immutabl
 official GitLab URL, verifies size and hash, and owns its cache and resource limits.
 The catalog and original upstream license notice are packaged and content locked.
 
+PCB distribution 0.3.4 changes the download transport to GitLab's repository-files
+API because web raw URLs can return a regional Cloudflare challenge. The schema-2
+catalog and declaration both bind `download.type: gitlab-repository-files`, the
+official project path and the complete immutable commit. A supporting host encodes
+the entire model path and adds only that fixed `ref`; raw directory concatenation
+is not valid for this transport. Older beta.7 consumers reject catalog schema 2,
+so this Pack must be released with the updated generic Harness downloader. The
+model version remains 10.0.7 and all 7,252 original file identities are unchanged.
+The provider, native KiCad dependency and qualified execution image are unchanged.
+
 This data is separate from `runtimeAssets` and never gates native KiCad app
 installation or readiness. It grants no Tool execution, engineering verification
 or additional platform qualification. It is not a new native dependency version.
