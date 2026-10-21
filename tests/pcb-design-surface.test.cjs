@@ -55,7 +55,8 @@ test("bench tool registry is well formed and unique", () => {
 
 test("provider declares the bench surface verbatim plus the native profile", () => {
   const provider = manifest.provider;
-  assert.equal(manifest.version, provider.version);
+  assert.equal(manifest.version, "0.3.4");
+  assert.equal(provider.version, "0.3.3", "data transport does not change execution identity");
   const bench = provider.tools.filter((t) => t.id.startsWith("pcb.design."));
   const native = provider.tools.filter((t) => !t.id.startsWith("pcb.design."));
   assert.equal(bench.length, 89);
