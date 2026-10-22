@@ -1,10 +1,13 @@
 const fs = require("node:fs"),
-  path = require("node:path"),
-  os = require("node:os");
+  path = require("node:path");
 const { execFileSync } = require("node:child_process");
 const { prepareContext } = require("./runtime-build.cjs");
 const { reuseImage, verifyImage } = require("./runtime-image-reuse.cjs");
-const { planTool, ensureTool } = require("./runtime-tool-publication.cjs");
+const {
+  planTool,
+  ensureTool,
+  digest,
+} = require("./runtime-tool-publication.cjs");
 const { validateRuntimeRelease } = require("../lib/runtime-release.cjs");
 const { pushPublication } = require("./runtime-publication-writeback.cjs");
 const recipes = {
@@ -75,6 +78,41 @@ function releaseRecord(plan, result, evidence) {
     expected(plan.selection),
   );
 }
+function resumePlan({
+  plan,
+  selection: s,
+  source,
+  sourceContent,
+  input,
+  region,
+  configuration,
+  repository,
+}) {
+  const image = plan.tool?.request?.CustomConfiguration?.Image;
+  if (typeof image !== "string" || !image.startsWith(repository + "@"))
+    throw Error("Prior intent repository mismatch");
+  const tool = planTool({
+    environment: s.environment,
+    region,
+    packId: s.packId,
+    profile: s.profile,
+    image,
+    configuration,
+  });
+  const expectedPlan = {
+    selection: s,
+    source,
+    sourceContent,
+    input,
+    tool,
+    relative: `packs/${s.directory}/releases/${s.profile}/${s.environment}.lock.json`,
+  };
+  if (digest(expectedPlan) !== digest(plan))
+    throw Error(
+      "Prior intent differs from source, build inputs or environment configuration; reconcile before publishing",
+    );
+  return expectedPlan;
+}
 const run = (cmd, args, options = {}) =>
   execFileSync(cmd, args, {
     encoding: "utf8",
@@ -100,6 +138,9 @@ async function main(phase) {
       required("PUBLICATION_ENVIRONMENT"),
       required("GITHUB_REF"),
     );
+    const region = required("TENCENT_REGION");
+    const configuration = JSON.parse(required("TENCENT_TOOL_CONFIGURATION"));
+    const prefix = required("TENCENT_IMAGE_PREFIX");
     if (git("status", "--porcelain"))
       throw Error("Publication source must be clean");
     const source = git("rev-parse", "HEAD");
@@ -115,18 +156,42 @@ async function main(phase) {
       { root, recipe: s.recipe, platform: profile.platform },
       path.join(dir, "context"),
     );
-    const prefix = required("TENCENT_IMAGE_PREFIX");
     if (!/^[a-z0-9.-]+\/[a-z0-9/_-]+$/.test(prefix))
       throw Error("Invalid image repository prefix");
     const repository = prefix + "/" + s.directory + "-" + s.environment;
     const relative = `packs/${s.directory}/releases/${s.profile}/${s.environment}.lock.json`;
+    if (fs.existsSync(planFile)) {
+      const restored = resumePlan({
+        plan: JSON.parse(fs.readFileSync(planFile)),
+        selection: s,
+        source,
+        sourceContent: pack.identity.contentSha256,
+        input,
+        region,
+        configuration,
+        repository,
+      });
+      const image = {
+        reference: restored.tool.request.CustomConfiguration.Image,
+        platform: input.platform,
+      };
+      const registry = await verifyImage(image, true);
+      if (
+        registry.identity?.digest !== image.reference.split("@")[1] ||
+        registry.identity?.platform !== input.platform
+      )
+        throw Error("Restored image identity mismatch");
+      write(planFile, restored);
+      write(path.join(dir, "registry.json"), registry);
+      return;
+    }
     let record = null;
     if (fs.existsSync(relative))
       record = pack.getRuntimeRelease(s.packId, s.profile, s.environment);
     // Changed deployment region/repository cannot borrow a previous binding.
     if (
       record &&
-      (record.region !== required("TENCENT_REGION") ||
+      (record.region !== region ||
         !record.image.reference.startsWith(repository + "@"))
     )
       record = null;
@@ -174,11 +239,11 @@ async function main(phase) {
       throw Error("Registry identity mismatch");
     const tool = planTool({
       environment: s.environment,
-      region: required("TENCENT_REGION"),
+      region,
       packId: s.packId,
       profile: s.profile,
       image: image.reference,
-      configuration: JSON.parse(required("TENCENT_TOOL_CONFIGURATION")),
+      configuration,
     });
     write(planFile, {
       selection: s,
@@ -245,7 +310,7 @@ async function main(phase) {
     });
   } else throw Error("Expected prepare, tool or writeback phase");
 }
-module.exports = { selection, releaseRecord };
+module.exports = { selection, releaseRecord, resumePlan };
 if (require.main === module)
   main(process.argv[2]).catch((error) => {
     console.error("Runtime publication failed:", error.code || error.message);

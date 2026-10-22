@@ -91,7 +91,7 @@ content lock to the unchanged source branch. It does not deploy the Service or
 delete Tools. Configuration and publication-only gates are documented in
 `release-format.md`; the existing GHCR release channel remains separate.
 
-On macOS arm64 / Node 24.21.0, the complete JavaScript suite passed 151 tests with
+On macOS arm64 / Node 24.21.0, the complete JavaScript suite passed 158 tests with
 2 existing skips; the separate architecture suite passed 11 tests. The new tests
 exercise stable/environment-scoped identities, persistence failure, ambiguous
 creation, pagination, readback mismatch/null normalization and real local-Git
@@ -108,3 +108,14 @@ qualification. Dependency audit also reports the existing MCP SDK/Ajv advisories
 and a publisher-only transitive uuid advisory (v3/v5/v6 buffer APIs); the Tencent
 SDK path uses uuid.v4 without a supplied buffer. No dependency overrides or
 unrelated runtime upgrades were applied in this task.
+
+
+Independent review identified a rerun gap: rebuilding after an uncertain Tool
+creation could change the image digest and hence its idempotency identity. The
+fix restores and validates the previous intent across runs/attempts before any
+build; missing/expired evidence after a cloud attempt fails closed. Regression
+tests cover a hypothetical different rebuild digest and expired/missing intent,
+in addition to the existing timeout test. Cloud error-code diagnostics remain a
+minor deferred finding; real default materialization, Environment protections,
+native qualification and existing dependency advisories remain explicit external
+or separately scoped limits, not claims made by this local validation.

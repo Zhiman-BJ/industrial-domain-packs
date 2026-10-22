@@ -15,6 +15,7 @@ on:
 
 permissions:
   contents: write
+  actions: read
 
 # A single source-branch writer avoids competing content-lock commits.
 concurrency:
@@ -23,6 +24,7 @@ concurrency:
 
 jobs:
   publish:
+    name: Publish ${{ inputs.domain }} ${{ inputs.environment }}
     if: github.event_name == 'workflow_dispatch' && github.ref_type == 'branch' && (inputs.environment != 'prod' || github.ref == 'refs/heads/main')
     runs-on: ubuntu-24.04
     timeout-minutes: 120
@@ -58,13 +60,39 @@ jobs:
           registry: ${{ env.REGISTRY_HOST }}
           username: ${{ secrets.TENCENT_REGISTRY_USERNAME }}
           password: ${{ secrets.TENCENT_REGISTRY_PASSWORD }}
+      - name: Locate previous publication intent
+        id: previous
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const {findIntent} = require('./scripts/runtime-publication-resume.cjs');
+            const prior = await findIntent(github, {
+              ...context.repo, source: context.sha,
+              domain: process.env.PUBLICATION_DOMAIN,
+              environment: process.env.PUBLICATION_ENVIRONMENT,
+              runId: Number(process.env.GITHUB_RUN_ID),
+              runAttempt: Number(process.env.GITHUB_RUN_ATTEMPT),
+            });
+            if (prior) {
+              core.setOutput('artifact-id', prior.artifactId);
+              core.setOutput('run-id', prior.runId);
+            }
+      - name: Restore exact prior intent
+        if: steps.previous.outputs.artifact-id != ''
+        uses: actions/download-artifact@v4
+        with:
+          artifact-ids: ${{ steps.previous.outputs.artifact-id }}
+          run-id: ${{ steps.previous.outputs.run-id }}
+          github-token: ${{ github.token }}
+          merge-multiple: true
+          path: ${{ runner.temp }}/runtime-publication
       - name: Build or verify image; prepare Tool intent
         run: node scripts/publish-runtime.cjs prepare
       - name: Persist intent before cloud mutation
         id: intent
         uses: actions/upload-artifact@v4
         with:
-          name: runtime-intent-${{ github.run_id }}-${{ github.run_attempt }}
+          name: runtime-intent-${{ inputs.domain }}-${{ inputs.environment }}-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
           if-no-files-found: error
           retention-days: 90
           path: |

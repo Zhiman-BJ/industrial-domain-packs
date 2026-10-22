@@ -243,13 +243,24 @@ The Action builds the minimal DPR-02 context with the exact recorded arguments,
 pushes to the configured repository and verifies the registry manifest, platform
 and blobs by immutable digest. The prepared plan and registry evidence are
 uploaded **before** CreateSandboxTool. Upload failure prevents Tool creation.
+Before rebuilding, retries and later dispatches for the same source/domain/environment
+restore the prior uploaded plan, verify its source, build inputs and current
+configuration, and reverify its exact immutable image. They do not rebuild an
+uncertain publication into a different image identity. If an earlier cloud step
+ran but its intent artifact is unavailable/expired, publication stops for manual
+reconciliation. A failure before the cloud step can be restarted without an
+intent. Do not delete workflow history or intent artifacts while a publication is
+unresolved; removing both destroys the recovery evidence.
+
 A stable hash of environment, region, Pack/profile, immutable image and Tool
 configuration supplies the API ClientToken and deterministic Tool name. An
 existing matching Tool is reused only after ACTIVE/configuration checks. Creation
 timeouts are followed by bounded paginated queries, never another create in the
 same invocation. Re-running uses the same token/name for the same binding and
 queries before creation; it does not generate a fresh token to bypass uncertainty
-or quota errors. A collision or mismatched readback fails. The API's unique-name
+or quota errors. A collision or mismatched readback fails. Definitive Create errors currently also
+follow conservative reconciliation and eventually report a generic unknown/pending
+error; preserving sanitized cloud error codes is a deferred diagnostic improvement. The API's unique-name
 and idempotency constraints are part of this safety boundary.
 
 Successful result evidence is uploaded before the generated lock is written.
