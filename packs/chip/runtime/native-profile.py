@@ -22,26 +22,6 @@ from eda_harness.plugins import semantic
 MAX_LOG = 2 * 1024 * 1024
 
 
-def identity():
-    lock = json.loads((ROOT / "content-lock.json").read_text())
-    for name, expected in lock["files"].items():
-        parts = Path(name).parts
-        if parts[0] not in ("packs", "lib") or ".." in parts:
-            raise ValueError("Unsafe content path")
-        current = ROOT
-        for part in parts:
-            current /= part
-            if current.is_symlink():
-                raise ValueError("Pack source cannot be a symlink")
-        if not current.is_file() or hashlib.sha256(current.read_bytes()).hexdigest() != expected:
-            raise ValueError("Domain Pack integrity mismatch: " + name)
-    calculated = hashlib.sha256(json.dumps(lock["files"], separators=(",", ":"), ensure_ascii=False).encode()).hexdigest()
-    if calculated != lock["contentSha256"]:
-        raise ValueError("Invalid Pack content identity")
-    return {"contentSha256": lock["contentSha256"],
-            "packageVersion": json.loads((ROOT / "package.json").read_text())["version"]}
-
-
 def project(root):
     file = root / "eda.yaml"
     if file.is_symlink() or not file.is_file() or file.stat().st_size > 65536:
@@ -100,7 +80,6 @@ def invoke(args, work, log):
 
 
 def run(root, work):
-    release = identity()
     root, work = Path(root).resolve(), Path(work).resolve()
     work.mkdir(parents=True, exist_ok=True)
     resource.setrlimit(resource.RLIMIT_FSIZE, (64 * 1024 * 1024, 64 * 1024 * 1024))
@@ -108,7 +87,7 @@ def run(root, work):
     version = subprocess.check_output(["verilator", "--version"], text=True).strip()
     if not version.startswith("Verilator 5.026 "):
         raise ValueError("rtl-cpu requires pinned Verilator 5.026")
-    report = {"schemaVersion": "0.2", "packIdentity": release, "profileId": "rtl-cpu",
+    report = {"schemaVersion": "0.2", "profileId": "rtl-cpu",
         "toolVersion": version, "compileExitCode": None, "simulationExitCode": None,
         "completed": False, "completionMarker": None, "nativeVerification": None, "diagnostic": None}
     exit_code = 1
@@ -137,14 +116,12 @@ def run(root, work):
                 log.write(("RTL profile: " + report["diagnostic"] + "\n").encode())
     report["durationMs"] = round((time.monotonic() - started) * 1000)
     (work / "report.json").write_text(json.dumps(report, sort_keys=True) + "\n")
-    print(json.dumps({"executionSucceeded": exit_code == 0, "packIdentity": release, "toolVersion": version}))
+    print(json.dumps({"executionSucceeded": exit_code == 0, "toolVersion": version}))
     return exit_code
 
 
 if __name__ == "__main__":
-    if sys.argv[1:] == ["--identity"]:
-        print(json.dumps(identity(), sort_keys=True))
-    elif len(sys.argv) == 3:
+    if len(sys.argv) == 3:
         sys.exit(run(*sys.argv[1:]))
     else:
         sys.exit(64)

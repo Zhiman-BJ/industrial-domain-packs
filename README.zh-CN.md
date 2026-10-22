@@ -17,13 +17,13 @@
 
 导入来自 Harness 提交 371b011b41417d5cb0c29bc9a0fd4c8bfa4bf75e 和 FreeCAD PR29 提交 62510b22b47803e0841825ec1c2b34fae48b3b15。逐文件来源与哈希见 [迁移记录](provenance/domain-migration.json)。本地仍在修改的工作文件不纳入本次迁移。Pack 子目录 README 与 harness-pack.json 保留原仓库／bootstrap 的安装说明，其中可能引用 Harness 专属脚本或先前计划；当前状态以本页、pack.json 和验收记录为准，旧消费端元数据待 Harness 迁移时再生成。
 
-remote 直接依赖 npm 包名 @zhiman-bj/industrial-domain-packs 对应的 Git 提交。它读取 Pack 提供的 descriptor、验证器、执行入口、证据导出器和 Dockerfile，不再维护独立 Chip runner。沙箱执行前必须与协调器核对内容身份；身份随能力快照和任务保存。
+remote 直接依赖 npm 包名 @zhiman-bj/industrial-domain-packs 对应的 Git 提交。它读取 Pack 提供的 descriptor、验证器、执行入口、证据导出器和 Dockerfile，不再维护独立 Chip runner。共享 worker 在原生执行前检查 runtime 身份和输入快照完整性；完整 Pack 的内容校验在沙箱外完成。身份随能力快照和任务保存。
 
 Chip 本地和沙箱使用同一套 EDA semantic.prepare / semantic.observe；本地和远端的 canonical 验证器都引用 runtime/verifier.cjs。旧 Harness 安装不会自动切换，Harness 消费端后续单独迁移。
 
-开发、真实 MCP 检查、镜像构建和 validate.sh 使用见英文 README。源码修改后先暂存经过检查的 packs/ 和 lib/ 文件，再执行 npm run lock 更新内容身份。消费者和沙箱必须从同一固定版本构建。源码 CI 不构建或发布工具镜像。
+开发、真实 MCP 检查、镜像构建和 validate.sh 使用见英文 README。源码修改后先暂存经过检查的 packs/ 和 lib/ 文件，再执行 npm run lock 更新内容身份。消费者固定经过审查的 Pack 提交，沙箱固定所选 profile 的不可变镜像；构建源码与发布提交的关系见[发布身份](docs/release-format.md)。源码 CI 不构建或发布工具镜像。
 
-[验收记录](docs/migration-validation.md) 区分代码迁入、原生工具执行和远端支持。source-only archive 可覆盖所有六个 Pack，但不是可直接使用的执行镜像；镜像构建使用完整固定版本的包。
+[验收记录](docs/migration-validation.md) 区分代码迁入、原生工具执行和远端支持。source-only archive 可覆盖所有六个 Pack，但不是可直接使用的执行镜像。固定版本的仓库可以作为 Docker 构建上下文，不代表要将其全部复制进镜像；远端镜像内容遵循[打包规范](docs/release-format.md#remote-runtime-image-packaging)。
 
 本仓库负责领域实现；Harness 继续负责 canonical 合约、Runtime、Broker、Agent、CLI、Desktop、Viewer 框架；私有 remote 仓库负责认证、文件快照、授权、有限调度和沙箱生命周期。工作负载不获得 Docker socket 或 Kubernetes 权限。
 
@@ -93,3 +93,5 @@ C++ 工具链、其他 EDA/PDK 前提及工程验收边界。macOS ARM64 已运�
 远端发布与消费方可通过 `getRuntimeRelease` 校验 schema-1 运行发布记录，见[发布身份](docs/release-format.md)。该元数据 API 不负责发布 Tool，也不代表执行 profile 已通过资格验收。
 
 Runtime release lock 由发布 GitHub Action 维护，不要手动修改生成的 image digest、Tool ID 或发布证据。修改发布流程前，请阅读[发布流程与最终 hash 计算顺序](docs/release-format.md#publication-workflow-and-generated-files)。Action 流程尚待实现，当前提供的是元数据接口。
+
+新增或修改任何 domain 的远端 runtime profile 前，请阅读[统一打包规范](docs/release-format.md#remote-runtime-image-packaging)。

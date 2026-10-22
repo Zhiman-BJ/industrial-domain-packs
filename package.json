@@ -88,6 +88,7 @@
     "packs/chip/eda-harness/tests/conftest.py",
     "packs/chip/eda-harness/tests/test_equivalence_adapter.py",
     "packs/chip/eda-harness/tests/test_orfs_lec.py",
+    "packs/chip/eda-harness/tests/test_remote_packaging.py",
     "packs/chip/eda-harness/tests/test_resource_admission.py",
     "packs/chip/eda-harness/tests/test_runtime_cleanup.py",
     "packs/chip/eda-harness/tests/test_runtime_native.py",

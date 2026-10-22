@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1
+# syntax=docker/dockerfile:1@sha256:4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e
 # Verilator's official fixed linux/amd64 image, also used by eda-full.
 FROM verilator/verilator@sha256:4381a83fc2864cc2be91c5acb8ddff688077c73db20304b7f2c38cccd6a965da AS verilator
 FROM ubuntu:24.04@sha256:008173c23f95b170204355c12626cb5a965d779a7e1283b09e9cffbb1bf33ca3
@@ -9,16 +9,32 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     apt-get -o Acquire::Retries=3 update && apt-get -o Acquire::Retries=3 install -y --no-install-recommends \
       g++=4:13.2.0-7ubuntu1 make=4.3-4.1build2 perl=5.38.2-3.2ubuntu0.6 ccache=4.9.1-1 \
       libfl2=2.6.4-8.2build1 zlib1g=1:1.3.dfsg-3.1ubuntu2.2 python3=3.12.3-0ubuntu2.1 \
-      python3-venv=3.12.3-0ubuntu2.1 ca-certificates=20260601~24.04.1 \
+      python3-venv=3.12.3-0ubuntu2.1 ca-certificates=20260816ubuntu0.24.04.1 \
     && rm -rf /var/lib/apt/lists/*
 COPY --from=verilator /usr/local/bin/verilator* /usr/local/bin/
 COPY --from=verilator /usr/local/share/verilator /usr/local/share/verilator
 COPY packs/chip/eda-harness/src/eda_harness/dependency_locks/runtime.txt /opt/locks/runtime.txt
 RUN python3 -m venv /opt/venv && /opt/venv/bin/pip install --no-cache-dir --require-hashes --only-binary=:all: -r /opt/locks/runtime.txt
 ENV PATH="/opt/venv/bin:${PATH}" HOME=/tmp PYTHONDONTWRITEBYTECODE=1 CCACHE_DISABLE=1
-COPY package.json content-lock.json /opt/domain-packs/
-COPY lib /opt/domain-packs/lib
-COPY packs /opt/domain-packs/packs
+COPY lib/worker-http.py /opt/domain-packs/lib/worker-http.py
+COPY packs/chip/pack.json /opt/domain-packs/packs/chip/pack.json
+COPY packs/chip/runtime/native-profile.py /opt/domain-packs/packs/chip/runtime/native-profile.py
+COPY packs/chip/runtime/export.py /opt/domain-packs/packs/chip/runtime/export.py
+COPY packs/chip/eda-harness/src/eda_harness/__init__.py /opt/domain-packs/packs/chip/eda-harness/src/eda_harness/__init__.py
+COPY packs/chip/eda-harness/src/eda_harness/core/__init__.py /opt/domain-packs/packs/chip/eda-harness/src/eda_harness/core/__init__.py
+COPY packs/chip/eda-harness/src/eda_harness/core/models.py /opt/domain-packs/packs/chip/eda-harness/src/eda_harness/core/models.py
+COPY packs/chip/eda-harness/src/eda_harness/core/parameters.py /opt/domain-packs/packs/chip/eda-harness/src/eda_harness/core/parameters.py
+COPY packs/chip/eda-harness/src/eda_harness/core/workflow.py /opt/domain-packs/packs/chip/eda-harness/src/eda_harness/core/workflow.py
+COPY packs/chip/eda-harness/src/eda_harness/core/workspace.py /opt/domain-packs/packs/chip/eda-harness/src/eda_harness/core/workspace.py
+COPY packs/chip/eda-harness/src/eda_harness/core/store.py /opt/domain-packs/packs/chip/eda-harness/src/eda_harness/core/store.py
+COPY packs/chip/eda-harness/src/eda_harness/plugins/__init__.py /opt/domain-packs/packs/chip/eda-harness/src/eda_harness/plugins/__init__.py
+COPY packs/chip/eda-harness/src/eda_harness/plugins/semantic.py /opt/domain-packs/packs/chip/eda-harness/src/eda_harness/plugins/semantic.py
+COPY packs/chip/eda-harness/src/eda_harness/plugins/advanced.py /opt/domain-packs/packs/chip/eda-harness/src/eda_harness/plugins/advanced.py
+COPY packs/chip/eda-harness/src/eda_harness/plugins/equivalence.py /opt/domain-packs/packs/chip/eda-harness/src/eda_harness/plugins/equivalence.py
+COPY packs/chip/eda-harness/src/eda_harness/plugins/tools.py /opt/domain-packs/packs/chip/eda-harness/src/eda_harness/plugins/tools.py
+COPY packs/chip/examples/rtl/counter.sv /opt/domain-packs/packs/chip/examples/rtl/counter.sv
+COPY packs/chip/examples/rtl/counter_tb.sv /opt/domain-packs/packs/chip/examples/rtl/counter_tb.sv
+COPY packs/chip/examples/rtl/eda.yaml /opt/domain-packs/packs/chip/examples/rtl/eda.yaml
 RUN python3 /opt/domain-packs/packs/chip/runtime/native-profile.py /opt/domain-packs/packs/chip/examples/rtl /tmp/smoke \
     && test -s /tmp/smoke/wave.vcd && rm -rf /tmp/smoke
 # The runtime identity this image agrees to serve; must match the server's
@@ -29,7 +45,7 @@ ENV WORKER_RUNTIME_DIGEST=${CHIP_RUNTIME_DIGEST} WORKER_PACK=chip WORKER_PROFILE
 # health checks, command execution, and the snapshot-staging file interface
 # all flow through envd on 49983. Runs as the same fixed unprivileged user
 # as the worker, so staged files land with matching ownership in /input.
-COPY --from=ccr.ccs.tencentyun.com/ags-image/envd:v0.5.14 --chmod=755 /usr/bin/envd /usr/bin/envd
+COPY --from=ccr.ccs.tencentyun.com/ags-image/envd:v0.5.14@sha256:339efc1a2186ae32b9cbe388c0069c33f9c844361d7dcbc830f4e9863d6e8e51 --chmod=755 /usr/bin/envd /usr/bin/envd
 # /input receives the server-staged snapshot via the AGS file interface;
 # /work holds per-request evidence directories. Both belong to the
 # unprivileged runtime user (envd stages files as the boot user).

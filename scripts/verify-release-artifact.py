@@ -117,12 +117,28 @@ class PublicRegistry:
         body = json.loads(raw)
         result = {'digest': actual, 'mediaType': body['mediaType'], 'size': len(raw)}
         if 'manifests' in body:
-            os_name, arch = platform.split('/')
-            matches = [m for m in body['manifests'] if m.get('platform', {}).get('os') == os_name and m.get('platform', {}).get('architecture') == arch]
+            parts = platform.split('/')
+            os_name, arch = parts[:2]
+            matches = [m for m in body['manifests'] if m.get('platform', {}).get('os') == os_name and m.get('platform', {}).get('architecture') == arch and (len(parts) == 2 or m.get('platform', {}).get('variant') == parts[2])]
             if len(matches) != 1:
                 raise ValueError('Expected exactly one manifest for ' + platform)
             result['platformManifest'] = self.manifest(matches[0]['digest'], platform)
+            result['platform'] = result['platformManifest']['platform']
         else:
+            config_descriptor = body['config']
+            validate_digest(config_descriptor['digest'])
+            with self.request('blobs', config_descriptor['digest']) as response:
+                raw_config = response.read(16 * 1024 * 1024 + 1)
+            if (len(raw_config) > 16 * 1024 * 1024
+                    or len(raw_config) != config_descriptor['size']
+                    or 'sha256:' + hashlib.sha256(raw_config).hexdigest() != config_descriptor['digest']):
+                raise ValueError('Image config identity mismatch')
+            config = json.loads(raw_config)
+            parts = platform.split('/')
+            if (config.get('os') != parts[0] or config.get('architecture') != parts[1]
+                    or (len(parts) == 3 and config.get('variant') != parts[2])):
+                raise ValueError('Image config platform mismatch')
+            result['platform'] = platform
             descriptors = [body['config'], *body.get('layers', [])]
             for descriptor in descriptors:
                 self.blob(descriptor['digest'], descriptor['size'])
