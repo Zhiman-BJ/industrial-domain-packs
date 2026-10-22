@@ -20,7 +20,7 @@ function tcrClient() {
     profile: { httpProfile: { reqTimeout: 30 } },
   });
 }
-async function findImage({ repository, input, client = tcrClient() }) {
+async function findImage({ repository, input, client = tcrClient(), signal }) {
   if (
     !repository.startsWith(prefix) ||
     !/^[a-z0-9_-]+$/.test(repository.slice(prefix.length))
@@ -32,11 +32,17 @@ async function findImage({ repository, input, client = tcrClient() }) {
     matches = [];
   let offset = 0;
   for (let page = 0; page < 100; page++) {
-    const { Data: d } = await client.request("DescribeImagePersonal", {
-      RepoName: repository.split("/").slice(1).join("/"),
-      Offset: offset,
-      Limit: 100,
-    });
+    signal?.throwIfAborted();
+    const { Data: d } = await client.request(
+      "DescribeImagePersonal",
+      {
+        RepoName: repository.split("/").slice(1).join("/"),
+        Offset: offset,
+        Limit: 100,
+      },
+      { signal },
+    );
+    signal?.throwIfAborted();
     if (
       !Array.isArray(d?.TagInfo) ||
       !Number.isSafeInteger(d.TagCount) ||

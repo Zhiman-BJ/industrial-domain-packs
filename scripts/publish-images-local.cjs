@@ -32,6 +32,49 @@ function verifyIdentity(image, evidence) {
   )
     throw Error("Full registry verification did not match the image");
 }
+async function waitForImage(
+  options,
+  image,
+  {
+    find = require("./runtime-cloud-image.cjs").findImage,
+    now = Date.now,
+    sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
+  } = {},
+) {
+  const deadline = now() + 60000;
+  const timeout = () =>
+    Error(
+      "Promoted image not visible within 60 seconds; retry after registry propagation",
+    );
+  while (now() < deadline) {
+    let timer;
+    const controller = new AbortController();
+    let published;
+    try {
+      published = await Promise.race([
+        find({ ...options, signal: controller.signal }),
+        new Promise((_, reject) => {
+          timer = setTimeout(() => {
+            const error = timeout();
+            controller.abort(error);
+            reject(error);
+          }, deadline - now());
+        }),
+      ]);
+    } finally {
+      clearTimeout(timer);
+    }
+    if (published) {
+      if (published.reference !== image.reference)
+        throw Error(
+          "Promoted tag points to a different image; reconcile before retrying",
+        );
+      return;
+    }
+    await sleep(Math.min(5000, Math.max(0, deadline - now())));
+  }
+  throw timeout();
+}
 async function publishImage(
   { repository, input, directory, recipe },
   dependencies = {},
@@ -97,11 +140,7 @@ async function publishImage(
         ],
         { stdio: "inherit", timeout: 3 * 60 * 1000 },
       );
-    const published = await find({ repository, input });
-    if (published?.reference !== image.reference)
-      throw Error(
-        "Promoted image tag readback mismatch; retry after registry propagation",
-      );
+    await waitForImage({ repository, input }, image, { ...dependencies, find });
   }
   return { image, operation: reused ? "reused" : "built" };
 }
@@ -247,7 +286,12 @@ async function main() {
     fs.rmSync(lock, { recursive: true, force: true });
   }
 }
-module.exports = { validateEnvironment, publishImage, attemptDirectory };
+module.exports = {
+  validateEnvironment,
+  publishImage,
+  attemptDirectory,
+  waitForImage,
+};
 if (require.main === module)
   main().catch((error) => {
     // Never print subprocess objects (which may contain password-stdin) or SDK requests.

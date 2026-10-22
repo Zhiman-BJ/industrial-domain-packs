@@ -127,3 +127,64 @@ test("repeated image attempts preserve prior evidence and use fresh contexts", (
     "previous evidence",
   );
 });
+
+for (const scenario of ["eventual", "absent", "mismatch", "query-error"])
+  test(`promotion readback: ${scenario}`, async () => {
+    const { waitForImage } = require("../scripts/publish-images-local.cjs");
+    const image = { reference: "repo@sha256:" + "a".repeat(64) };
+    let elapsed = 0,
+      calls = 0;
+    const promise = waitForImage({}, image, {
+      now: () => elapsed,
+      sleep: async (ms) => {
+        elapsed += ms;
+      },
+      find: async () => {
+        calls++;
+        if (scenario === "query-error") throw Error("denied");
+        if (scenario === "mismatch")
+          return { reference: "repo@sha256:" + "b".repeat(64) };
+        return scenario === "eventual" && calls === 3 ? image : null;
+      },
+    });
+    if (scenario === "eventual") {
+      await promise;
+      assert.equal(calls, 3);
+      assert.equal(elapsed, 10000);
+    } else {
+      await assert.rejects(
+        promise,
+        scenario === "absent"
+          ? /60 seconds/
+          : scenario === "mismatch"
+            ? /different image/
+            : /denied/,
+      );
+      assert.equal(elapsed, scenario === "absent" ? 60000 : 0);
+      if (scenario !== "absent") assert.equal(calls, 1);
+    }
+  });
+
+test("readback deadline cancels an in-flight query", async (t) => {
+  t.mock.timers.enable({ apis: ["setTimeout"] });
+  const { waitForImage } = require("../scripts/publish-images-local.cjs");
+  let signal;
+  const pending = waitForImage(
+    {},
+    { reference: "expected" },
+    {
+      find: async (options) => {
+        signal = options.signal;
+        return new Promise((_, reject) =>
+          signal.addEventListener("abort", () => reject(signal.reason), {
+            once: true,
+          }),
+        );
+      },
+    },
+  );
+  const assertion = assert.rejects(pending, /60 seconds/);
+  t.mock.timers.tick(60000);
+  await assertion;
+  assert.equal(signal.aborted, true);
+});

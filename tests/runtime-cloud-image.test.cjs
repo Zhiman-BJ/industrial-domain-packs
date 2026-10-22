@@ -66,3 +66,25 @@ test("only confirmed absence permits build, errors and incomplete pagination fai
     /namespace/,
   );
 });
+
+test("aborted lookup passes cancellation to SDK and stops pagination", async () => {
+  const controller = new AbortController();
+  let calls = 0;
+  await assert.rejects(
+    findImage({
+      repository,
+      input,
+      signal: controller.signal,
+      client: {
+        request: async (_action, _args, options) => {
+          calls++;
+          assert.equal(options.signal, controller.signal);
+          controller.abort(Error("deadline"));
+          return { Data: { TagCount: 2, TagInfo: [{ TagName: "unrelated" }] } };
+        },
+      },
+    }),
+    /deadline/,
+  );
+  assert.equal(calls, 1);
+});

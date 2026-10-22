@@ -400,3 +400,7 @@ changes to a trusted repository branch for this check. Do not use
 `pull_request_target` to execute untrusted candidate code with cloud credentials.
 Publication after merge still rechecks cloud state because images can disappear
 after PR validation.
+
+Local tag promotion waits up to 60 seconds for the cloud listing to expose the
+new input tag, polling every five seconds. A different digest or query failure
+still fails immediately; an absent tag after the deadline fails for a later retry.

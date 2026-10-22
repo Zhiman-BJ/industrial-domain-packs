@@ -245,3 +245,15 @@ required-check enforcement on main remains pending administrator configuration.
 Independent review of the incremental gate found no blocking issues and reran all
 six readiness tests successfully. Live GitHub/registry execution is checked
 separately from these local fixtures.
+
+## 2026-10-22 — local publication tag propagation
+
+The live Chip build completed, pushed immutable digest
+`sha256:ef6531dc6b7e3fcb7bdd0f04a05d197b73ac4765e3a6f653c8838140a6189d7a`,
+passed full blob verification and promoted its input tag. Immediate TCR listing
+still reported absence, while a subsequent read returned the matching digest.
+Added owner-approved readback polling for absent tags, bounded to 60 seconds;
+different digests and query errors still fail immediately. Six regression cases
+passed, including cancellation of in-flight queries and stopping pagination after
+the deadline. The full Node suite passed 198 tests with 2 skipped (200 total).
+Content-lock and diff checks passed. FreeCAD/PCB publication remains in progress.
