@@ -360,3 +360,22 @@ skipped (207 total); content-lock and diff checks passed. Incremental review was
 skipped for this four-line test-only removal; previous implementation reviews
 remain applicable. The next publication should reuse the three ACTIVE Tools and
 complete lock writeback without creating replacements.
+
+## 2026-10-22 — successful test publication and automatic lock writeback
+
+Run `39778930538` completed successfully on source `3efa363`. All three Check jobs
+reused the ACTIVE Tools created by run `39778046006`; Publish jobs were skipped.
+The finish job passed its checks and pushed commit `dc2d758`, containing all three
+test release locks, package file entries and the final content lock.
+
+- Chip: `sdt-3mpfi02x`.
+- FreeCAD: `sdt-6e1agoen`.
+- PCB: `sdt-lxd25fhf`.
+
+This qualifies test Tool creation, readback, reuse and automatic feature-branch
+lock writeback. It does not qualify native instance execution or prod publication.
+The bot writeback uses GITHUB_TOKEN and therefore does not trigger new PR checks;
+a subsequent documentation push triggers checks on the final lock-bearing tree.
+The account now has ten Tools. Prod creation requires capacity planning, and
+protected-main lock writeback still needs qualification against the enforced PR
+and required-check rules. Neither limitation was bypassed in this test.
