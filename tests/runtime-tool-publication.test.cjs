@@ -216,3 +216,55 @@ test("nullable cloud detail fields normalize without masking nonempty overrides"
   });
   assert.equal((await ensureTool(p, c, {})).providerToolId, "sdt-test1234");
 });
+test("CPU/memory changes preserve Tool name and update existing Tool once with verified readback", async () => {
+  const before = structuredClone(base);
+  before.configuration.CustomConfiguration.Resources = {
+    CPU: "1",
+    Memory: "1Gi",
+    Storage: "1Gi",
+  };
+  const after = structuredClone(before);
+  after.configuration.CustomConfiguration.Resources = {
+    CPU: "2",
+    Memory: "2Gi",
+    Storage: "1Gi",
+  };
+  const p = planTool(before),
+    q = planTool(after);
+  assert.equal(p.request.ToolName, q.request.ToolName);
+  assert.notEqual(p.identity, q.identity);
+  const c = cloud(p);
+  await c.CreateSandboxTool(p.request);
+  let updates = 0,
+    persisted = false;
+  c.UpdateSandboxTool = async (req) => {
+    assert.equal(persisted, true);
+    updates++;
+    c.row().CustomConfiguration = structuredClone(req.CustomConfiguration);
+    throw Error("response lost");
+  };
+  const out = await ensureTool(q, c, {
+    persist: async () => {
+      persisted = true;
+    },
+    sleep: async () => {},
+    polls: 3,
+  });
+  assert.equal(out.toolOperation, "updated");
+  assert.equal(updates, 1);
+  assert.equal(c.calls.length, 1);
+  assert.equal(
+    (await ensureTool(q, c, { sleep: async () => {}, polls: 1 })).toolOperation,
+    "reused",
+  );
+  const storage = structuredClone(after);
+  storage.configuration.CustomConfiguration.Resources.Storage = "5Gi";
+  assert.equal(planTool(storage).request.ToolName, q.request.ToolName);
+  const disk = await ensureTool(planTool(storage), c, {
+    persist: async () => {},
+    sleep: async () => {},
+    polls: 3,
+  });
+  assert.equal(disk.toolOperation, "updated");
+  assert.equal(updates, 2);
+});

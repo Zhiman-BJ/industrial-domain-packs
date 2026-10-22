@@ -2,23 +2,19 @@ const test = require("node:test"),
   assert = require("node:assert/strict");
 const { selection, releaseRecord } = require("../scripts/publish-runtime.cjs");
 test("only explicit supported remote recipes and trusted branch/environment are selected", () => {
+  assert.equal(selection("chip", "refs/heads/feature").profile, "rtl-cpu");
   assert.equal(
-    selection("chip", "test", "refs/heads/feature").profile,
-    "rtl-cpu",
-  );
-  assert.equal(
-    selection("freecad", "prod", "refs/heads/main").profile,
+    selection("freecad", "refs/heads/main").profile,
     "freecad-linux-cpu",
   );
-  assert.throws(() => selection("chip", "prod", "refs/heads/feature"), /main/);
-  assert.throws(() => selection("chip", "test", "refs/tags/v1"), /branch/);
-  assert.throws(
-    () => selection("../chip", "test", "refs/heads/feature"),
-    /domain/,
-  );
+  assert.equal(selection("chip", "refs/heads/feature").environment, "test");
+  assert.equal(selection("chip", "refs/heads/main").environment, "prod");
+  assert.equal(selection("chip", "refs/heads/main-fix").environment, "test");
+  assert.throws(() => selection("chip", "refs/tags/v1"), /branch/);
+  assert.throws(() => selection("../chip", "refs/heads/feature"), /domain/);
 });
 test("release binds source A and publication checks without asserting engineering qualification", () => {
-  const s = selection("chip", "test", "refs/heads/feature");
+  const s = selection("chip", "refs/heads/feature");
   const p = {
     selection: s,
     source: "a".repeat(40),
@@ -71,19 +67,19 @@ test("missing cloud configuration fails before checkout/build side effects", (t)
         PATH: process.env.PATH,
         PUBLICATION_DIRECTORY: dir,
         PUBLICATION_DOMAIN: "chip",
-        PUBLICATION_ENVIRONMENT: "test",
+        PUBLICATION_ENVIRONMENT: "prod", // obsolete variable must not choose routing
         GITHUB_REF: "refs/heads/feature",
       },
     },
   );
   assert.equal(result.status, 1);
-  assert.match(result.stderr, /Missing configuration: TENCENT_REGION/);
+  assert.match(result.stderr, /Missing configuration: TENCENT_ROLE_ARN/);
   assert.equal(fs.existsSync(path.join(dir, "context")), false);
 });
 test("resume keeps the first immutable image and token even if a rebuild would differ", () => {
   const { resumePlan } = require("../scripts/publish-runtime.cjs");
   const { planTool } = require("../scripts/runtime-tool-publication.cjs");
-  const s = selection("chip", "test", "refs/heads/feature"),
+  const s = selection("chip", "refs/heads/feature"),
     repository = "example.com/test/chip-test";
   const configuration = {
     ToolType: "custom",
@@ -119,6 +115,21 @@ test("resume keeps the first immutable image and token even if a rebuild would d
     relative: "packs/chip/releases/rtl-cpu/test.lock.json",
   };
   assert.deepEqual(resumePlan({ ...options, plan }), plan);
+  const otherSelection = selection("chip", "refs/heads/another-test-branch");
+  assert.equal(
+    resumePlan({ ...options, plan, selection: otherSelection }).selection
+      .branch,
+    "another-test-branch",
+  );
+  assert.throws(
+    () =>
+      resumePlan({
+        ...options,
+        plan,
+        selection: selection("chip", "refs/heads/main"),
+      }),
+    /intent/,
+  );
   const rebuilt = planTool({
     environment: "test",
     region: options.region,
@@ -140,4 +151,32 @@ test("resume keeps the first immutable image and token even if a rebuild would d
       resumePlan({ ...options, plan, input: { buildInputDigest: "changed" } }),
     /intent/,
   );
+});
+
+test("each branch selects the checked-in environment configuration with existing domain limits", () => {
+  const { publicationConfig } = require("../scripts/publish-runtime.cjs");
+  for (const domain of ["chip", "freecad", "pcb"]) {
+    for (const [ref, environment, region] of [
+      ["refs/heads/feature", "test", "ap-guangzhou"],
+      ["refs/heads/main", "prod", "ap-beijing"],
+    ]) {
+      const s = selection(domain, ref),
+        config = publicationConfig(s);
+      assert.equal(s.environment, environment);
+      assert.equal(config.region, region);
+      assert.equal(
+        config.toolConfiguration.DefaultTimeout,
+        domain === "chip" ? "1800s" : "900s",
+      );
+      assert.match(
+        config.toolConfiguration.CustomConfiguration.Resources.Memory,
+        /^[1-9][0-9]*(Mi|Gi)$/,
+      );
+      assert.equal(Object.hasOwn(config.toolConfiguration, "RoleArn"), false);
+      assert.equal(
+        Object.hasOwn(config.toolConfiguration.CustomConfiguration, "Image"),
+        false,
+      );
+    }
+  }
 });

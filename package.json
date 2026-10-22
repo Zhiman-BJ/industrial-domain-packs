@@ -112,6 +112,8 @@
     "packs/chip/linux-bootstrap.sh",
     "packs/chip/linux-installer-header.sh",
     "packs/chip/pack.json",
+    "packs/chip/publication/rtl-cpu/prod.json",
+    "packs/chip/publication/rtl-cpu/test.json",
     "packs/chip/resources/klayout-viewer/assets.json",
     "packs/chip/resources/klayout-viewer/probe.py",
     "packs/chip/runtime/bridge.py",
@@ -149,6 +151,8 @@
     "packs/freecad/harness-pack.json",
     "packs/freecad/images/Dockerfile.linux-cpu",
     "packs/freecad/pack.json",
+    "packs/freecad/publication/freecad-linux-cpu/prod.json",
+    "packs/freecad/publication/freecad-linux-cpu/test.json",
     "packs/freecad/runtime/index.cjs",
     "packs/freecad/runtime/native.py",
     "packs/freecad/runtime/presentation.cjs",
@@ -560,6 +564,8 @@
     "packs/pcb/pcb-agent/tools/verify.py",
     "packs/pcb/pcb-agent/tools/visualize.py",
     "packs/pcb/pcb-agent/tools/workspace.py",
+    "packs/pcb/publication/pcb-verify-cpu/prod.json",
+    "packs/pcb/publication/pcb-verify-cpu/test.json",
     "packs/pcb/pyproject.toml",
     "packs/pcb/resources/kicad-3d-10.0.7.json",
     "packs/pcb/resources/licenses/kicad-3d-LICENSE.md",
@@ -620,6 +626,7 @@
     }
   },
   "devDependencies": {
-    "tencentcloud-sdk-nodejs-ags": "4.1.326"
+    "tencentcloud-sdk-nodejs-ags": "4.1.326",
+    "tencentcloud-sdk-nodejs-common": "4.1.220"
   }
 }

@@ -123,3 +123,40 @@ in addition to the existing timeout test. Cloud error-code diagnostics remain a
 minor deferred finding; real default materialization, Environment protections,
 native qualification and existing dependency advisories remain explicit external
 or separately scoped limits, not claims made by this local validation.
+
+## 2026-10-22 — resource updates and shared image publication revision
+
+An isolated Guangzhou custom Tool used an existing Chip image from the allowed
+namespace, a diagnostic Python HTTP process and token-authenticated access. CPU/
+memory changed from 1 core/1 GiB to 2 cores/2 GiB. The old instance retained cgroup
+quota 100000/100000 and memory 1073741824; the new instance had 200000/100000 and
+2147483648. The old process boot UUID stayed constant and elapsed time increased.
+Both instances were observed STOPPED and the test Tool absent after cleanup.
+
+Disk update first exposed propagation lag: Tool readback changed from 1Gi to 5Gi,
+but an immediately started instance still reported root capacity 1078984704 bytes.
+A second isolated test waited 15 seconds after update: old root/tmp/home/mnt stayed
+1078984704; new paths reported 5373952000. Instance API resource readback likewise
+showed 1024Mi versus 5120Mi. Old process continuity was preserved. Temporary Tools
+were deleted; subsequent API queries confirmed all four disk-test instances
+STOPPED and both Tools absent. This proves an observed eventual update, not a bounded
+15-second propagation guarantee or a pause/resume guarantee.
+
+Read-only CCR checks found actual per-repository quota 100 tags, with Chip 3,
+PCB 5 and FreeCAD 2 tags. No global or per-repository lifecycle strategy existed.
+The new capacity helper was exercised against the live Chip repository and
+returned 3/100, remaining 97. No image was published or deleted in these tests.
+The revised workflow uses repository configuration/secrets rather than the
+previous GitHub Environment prerequisite, cloud input-tag reuse, mutable resource
+sizing, one batch writeback and per-domain summaries. End-to-end Action publication
+is still not qualified by these targeted cloud checks.
+
+Final revision checks: 172 tests, 170 passed and 2 skipped; architecture policy
+checks passed; real Chip stdio MCP smoke returned 25 tools with required tools
+present; actionlint passed after correcting the final job scratch-directory
+context. Independent review covered the complete diff and follow-up fixes:
+removed a hardcoded memory test that blocked valid configuration edits and allowed
+same-source test-branch intent reuse without relaxing environment/source checks.
+The existing pull role was configured as repository variable TENCENT_ROLE_ARN.
+Registry username/password Secrets are still absent; the live publication Action
+has not been dispatched. Existing native qualification is unchanged.

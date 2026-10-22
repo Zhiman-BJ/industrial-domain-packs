@@ -82,14 +82,35 @@ function planTool({
     profile,
     configuration: config,
   });
+  // Resource sizing is mutable; all other configuration remains versioned.
+  const stableConfig = structuredClone(config);
+  if (stableConfig.CustomConfiguration.Resources) {
+    delete stableConfig.CustomConfiguration.Resources.CPU;
+    delete stableConfig.CustomConfiguration.Resources.Memory;
+    delete stableConfig.CustomConfiguration.Resources.Storage;
+  }
+  const stableIdentity = digest({
+    environment,
+    region,
+    packId,
+    profile,
+    configuration: stableConfig,
+  });
   // The full hash is the API idempotency key; the name remains within AGS's 50-char limit.
   const request = {
     ...config,
-    ToolName: `dp-${environment}-${identity.slice(7, 47)}`,
+    ToolName: `dp-${environment}-${stableIdentity.slice(7, 47)}`,
     ClientToken: identity.slice(7),
-    Description: `domain-pack:${identity}`,
+    Description: `domain-pack:${stableIdentity}`,
   };
   return { environment, region, packId, profile, identity, request };
+}
+function configurationDigest(request) {
+  const config = {};
+  for (const key of fields)
+    if (request[key] != null) config[key] = request[key];
+  config.DefaultTimeoutSeconds = Number(request.DefaultTimeout.slice(0, -1));
+  return digest(config);
 }
 function readback(plan, tool) {
   if (!/^sdt-[a-z0-9]+$/.test(tool.ToolId || ""))
@@ -163,12 +184,15 @@ async function ensureTool(
   } = {},
 ) {
   let tool = await findTool(plan, client);
+  let submitted = false;
+  let updated = false;
   if (!tool) {
     // This callback must upload the intent durably, not merely write a runner file.
     if (typeof persist !== "function")
       throw Error("Durable publication intent required");
     await persist(plan);
     try {
+      submitted = true;
       await client.CreateSandboxTool(plan.request);
     } catch {
       /* Outcome unknown: query, never blind replay. */
@@ -177,8 +201,51 @@ async function ensureTool(
   for (let i = 0; i < polls; i++) {
     if (!tool) tool = await findTool(plan, client);
     if (tool) {
-      if (tool.Status === "ACTIVE") return readback(plan, tool);
-      if (tool.Status !== "CREATING")
+      if (tool.Status === "ACTIVE") {
+        try {
+          return {
+            ...readback(plan, tool),
+            toolOperation: updated
+              ? "updated"
+              : submitted
+                ? "created"
+                : "reused",
+          };
+        } catch (error) {
+          // Prove that only CPU/memory/storage differ before updating anything.
+          const normalized = structuredClone(tool);
+          for (const key of ["CPU", "Memory", "Storage"]) {
+            const value = plan.request.CustomConfiguration.Resources?.[key];
+            if (value === undefined)
+              delete normalized.CustomConfiguration.Resources?.[key];
+            else {
+              normalized.CustomConfiguration.Resources ??= {};
+              normalized.CustomConfiguration.Resources[key] = value;
+            }
+          }
+          readback(plan, normalized);
+          if (!updated) {
+            if (typeof persist !== "function")
+              throw Error("Durable publication intent required");
+            await persist(plan);
+            updated = true;
+            const custom = structuredClone(tool.CustomConfiguration);
+            delete custom.ImageDigest;
+            custom.Resources = structuredClone(
+              plan.request.CustomConfiguration.Resources,
+            );
+            try {
+              await client.UpdateSandboxTool({
+                ToolId: tool.ToolId,
+                CustomConfiguration: custom,
+              });
+            } catch {
+              /* Query the result; never blindly replay an uncertain update. */
+            }
+          }
+        }
+      }
+      if (!["CREATING", "ACTIVE"].includes(tool.Status))
         throw Error("Tool is not usable: " + tool.Status);
       if (
         tool.ToolName !== plan.request.ToolName ||
@@ -195,4 +262,10 @@ async function ensureTool(
     "Tool creation outcome unknown or still pending; reconcile the same publication identity",
   );
 }
-module.exports = { planTool, ensureTool, readback, digest };
+module.exports = {
+  planTool,
+  ensureTool,
+  readback,
+  digest,
+  configurationDigest,
+};

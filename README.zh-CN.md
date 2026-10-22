@@ -94,4 +94,4 @@ C++ 工具链、其他 EDA/PDK 前提及工程验收边界。macOS ARM64 已运�
 
 Runtime release lock 由发布 GitHub Action 维护，不要手动修改生成的 image digest、Tool ID 或发布证据。修改发布流程前，请阅读[发布流程与最终 hash 计算顺序](docs/release-format.md#publication-workflow-and-generated-files)。使用手动触发的 `Publish remote runtime` Action，具体见[腾讯云配置与资格范围](docs/release-format.md#tencent-publishing-action-configuration)。
 
-新增或修改任何 domain 的远端 runtime profile 前，请阅读[统一打包规范](docs/release-format.md#remote-runtime-image-packaging)。
+新增或修改任何 domain 的远端 runtime profile 前，请阅读[统一打包规范](docs/release-format.md#remote-runtime-image-packaging)。 Action 无需填写参数：main 使用 prod，其他分支使用 test；直接查询腾讯云判断 image/Tool 复用。环境配置保存在 Pack 文件里，发布结果和容量预警展示在 Action Summary。

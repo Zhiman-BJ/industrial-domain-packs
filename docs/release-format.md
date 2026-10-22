@@ -184,107 +184,115 @@ fail rather than silently excluding inputs. All external `FROM`, `COPY --from`
 and Dockerfile frontend references must be digest-pinned. Extend the reader and
 its tests together when a recipe actually requires additional syntax.
 
-`scripts/runtime-image-reuse.cjs` provides the publisher's `reuseImage` helper.
-Its candidate must be a previously qualified release record from a reviewed,
-integrity-checked Pack. It validates that record, compares build inputs, platform
-and runtime identity, then calls the existing registry artifact verifier to
-verify the immutable manifest, actual config platform and referenced blobs.
-Qualification references remain attached to that same publication/image; they
-are not copied to a different digest and native result samples are not rerun here.
-A missing prior release or changed input returns a build decision. Invalid
-metadata, missing/corrupt images and registry errors fail the reuse check; they
-never count as permission to reuse. Existing Docker credentials may be used
-explicitly for a private registry; credentials are not recorded in the descriptor.
-
-The publishing Action uses these helpers; by themselves they do not publish
-images, create Tools, write release locks or change Service configuration.
-
+`scripts/runtime-cloud-image.cjs` looks up the publisher-owned `input-<full
+buildInputDigest>` tag directly in personal CCR. All lookups and pushes stay in
+`ccr.ccs.tencentyun.com/industrial-mcp-remote/`, in `chip-rtl`, `freecad-worker`
+or `pcb-kicad`. Test and prod share images. A release lock is an output for
+consumers, not a prerequisite or cache index for publishing. Existing legacy tags
+without a build-input identity cannot prove reuse eligibility. The publisher
+resolves a matching tag to an immutable digest and verifies its manifest, actual
+config platform and referenced blobs. A confirmed missing tag permits a build;
+a cloud query error, corrupt image or incomplete response fails publication.
+Only trusted publishers should write these input tags; do not retarget them.
 
 ## Tencent publishing Action configuration
 
-`publish-runtime.yml` is separate from the legacy GHCR/local-development image
-release workflow. A repository maintainer selects `chip`, `freecad` or `pcb`, and
-`test` or `prod`. Test candidates can come from trusted repository feature
-branches; prod candidates must come from `main`. It never deploys the Service,
-changes its Pack pin, deletes a Tool or changes an existing Tool's image.
-Configure GitHub Environments named `test` and `prod`, with branch restrictions
-and reviewers appropriate to the credentials. Only trusted maintainers may run
-credentialed candidate code. Fork PRs have no publication trigger. Protect prod
-with a main-only Environment rule as well as the workflow check.
+Manually dispatch `Publish remote runtime` on a trusted repository branch, with
+no domain or environment inputs. `main` uses prod configuration; every other
+branch uses test. Each of chip/freecad/pcb checks its actual build inputs and cloud
+resources. Unchanged resources are reused, not rebuilt. Shared worker changes
+naturally change every affected domain's build hash. Tool-only configuration
+changes do not change image build inputs. Publication does not deploy Service.
 
-Secrets (Environment-scoped, or shared repository secrets when test/prod intentionally
-use the same cloud identity):
+Configuration lives in `packs/<domain>/publication/<profile>/{test,prod}.json`
+and is covered by the content lock. It includes the AGS region, fixed shared image
+namespace, and per-environment Tool settings. Credentials never belong in these
+files. Test currently uses Guangzhou; prod uses Beijing. Personal CCR is queried
+in Guangzhou independently of the AGS region.
 
-| Name | Purpose |
-| --- | --- |
-| `TENCENT_SECRET_ID`, `TENCENT_SECRET_KEY` | Dedicated CAM identity for AGS CreateSandboxTool and DescribeSandboxToolList; no deletion permission is used |
-| `TENCENT_REGISTRY_USERNAME`, `TENCENT_REGISTRY_PASSWORD` | Push/read credentials for the selected CCR/TCR repository; these are registry login credentials, not assumed to equal the CAM key pair |
-
-Environment variables:
+Repository secrets:
 
 | Name | Purpose |
 | --- | --- |
-| `TENCENT_REGION` | AGS region, checked into the resulting release record |
-| `TENCENT_IMAGE_PREFIX` | Registry host plus namespace, without scheme/tag; the publisher appends `<domain>-<environment>` |
-| `TENCENT_TOOL_CONFIGURATION_CHIP`, `TENCENT_TOOL_CONFIGURATION_FREECAD`, `TENCENT_TOOL_CONFIGURATION_PCB` | Per-domain trusted CreateSandboxTool configuration JSON, described below; preserves distinct timeouts/resources |
+| `TENCENT_SECRET_ID`, `TENCENT_SECRET_KEY` | CAM identity for AGS create/list/update and read-only CCR image/quota queries |
+| `TENCENT_REGISTRY_USERNAME`, `TENCENT_REGISTRY_PASSWORD` | CCR push/read login credentials; not assumed to equal the CAM key pair |
 
-Provision the repositories and image-pull role before running. The role must let
-AGS pull the private immutable image. The Tool configuration includes
-`ToolType: "custom"`, `Persistent: false`, a `DefaultTimeout` expressed in seconds
-(e.g. `"300s"`), `RoleArn`, `NetworkConfiguration`, and `CustomConfiguration` with
-`ImageRegistryType` (`personal` or `enterprise`). Choose network and resource
-settings to match the Service deployment. Do not put credentials in this JSON.
-The image field is supplied by the publisher; mounts and computer configurations
-are rejected. The publisher does not invent cloud endpoints, role ARNs or
-resource settings. Configuration is included in the publication identity and
-is strictly checked against cloud readback; unexpected defaults fail closed
-until their normalization is reviewed against real cloud evidence.
+Repository variable `TENCENT_ROLE_ARN` supplies the existing AGS image-pull role.
+GitHub Environments are not required. Only trusted maintainers may run candidate
+code with repository credentials; fork PRs have no publication trigger. Registry
+repositories and the pull role must already exist. Tool type is `custom`,
+`Persistent` is false. The publisher generates Tool names and immutable image
+references. Mounts and computer configurations are rejected.
 
-The Action builds the minimal DPR-02 context with the exact recorded arguments,
-pushes to the configured repository and verifies the registry manifest, platform
-and blobs by immutable digest. The prepared plan and registry evidence are
-uploaded **before** CreateSandboxTool. Upload failure prevents Tool creation.
-Before rebuilding, retries and later dispatches for the same source/domain/environment
-restore the prior uploaded plan, verify its source, build inputs and current
-configuration, and reverify its exact immutable image. They do not rebuild an
-uncertain publication into a different image identity. If an earlier cloud step
-ran but its intent artifact is unavailable/expired, publication stops for manual
-reconciliation. A failure before the cloud step can be restarted without an
-intent. Do not delete workflow history or intent artifacts while a publication is
-unresolved; removing both destroys the recovery evidence. Recovery inspects all matching
-runs regardless of run ID: an older run can be rerun after a newer run executed.
+| Change | Image | Tool |
+| --- | --- | --- |
+| CPU, memory or disk size | Reuse if build inputs match | Update existing Tool and verify readback |
+| Command/Args, Ports, Probe, network or pull role | Reuse if build inputs match | New Tool identity |
+| Dockerfile, copied code, declared dependencies, build arguments/platform | Reuse matching cloud image, otherwise build | New Tool if image digest changes |
+| No changes | Reuse | Reuse ACTIVE matching Tool |
 
-A stable hash of environment, region, Pack/profile, immutable image and Tool
-configuration supplies the API ClientToken and deterministic Tool name. An
-existing matching Tool is reused only after ACTIVE/configuration checks. Creation
-timeouts are followed by bounded paginated queries, never another create in the
-same invocation. Re-running uses the same token/name for the same binding and
-queries before creation; it does not generate a fresh token to bypass uncertainty
-or quota errors. A collision or mismatched readback fails. Definitive Create errors currently also
-follow conservative reconciliation and eventually report a generic unknown/pending
-error; preserving sanitized cloud error codes is a deferred diagnostic improvement. The API's unique-name
-and idempotency constraints are part of this safety boundary.
+Tool `DefaultTimeout` is a fixed creation fallback (Chip 1800s, CAD/PCB 900s),
+not an editable publication setting. Service explicitly supplies instance Timeout;
+that instance lifetime and worker execution timeout are separate policies.
+The lock records actual Tool configuration, not a pretend update of its default.
 
-Successful result evidence is uploaded before the generated lock is written.
-Evidence artifacts have 90-day retention; archive them separately if a longer
-retention period is required. Failed or interrupted runs can leave an image or
-Tool without a release lock; inspect the run's intent and reconcile the same
-identity. There is no automatic cleanup. Repository-wide publication concurrency
-avoids competing content-lock writers. Source advancement is still checked at
-writeback: a compare-and-swap push accepts only the publication commit whose
-single parent is source A, and only while the remote branch still equals A.
-Branch protection may reject the bot write; it must not be disabled to force a
-release. Generated writes use GITHUB_TOKEN, and explicit-only dispatch prevents
-recursive publication.
+CPU/memory/disk sizes are excluded from the stable Tool name identity; the full
+configuration remains in the publication identity, ClientToken and lock digest.
+All other settings, image, environment, region and Pack/profile remain in the
+stable name identity. Before updating, readback must prove that only the allowed
+resource fields differ. Updates persist intent first, issue at most one update
+per invocation, and reconcile uncertain responses by querying. They never change
+the Tool image. Resource updates affect newly created instances; existing running
+instances retained their previous resources in the 2026-10-22 tests. **Propagation
+is not atomic:** an instance started immediately after a disk update still used
+the old size; a separate test waiting 15 seconds observed the new size. Fifteen
+seconds is an observation, not a guaranteed maximum propagation delay. Tool
+readback qualification does not promise instantaneous instance resource changes.
+See [validation evidence](migration-validation.md).
 
-The generated qualification gates are exactly `registry-integrity`,
-`ags-tool-active`, and `ags-tool-configuration`. These are publication checks,
-**not native success/failure/cancellation/recovery qualification**. Consumers
-must retain their domain qualification requirements; publishing a Tool does
-not enable a profile. Real GitHub/Tencent execution remains unqualified until
-credentials/configuration and the corresponding cloud gates have been exercised.
-The SDK is a development dependency used only by the publisher; cloud keys are
-passed only to the Tool step and never enter an image or release record.
+Before rebuilding, retries for the same source/domain/environment restore the
+prior uploaded plan and reverify its exact immutable image. Two test branches at
+the same source commit may reuse that intent; only the writeback branch is rebound,
+while source, environment, build inputs and full cloud configuration remain checked. Intent is uploaded
+before Tool creation/update. If an earlier cloud step ran but intent has expired
+or disappeared, fail for reconciliation rather than rebuilding an uncertain
+publication. Retain workflow history and intent artifacts while unresolved.
+Artifacts have 90-day retention. Cloud operations use bounded polling; no blind
+create/update replay occurs after a timeout. Name collisions or other drift fail.
 
-API references: [CreateSandboxTool](https://cloud.tencent.com/document/api/1814/124812)
-and [Tool/readback structures](https://cloud.tencent.com/document/api/1814/124823).
+Domain jobs upload results even on partial failure. The final job collects and
+validates every domain's evidence, writes all release locks together, computes
+the final content lock, runs checks, and makes one source-branch writeback commit.
+Any domain failure prevents the batch writeback. A compare-and-swap push requires
+that the source branch still equals the build source. Branch protection is not
+bypassed. Repository-wide workflow concurrency serializes publication, and
+explicit dispatch prevents generated-commit loops.
+
+The Action Summary lists immutable image references, Tool IDs, built/reused/
+restored images, created/updated/reused Tools and cloud status separately from
+lock writeback. A successful image push followed by a Tool failure remains
+visible. Build/push/Tool failures fail the Action; partial resources are retained
+for reconciliation, not automatically deleted. Unconfirmed Tool outcomes never
+produce a successful release lock. Cloud error-code detail after uncertain Tool
+calls remains a diagnostic limitation.
+
+Qualification gates are `registry-integrity`, `ags-tool-active`, and
+`ags-tool-configuration`; these are **not native domain qualification**. The full
+GitHub/Tencent publishing workflow still needs real execution qualification.
+Publisher SDKs are development dependencies. Cloud credentials are passed only
+to cloud-query/Tool steps, never image build arguments or release records.
+
+API references: [CreateSandboxTool](https://cloud.tencent.com/document/api/1814/124812),
+[UpdateSandboxTool](https://cloud.tencent.com/document/api/1814/124809),
+[Tool/readback structures](https://cloud.tencent.com/document/api/1814/124823).
+
+### Image capacity advisory
+
+After building or reusing an image, publication queries the Guangzhou personal
+CCR repository tag count and the account's actual per-repository tag quota.
+Only `ccr.ccs.tencentyun.com/industrial-mcp-remote/` repositories are queried.
+The Action Summary reports used, maximum and remaining tag counts; usage at or
+above 80% also emits a GitHub Actions warning annotation. Query failures emit an
+explicit unknown-capacity warning rather than failing the publication. This is
+an advisory check, not a reservation or an automatic deletion policy. Images are
+shared by test/prod; any future cleanup must protect references from both.

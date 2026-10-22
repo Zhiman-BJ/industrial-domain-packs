@@ -2,28 +2,26 @@ const fs = require("node:fs"),
   path = require("node:path");
 const { execFileSync } = require("node:child_process");
 const { prepareContext } = require("./runtime-build.cjs");
-const { reuseImage, verifyImage } = require("./runtime-image-reuse.cjs");
+const { verifyImage } = require("./runtime-image-reuse.cjs");
 const {
   planTool,
   ensureTool,
   digest,
+  configurationDigest,
 } = require("./runtime-tool-publication.cjs");
 const { validateRuntimeRelease } = require("../lib/runtime-release.cjs");
-const { pushPublication } = require("./runtime-publication-writeback.cjs");
+const { findImage, repositoryFor } = require("./runtime-cloud-image.cjs");
 const recipes = {
   chip: ["chip-pack", "chip", "rtl-cpu", "Dockerfile.rtl-cpu"],
   freecad: ["freecad-pack", "cad", "freecad-linux-cpu", "Dockerfile.linux-cpu"],
   pcb: ["pcb-pack", "pcb", "pcb-verify-cpu", "Dockerfile.pcb-verify"],
 };
-function selection(domain, environment, ref) {
+function selection(domain, ref) {
   if (!Object.hasOwn(recipes, domain))
     throw Error("Unknown publication domain");
-  if (!["test", "prod"].includes(environment))
-    throw Error("Unknown publication environment");
   if (!ref?.startsWith("refs/heads/"))
     throw Error("Publication requires a source branch");
-  if (environment === "prod" && ref !== "refs/heads/main")
-    throw Error("Production publication requires main");
+  const environment = ref === "refs/heads/main" ? "prod" : "test";
   const [packId, factDomain, profile, recipe] = recipes[domain];
   return {
     directory: domain,
@@ -34,6 +32,35 @@ function selection(domain, environment, ref) {
     branch: ref.slice(11),
     recipe: `packs/${domain}/images/${recipe}`,
   };
+}
+function publicationConfig(s) {
+  const pack = require("../lib/index.cjs");
+  pack.verifyIntegrity();
+  const relative = `packs/${s.directory}/publication/${s.profile}/${s.environment}.json`;
+  if (!Object.hasOwn(require("../content-lock.json").files, relative))
+    throw Error("Publication configuration is not covered by content lock");
+  const config = JSON.parse(fs.readFileSync(path.join(pack.root, relative)));
+  if (
+    config.schemaVersion !== 1 ||
+    Object.keys(config).some(
+      (k) =>
+        ![
+          "schemaVersion",
+          "region",
+          "imagePrefix",
+          "toolConfiguration",
+        ].includes(k),
+    ) ||
+    !/^[a-z]+-[a-z]+(?:-[a-z]+)?\d?$/.test(config.region) ||
+    config.imagePrefix !== "ccr.ccs.tencentyun.com/industrial-mcp-remote" ||
+    !config.toolConfiguration ||
+    Object.hasOwn(config.toolConfiguration, "RoleArn") ||
+    Object.hasOwn(config.toolConfiguration, "DefaultTimeout")
+  )
+    throw Error("Invalid publication configuration");
+  config.toolConfiguration.DefaultTimeout =
+    s.directory === "chip" ? "1800s" : "900s";
+  return config;
 }
 function expected(s) {
   return {
@@ -64,7 +91,8 @@ function releaseRecord(plan, result, evidence) {
         platform: plan.input.platform,
       },
       provider: "tencent-ags",
-      ...result,
+      providerToolId: result.providerToolId,
+      toolConfigurationDigest: result.toolConfigurationDigest,
       qualification: {
         status: "passed",
         gates: [
@@ -107,7 +135,13 @@ function resumePlan({
     tool,
     relative: `packs/${s.directory}/releases/${s.profile}/${s.environment}.lock.json`,
   };
-  if (digest(expectedPlan) !== digest(plan))
+  // Same source on two test branches may share the cloud intent; only the
+  // writeback destination changes. All cloud/source/environment fields remain checked.
+  const rebound = {
+    ...plan,
+    selection: { ...plan.selection, branch: s.branch },
+  };
+  if (digest(expectedPlan) !== digest(rebound))
     throw Error(
       "Prior intent differs from source, build inputs or environment configuration; reconcile before publishing",
     );
@@ -132,15 +166,20 @@ async function main(phase) {
   const dir = required("PUBLICATION_DIRECTORY");
   fs.mkdirSync(dir, { recursive: true });
   const planFile = path.join(dir, "plan.json");
-  if (phase === "prepare") {
-    const s = selection(
-      required("PUBLICATION_DOMAIN"),
-      required("PUBLICATION_ENVIRONMENT"),
-      required("GITHUB_REF"),
+  if (phase === "configure") {
+    const s = selection(required("PUBLICATION_DOMAIN"), required("GITHUB_REF"));
+    const config = publicationConfig(s);
+    fs.appendFileSync(
+      required("GITHUB_OUTPUT"),
+      `registry-host=${config.imagePrefix.split("/")[0]}\n`,
     );
-    const region = required("TENCENT_REGION");
-    const configuration = JSON.parse(required("TENCENT_TOOL_CONFIGURATION"));
-    const prefix = required("TENCENT_IMAGE_PREFIX");
+  } else if (phase === "prepare") {
+    const s = selection(required("PUBLICATION_DOMAIN"), required("GITHUB_REF"));
+    const roleArn = required("TENCENT_ROLE_ARN");
+    const config = publicationConfig(s);
+    const region = config.region,
+      prefix = config.imagePrefix;
+    const configuration = { ...config.toolConfiguration, RoleArn: roleArn };
     if (git("status", "--porcelain"))
       throw Error("Publication source must be clean");
     const source = git("rev-parse", "HEAD");
@@ -158,7 +197,7 @@ async function main(phase) {
     );
     if (!/^[a-z0-9.-]+\/[a-z0-9/_-]+$/.test(prefix))
       throw Error("Invalid image repository prefix");
-    const repository = prefix + "/" + s.directory + "-" + s.environment;
+    const repository = repositoryFor(s.directory);
     const relative = `packs/${s.directory}/releases/${s.profile}/${s.environment}.lock.json`;
     if (fs.existsSync(planFile)) {
       const restored = resumePlan({
@@ -183,26 +222,12 @@ async function main(phase) {
         throw Error("Restored image identity mismatch");
       write(planFile, restored);
       write(path.join(dir, "registry.json"), registry);
+      write(path.join(dir, "image-operation.json"), "restored");
       return;
     }
-    let record = null;
-    if (fs.existsSync(relative))
-      record = pack.getRuntimeRelease(s.packId, s.profile, s.environment);
-    // Changed deployment region/repository cannot borrow a previous binding.
-    if (
-      record &&
-      (record.region !== region ||
-        !record.image.reference.startsWith(repository + "@"))
-    )
-      record = null;
-    const reuse = await reuseImage({
-      input,
-      record,
-      expected: expected(s),
-      dockerCredentials: true,
-    });
-    let image = reuse.image;
-    if (!reuse.reuse) {
+    let image = await findImage({ repository, input });
+    const reused = Boolean(image);
+    if (!reused) {
       const tag = repository + ":input-" + input.buildInputDigest.slice(7);
       const metadata = path.join(dir, "build-metadata.json");
       const args = [
@@ -231,6 +256,8 @@ async function main(phase) {
         throw Error("Missing immutable build digest");
       image = { reference: repository + "@" + hash, platform: input.platform };
     }
+    write(path.join(dir, "image.json"), image);
+    write(path.join(dir, "image-operation.json"), reused ? "reused" : "built");
     const registry = await verifyImage(image, true);
     if (
       registry.identity?.digest !== image.reference.split("@")[1] ||
@@ -254,6 +281,7 @@ async function main(phase) {
       relative,
     });
     write(path.join(dir, "registry.json"), registry);
+    write(path.join(dir, "image-operation.json"), reused ? "reused" : "built");
   } else if (phase === "tool") {
     const plan = JSON.parse(fs.readFileSync(planFile));
     if (!/^\d+$/.test(required("PUBLICATION_INTENT_ARTIFACT_ID")))
@@ -275,42 +303,9 @@ async function main(phase) {
       },
     });
     write(path.join(dir, "result.json"), result);
-  } else if (phase === "writeback") {
-    const plan = JSON.parse(fs.readFileSync(planFile));
-    if (
-      git("rev-parse", "HEAD") !== plan.source ||
-      git("status", "--porcelain")
-    )
-      throw Error("Source checkout changed");
-    const result = JSON.parse(fs.readFileSync(path.join(dir, "result.json")));
-    const evidence = `${required("GITHUB_SERVER_URL")}/${required("GITHUB_REPOSITORY")}/actions/runs/${required("GITHUB_RUN_ID")}`;
-    const record = releaseRecord(plan, result, evidence);
-    fs.mkdirSync(path.dirname(plan.relative), { recursive: true });
-    write(plan.relative, record);
-    git("add", "--", plan.relative);
-    run("npm", ["run", "lock"]);
-    run("npm", ["run", "lock:check"]);
-    run("npm", ["test"], { stdio: "inherit" });
-    git("add", "--", "content-lock.json", "package.json");
-    git("config", "user.name", "github-actions[bot]");
-    git(
-      "config",
-      "user.email",
-      "41898282+github-actions[bot]@users.noreply.github.com",
-    );
-    git(
-      "commit",
-      "-m",
-      `chore: publish ${plan.selection.directory} ${plan.selection.environment} runtime`,
-    );
-    pushPublication({
-      cwd: root,
-      branch: plan.selection.branch,
-      source: plan.source,
-    });
-  } else throw Error("Expected prepare, tool or writeback phase");
+  } else throw Error("Expected configure, prepare or tool phase");
 }
-module.exports = { selection, releaseRecord, resumePlan };
+module.exports = { selection, publicationConfig, releaseRecord, resumePlan };
 if (require.main === module)
   main(process.argv[2]).catch((error) => {
     console.error("Runtime publication failed:", error.code || error.message);
