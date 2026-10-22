@@ -12,7 +12,7 @@ def request(label, method, url, data=None, headers=None):
     started = time.monotonic()
     print(json.dumps({'phase':label,'state':'start','bytes':len(data or b'')}), flush=True)
     try:
-        r = opener.open(urllib.request.Request(url,data=data,headers=headers or {},method=method),timeout=30)
+        r = opener.open(urllib.request.Request(url,data=data,headers=headers or {},method=method),timeout=90)
     except urllib.error.HTTPError as e:
         r = e
     except Exception as e:
@@ -22,7 +22,7 @@ def request(label, method, url, data=None, headers=None):
     print(json.dumps({'phase':label,'status':r.status,'seconds':round(time.monotonic()-started,2),'responseBytes':len(body)}),flush=True)
     return r.status, r.headers, body
 raw = (os.environ['TENCENT_REGISTRY_USERNAME']+':'+os.environ['TENCENT_REGISTRY_PASSWORD']).encode()
-query=urllib.parse.urlencode({'service':'token-service','scope':'repository:'+REPO+':pull,push'})
+query=urllib.parse.urlencode({'service':'token-service','scope':'repository:'+REPO+':pull,push,delete'})
 status,_,body=request('auth','GET',BASE+'/service/token?'+query,headers={'Authorization':'Basic '+base64.b64encode(raw).decode()})
 assert status==200
 obj=json.loads(body); token=obj.get('token') or obj['access_token']; auth={'Authorization':'Bearer '+token}
