@@ -204,11 +204,26 @@ resources. Unchanged resources are reused, not rebuilt. Shared worker changes
 naturally change every affected domain's build hash. Tool-only configuration
 changes do not change image build inputs. Publication does not deploy Service.
 
-Configuration lives in `packs/<domain>/publication/<profile>/{test,prod}.json`
-and is covered by the content lock. It includes the AGS region, fixed shared image
-namespace, and per-environment Tool settings. Credentials never belong in these
-files. Test currently uses Guangzhou; prod uses Beijing. Personal CCR is queried
-in Guangzhou independently of the AGS region.
+Configuration lives in `publication/test.cjs` and `publication/prod.cjs`, one
+file per environment with all domains under `domains`. Each uses native Node.js
+`module.exports` and exports plain data only; comments are supported, but do not
+put imports, environment reads or runtime logic in these files. No YAML parser or
+new configuration dependency is required. Existing Ajv validates the exported
+object, rejecting unknown fields, missing domains, wrong profiles and invalid
+types before publishing. Required root fields are `schemaVersion`, `region` and
+`domains`; each domain declares `profile`, `networkMode`, `command`, `args`,
+`ports`, `resources` and `probe`. CPU and memory quantities remain strings (for
+example `cpu: "2"`, `memory: "2Gi"`); port numbers and probe timings are numbers.
+The publisher converts these fields into Tencent API request objects in memory.
+
+Both files are covered by the content lock and included in the package inventory.
+Integrity verification happens before requiring a configuration file. Ordinary
+Pack consumers verify its bytes but do not execute it. Publication configuration
+is not an image build input; changing resource values does not rebuild images.
+The namespace, custom Tool type, registry type, nonpersistent setting and Tool
+fallback timeout remain fixed in publishing code. Credentials never belong in
+these files. Test currently uses Guangzhou; prod uses Beijing. Personal CCR is
+queried in Guangzhou independently of the AGS region.
 
 Repository secrets:
 

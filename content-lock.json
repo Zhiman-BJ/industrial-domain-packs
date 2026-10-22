@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "contentSha256": "d19481c6e68028e174a33ac7acbfc92cfa28b2a127cf9ca33a7f94172f0ef06f",
+  "contentSha256": "1527b7fa0bc98ae998a7cb1e7e450a5a6dc59b629ab76144c1c5469184db55c9",
   "files": {
     "lib/consumer.cjs": "4d670732dbf3d5a3da33cac41007573e1f47b514a7165ac1df1748c9c2f960ab",
     "lib/consumer.json": "6648e4205c510820a67e8a07788ef777b038269e473747e68a00ea6398015719",
     "lib/container.cjs": "d77ba68d399bbc6add9129dd9d4f338f9aedce66bd6385062531dc1880dfe819",
-    "lib/index.cjs": "cfd9142f4f6e32f4b0eadf7e91e61d45a9ce0dc97e57ae783d904c2b93c24968",
+    "lib/index.cjs": "3e65b2526d266d1136ef518afdb0f3eb886ae563bb361eea1a8a2a9466a32cea",
     "lib/resources.cjs": "aa4e069d70cafecf5d84216436d4d42a913f4c68ca8ca562b3bd85c9c3854965",
     "lib/runtime-release.cjs": "384939be0cf85a12cd174f4499e202ef0f9458f2af770334bffa0e8ad99325df",
     "lib/worker-http.py": "180fb027e07742e8ce83c14946a5ca81248f9da47300b2c07a9b73344b298e87",
@@ -106,8 +106,6 @@
     "packs/chip/linux-bootstrap.sh": "8006af4b130d81febd9b5835e594566b09fc80b64dd30c5a60a34010b7855e7b",
     "packs/chip/linux-installer-header.sh": "22a635d04702c059f30f2afd886c359064432f23fbd88777dd27da85ea1e2b8a",
     "packs/chip/pack.json": "b44bee1aa16ad1beca146021f0e081fed65460e4a1ce4dda37f45880d132e350",
-    "packs/chip/publication/rtl-cpu/prod.json": "a2e1ce2762889090ef4d7f8575a8e722c4d71a370a0936679186141e886a699f",
-    "packs/chip/publication/rtl-cpu/test.json": "e2841da98a6529c450c6a9ca3f1cd1abe181046d9e534eadc505d79b8fae6e85",
     "packs/chip/resources/klayout-viewer/assets.json": "0e167b4edb8110d7b15a6ca5301797e2c47f7e3d4cf2bbedc776a10f8225a836",
     "packs/chip/resources/klayout-viewer/probe.py": "a53d2d1d97aabdba0da1ebd4b190c8dcaf727cefac8a98e85178edac6ecba8a3",
     "packs/chip/runtime/bridge.py": "3e627610b810042dd4e5ff082d91738f267ab36cab313b8fc2c4ff1b320b13ae",
@@ -145,8 +143,6 @@
     "packs/freecad/harness-pack.json": "e5dbac97796d5b9caf445a427c888193dbba83b0c0208557d8372d1f77712985",
     "packs/freecad/images/Dockerfile.linux-cpu": "fce41911158651fd4b7fbe0bb1c97aed9c9dad1b4802df9c7be3b02b0a6a2e80",
     "packs/freecad/pack.json": "5d5b07cca3ef086a254e405430446073c08441ef925439286ca8aad680065008",
-    "packs/freecad/publication/freecad-linux-cpu/prod.json": "8b027385c909bbcb2066dcddc58ddc868be00412fa484cdace1214d09dc4e9c9",
-    "packs/freecad/publication/freecad-linux-cpu/test.json": "63ea59e8f8070c729e00523ccf64b5c437940365f8310f93f64577a4c322c014",
     "packs/freecad/runtime/index.cjs": "f76116a8de7fec436c4d1989698b6cbc188d4f081040417164e2aaa45340171e",
     "packs/freecad/runtime/native.py": "c9da3e181617403384cdeb2135480dd3f7b0bf6b238771c81898f69ba559d9dc",
     "packs/freecad/runtime/presentation.cjs": "767c4e97d61d19b3980765c91a4d50ef3e7d4e61684d19cecf1415013facb77e",
@@ -558,8 +554,6 @@
     "packs/pcb/pcb-agent/tools/verify.py": "56430301c3fb245cee1dc9027ca158a8dcba2362cfbdd98b74cf277e0e992c41",
     "packs/pcb/pcb-agent/tools/visualize.py": "e5c7348f14775ef34c7a1123e5f8a6b7de631b0920718f85bd5c8cf16d5ad645",
     "packs/pcb/pcb-agent/tools/workspace.py": "5fd9a62526b5481407b56c8b289368180ed74a1a9818121964eadda1eec2d8ad",
-    "packs/pcb/publication/pcb-verify-cpu/prod.json": "83c6517593fc3c123413e460f2e436cb563e3704384d1560ecb49b75c650d4f2",
-    "packs/pcb/publication/pcb-verify-cpu/test.json": "f2839fae5cb40f10d0fe3dd2cf0029f31a33f7877ffd007da3c296998703126b",
     "packs/pcb/pyproject.toml": "baa7b9c41b2b57b7e19898fa7138828d1d1401b992dd859e6c5a922a1e793951",
     "packs/pcb/resources/kicad-3d-10.0.7.json": "b2387e749197c029a5f61319bd07d2fb9a62a290fe32eab9afa5de39e9f8a83a",
     "packs/pcb/resources/licenses/kicad-3d-LICENSE.md": "45d2bce75e5a4208f5afb01b8fb2c406e700371c4fe2b5f5cd5c443d46db4d8f",
@@ -592,6 +586,8 @@
     "packs/pcb/skills/pcb-kicad-native/SKILL.md": "36bb4063a762ab775442c446190518fbc70bd60b23bff0fdb70fc7422c8eab90",
     "packs/pcb/skills/pcb-layout-inspect/SKILL.md": "32fc6159e077641b8672920157a2f6552d9abae0511945fb972351a10f64d856",
     "packs/pcb/uv.lock": "d4e08ee289d8ee8ebb7a8d9672f6e62efa9a6bd50bf70efa7e06627fc2e8c282",
-    "packs/pcb/validate.sh": "299e214b0cc8fb13efa7520a1294004e2b1a953572fb33ca66b332263707bb92"
+    "packs/pcb/validate.sh": "299e214b0cc8fb13efa7520a1294004e2b1a953572fb33ca66b332263707bb92",
+    "publication/prod.cjs": "ba9b223d328123a3fc0bfab8cdbe412b20b1248e37fb7a62135152d36c15f6c0",
+    "publication/test.cjs": "f4e6980d1bb37fd18eab5c8722f15c1b1130ea763e4340a46d344ff2e44a0de7"
   }
 }

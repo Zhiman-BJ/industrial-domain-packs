@@ -36,32 +36,17 @@ function selection(domain, ref) {
 function publicationConfig(s) {
   const pack = require("../lib/index.cjs");
   pack.verifyIntegrity();
-  const relative = `packs/${s.directory}/publication/${s.profile}/${s.environment}.json`;
+  if (!["test", "prod"].includes(s.environment))
+    throw Error("Invalid publication environment");
+  const relative = `publication/${s.environment}.cjs`;
   if (!Object.hasOwn(require("../content-lock.json").files, relative))
     throw Error("Publication configuration is not covered by content lock");
-  const config = JSON.parse(fs.readFileSync(path.join(pack.root, relative)));
-  if (
-    config.schemaVersion !== 1 ||
-    Object.keys(config).some(
-      (k) =>
-        ![
-          "schemaVersion",
-          "region",
-          "imagePrefix",
-          "toolConfiguration",
-        ].includes(k),
-    ) ||
-    !/^[a-z]+-[a-z]+(?:-[a-z]+)?\d?$/.test(config.region) ||
-    config.imagePrefix !== "ccr.ccs.tencentyun.com/industrial-mcp-remote" ||
-    !config.toolConfiguration ||
-    Object.hasOwn(config.toolConfiguration, "RoleArn") ||
-    Object.hasOwn(config.toolConfiguration, "DefaultTimeout")
-  )
-    throw Error("Invalid publication configuration");
-  config.toolConfiguration.DefaultTimeout =
-    s.directory === "chip" ? "1800s" : "900s";
-  return config;
+  return require("./runtime-publication-config.cjs").buildPublicationConfig(
+    require(path.join(pack.root, relative)),
+    s,
+  );
 }
+
 function expected(s) {
   return {
     packId: s.packId,

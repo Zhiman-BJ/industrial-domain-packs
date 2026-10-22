@@ -34,7 +34,10 @@ test("fingerprint follows actual inputs, not publications or documentation; prep
   f.write("README.md", "new docs");
   f.write("packs/example/releases/test.lock.json", "new lock");
   f.write("content-lock.json", "new full hash");
-  f.write("packs/example/publication/profile/test.json", "changed Tool resources");
+  f.write(
+    "publication/test.cjs",
+    'module.exports = {domains: {example: {resources: {memory: "4Gi"}}}};',
+  );
   assert.equal(api().inputs(f).buildInputDigest, original.buildInputDigest);
   for (const name of ["lib/worker.py", "packs/example/run.py", f.recipe]) {
     const bytes = fs.readFileSync(path.join(f.root, name));

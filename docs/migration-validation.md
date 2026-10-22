@@ -160,3 +160,24 @@ same-source test-branch intent reuse without relaxing environment/source checks.
 The existing pull role was configured as repository variable TENCENT_ROLE_ARN.
 Registry username/password Secrets are still absent; the live publication Action
 has not been dispatched. Existing native qualification is unchanged.
+
+## 2026-10-22 — publication configuration grouped by environment
+
+Replaced six per-domain JSON files with `publication/test.cjs` and
+`publication/prod.cjs`. The files export plain objects with all domains and native
+JS comments; no YAML dependency remains. Existing Ajv validates and translates
+the objects. The six translated Tencent configurations were compared with the
+pre-migration JSON values, including fixed fallback timeouts, and were identical.
+The input files of all three actual Docker recipes were checked: none changed.
+The package inventory and integrity verifier now cover the two CJS files; ordinary
+consumers do not execute them. The consumer test rejects altered configuration
+bytes, and configuration tests cover unknown fields, invalid types, missing
+domains/profile mismatches and isolation from Node's cached configuration object.
+Registry login Secrets were provisioned with owner approval after the previous
+record; the full publishing Action has still not been dispatched.
+
+Migration validation: 175 tests, 173 passed and 2 skipped; all 11 architecture
+policy tests and content-lock verification passed. Package dry-run includes both
+CJS files and no legacy publication JSON. Real Chip stdio MCP smoke returned 25
+tools with required tools present. Independent review found no blocking or minor
+issues and independently checked configuration equivalence and 14 focused tests.

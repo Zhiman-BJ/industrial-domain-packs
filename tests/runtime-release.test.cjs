@@ -64,8 +64,12 @@ test("rejects wrong routing selection", () => {
 
 test("rejects malformed, mutable, incomplete and secret-bearing release records", () => {
   const mutations = [
-    (r) => { r.buildInputDigest = "invalid"; },
-    (r) => { delete r.runtimeDigest; },
+    (r) => {
+      r.buildInputDigest = "invalid";
+    },
+    (r) => {
+      delete r.runtimeDigest;
+    },
     (r) => {
       r.image.reference = "registry.example.org/worker:latest";
     },
@@ -194,8 +198,7 @@ test("public consumer facade derives routing from the pinned catalog and rejects
     /profile/i,
   );
   assert.throws(
-    () =>
-      pack.getRuntimeRelease("chip-pack", "rtl-cpu", "test"),
+    () => pack.getRuntimeRelease("chip-pack", "rtl-cpu", "test"),
     /content lock/i,
   );
 });
@@ -204,7 +207,13 @@ test("package consumer reads a covered lock and rejects altered bytes and a wron
   const source = path.join(__dirname, "..");
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "release-consumer-"));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
-  for (const name of ["lib", "packs", "package.json", "content-lock.json"])
+  for (const name of [
+    "lib",
+    "packs",
+    "publication",
+    "package.json",
+    "content-lock.json",
+  ])
     fs.cpSync(path.join(source, name), path.join(root, name), {
       recursive: true,
     });
@@ -258,6 +267,17 @@ test("package consumer reads a covered lock and rejects altered bytes and a wron
   let result = invoke();
   assert.equal(result.status, 0, result.stderr);
   assert.equal(result.stdout.trim(), "sdt-example1");
+  const publication = path.join(root, "publication/test.cjs");
+  const original = fs.readFileSync(publication);
+  fs.appendFileSync(publication, "\n// changed config bytes\n");
+  result = invoke();
+  assert.notEqual(result.status, 0);
+  assert.match(
+    result.stderr,
+    /differs from its pinned release.*publication\/test.cjs/,
+  );
+  fs.writeFileSync(publication, original);
+
   fs.appendFileSync(path.join(root, relativePath), " ");
   result = invoke();
   assert.notEqual(result.status, 0);
