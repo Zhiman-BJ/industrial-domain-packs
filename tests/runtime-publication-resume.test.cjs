@@ -112,3 +112,32 @@ test("other domains and later queued runs are not prior attempts", async () => {
   );
   assert.equal(await findIntent(a, context), null);
 });
+test("rerunning an older run restores evidence from a higher-numbered run", async () => {
+  const older = { ...context, runId: 5, runAttempt: 2 };
+  assert.equal((await findIntent(api([artifact]), older)).artifactId, 1);
+});
+test("older rerun fails closed when later-run cloud attempt lost its artifact", async () => {
+  const older = { ...context, runId: 5, runAttempt: 2 };
+  await assert.rejects(
+    findIntent(
+      api(
+        [],
+        [
+          {
+            name: "Publish chip test",
+            run_attempt: 1,
+            steps: [
+              {
+                name: "Create or reconcile Tool and verify readback",
+                status: "completed",
+                conclusion: "failure",
+              },
+            ],
+          },
+        ],
+      ),
+      older,
+    ),
+    /unavailable/,
+  );
+});

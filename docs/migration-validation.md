@@ -91,7 +91,7 @@ content lock to the unchanged source branch. It does not deploy the Service or
 delete Tools. Configuration and publication-only gates are documented in
 `release-format.md`; the existing GHCR release channel remains separate.
 
-On macOS arm64 / Node 24.21.0, the complete JavaScript suite passed 158 tests with
+On macOS arm64 / Node 24.21.0, the complete JavaScript suite passed 160 tests with
 2 existing skips; the separate architecture suite passed 11 tests. The new tests
 exercise stable/environment-scoped identities, persistence failure, ambiguous
 creation, pagination, readback mismatch/null normalization and real local-Git
@@ -100,8 +100,12 @@ EPERM and passed when rerun with loopback-listener permission. Actionlint 1.7.7
 checks the workflow. Runtime recipes and native execution code are unchanged;
 DPR-02 build evidence remains applicable, not a new cloud qualification.
 
-No GitHub/Tencent publication has been run: the repository has no test/prod
-Environment credentials/configuration yet. Registry upload, AGS API defaults,
+No GitHub/Tencent publication has been run: test/prod Environment configuration is still absent. Shared Tencent
+SecretId/SecretKey were subsequently configured at repository scope with explicit
+owner approval; Environment creation was rejected by GitHub because the current
+account lacks repository administrator rights. A read-only query verified all six
+existing Tools are ACTIVE and retains their distinct resource/timeout settings;
+this does not qualify a new publication. Registry upload, AGS API defaults,
 CAM permissions and protected-branch bot writeback still require real Action
 validation. The generated metadata must not be interpreted as native domain
 qualification. Dependency audit also reports the existing MCP SDK/Ajv advisories

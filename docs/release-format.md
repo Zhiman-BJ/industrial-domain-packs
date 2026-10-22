@@ -212,7 +212,8 @@ and reviewers appropriate to the credentials. Only trusted maintainers may run
 credentialed candidate code. Fork PRs have no publication trigger. Protect prod
 with a main-only Environment rule as well as the workflow check.
 
-Environment secrets:
+Secrets (Environment-scoped, or shared repository secrets when test/prod intentionally
+use the same cloud identity):
 
 | Name | Purpose |
 | --- | --- |
@@ -225,7 +226,7 @@ Environment variables:
 | --- | --- |
 | `TENCENT_REGION` | AGS region, checked into the resulting release record |
 | `TENCENT_IMAGE_PREFIX` | Registry host plus namespace, without scheme/tag; the publisher appends `<domain>-<environment>` |
-| `TENCENT_TOOL_CONFIGURATION` | Trusted CreateSandboxTool configuration JSON, described below |
+| `TENCENT_TOOL_CONFIGURATION_CHIP`, `TENCENT_TOOL_CONFIGURATION_FREECAD`, `TENCENT_TOOL_CONFIGURATION_PCB` | Per-domain trusted CreateSandboxTool configuration JSON, described below; preserves distinct timeouts/resources |
 
 Provision the repositories and image-pull role before running. The role must let
 AGS pull the private immutable image. The Tool configuration includes
@@ -250,7 +251,8 @@ uncertain publication into a different image identity. If an earlier cloud step
 ran but its intent artifact is unavailable/expired, publication stops for manual
 reconciliation. A failure before the cloud step can be restarted without an
 intent. Do not delete workflow history or intent artifacts while a publication is
-unresolved; removing both destroys the recovery evidence.
+unresolved; removing both destroys the recovery evidence. Recovery inspects all matching
+runs regardless of run ID: an older run can be rerun after a newer run executed.
 
 A stable hash of environment, region, Pack/profile, immutable image and Tool
 configuration supplies the API ClientToken and deterministic Tool name. An

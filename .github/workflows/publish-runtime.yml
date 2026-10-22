@@ -34,7 +34,7 @@ jobs:
       PUBLICATION_ENVIRONMENT: ${{ inputs.environment }}
       TENCENT_REGION: ${{ vars.TENCENT_REGION }}
       TENCENT_IMAGE_PREFIX: ${{ vars.TENCENT_IMAGE_PREFIX }}
-      TENCENT_TOOL_CONFIGURATION: ${{ vars.TENCENT_TOOL_CONFIGURATION }}
+      TENCENT_TOOL_CONFIGURATION: ${{ vars[format('TENCENT_TOOL_CONFIGURATION_{0}', inputs.domain)] }}
     steps:
       - name: Set publication scratch directory
         run: echo "PUBLICATION_DIRECTORY=$RUNNER_TEMP/runtime-publication" >> "$GITHUB_ENV"

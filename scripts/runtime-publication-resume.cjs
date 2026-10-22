@@ -11,10 +11,7 @@ async function findIntent(
   const artifacts = await github.paginate(actions.listArtifactsForRepo, base);
   const candidates = artifacts
     .filter(
-      (a) =>
-        a.name.startsWith(prefix) &&
-        a.workflow_run?.head_sha === source &&
-        a.workflow_run.id <= runId,
+      (a) => a.name.startsWith(prefix) && a.workflow_run?.head_sha === source,
     )
     .sort((a, b) => b.id - a.id);
   if (candidates.length) {
@@ -35,7 +32,7 @@ async function findIntent(
     head_sha: source,
   });
   for (const run of runs) {
-    if (run.id > runId || (run.id === runId && runAttempt === 1)) continue;
+    if (run.id === runId && runAttempt === 1) continue;
     const jobs = await github.paginate(actions.listJobsForWorkflowRun, {
       ...base,
       run_id: run.id,
