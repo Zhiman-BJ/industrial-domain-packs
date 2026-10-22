@@ -70,3 +70,53 @@ and testing code. The package `getRuntimeRelease` facade additionally enforces f
 package integrity, catalog routing and target platform. Neither accepts paths or
 execution settings from an untrusted remote client. Public records must contain no
 credentials, customer inputs or private deployment endpoints.
+
+
+## Publication workflow and generated files
+
+The following is the agreed publisher workflow; the schema-1 metadata API does
+not yet implement the Action or an unpublished-placeholder schema.
+
+Runtime release files at `packs/<source-directory>/releases/<profile>/<environment>.lock.json`
+are owned by the publishing GitHub Action. Developers and coding agents must not
+hand-edit generated image digests, Tool IDs, build identities or qualification
+results. This ownership rule lives here and is linked from `AGENTS.md`; JSON
+records do not need comments or an extra generated-marker field.
+
+1. Prepare runtime source and the intended profile/environment publication slot.
+   An initial placeholder is unpublished and must never be accepted as a usable
+   release. Until placeholder support is implemented, do not insert fake values
+   into a schema-1 record. On later updates, keep the last successful record
+   intact until its replacement is ready.
+2. Trigger the publishing Action on source commit A. Validate A's source content
+   lock and derive the actual build-input fingerprint before building or safely
+   reusing an image. Create a new Tool for a new runtime image binding and verify
+   its configuration and required publication gates.
+3. Only after success, fill or replace the corresponding release record with the
+   real immutable image reference, Tool ID and evidence. The source identity
+   fields continue to describe A. Failed publication must not replace a working
+   record with partial results.
+4. Stage every new generated release file under `packs/` so the lock generator
+   includes it. After all covered source and release-record writes are complete,
+   run `npm run lock`, then `npm run lock:check` and the relevant validation gates.
+   Do not change covered files after this final hash calculation; if they change,
+   regenerate and revalidate the lock.
+5. Commit the generated records, `content-lock.json` and any generated package
+   file-inventory update together as publication commit B on the triggering
+   branch. If that branch has moved, fail or restart against its new source;
+   do not attach A's results to unrelated changes. Generated-only writeback must
+   not start a recursive publication. Consumers pin B only after success.
+
+The final maintained-content hash is `content-lock.json.contentSha256`. The
+existing generator hashes each tracked/staged file under `packs/` and `lib/`, then
+hashes the sorted path-to-file-hash JSON map. Thus B's content hash includes the
+completed release records as well as maintained source. It does **not** hash the
+entire repository, `content-lock.json` itself, or the Git commit: README/workflow
+changes alone need not change it. The externally pinned Git SHA identifies the
+complete committed tree. An exported archive has its own separate archive hash.
+
+The final content hash is calculated near the end of the Action, after generated
+content is finalized and before committing B. It is not written into the release
+record that it covers, avoiding a self-reference. `buildSourceContentSha256` is
+still A's pre-build content hash, not this final B content hash. Neither hash
+substitutes for the actual Docker build-input fingerprint.

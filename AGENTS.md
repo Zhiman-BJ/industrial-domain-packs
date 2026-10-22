@@ -16,3 +16,7 @@ Read README.md, docs/architecture.md and docs/migration.md before changing modul
 - Never commit customer inputs, generated engineering runs, credentials, private deployment endpoints, PDK archives, local Python environments or unreviewed binaries.
 - Contract fixtures are not evidence of engineering acceptance. Qualify native success, real failure, cancellation and recovery before declaring an execution profile supported.
 - Keep English and Chinese READMEs aligned. Run relevant tests and the real stdio MCP smoke test for domain changes.
+
+## Remote runtime publication records
+
+Before changing remote runtime publication or release records, read `docs/release-format.md#publication-workflow-and-generated-files`. Runtime release lock values are maintained by the publishing GitHub Action; do not hand-edit image digests, Tool IDs or publication evidence. The documented Action workflow is planned, not implemented by the metadata API.
