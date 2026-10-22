@@ -32,8 +32,8 @@ protocol-version contract is introduced. The complete Pack integrity
 check runs before reading; untracked release files, altered bytes, unsafe paths and
 symlinks are rejected. The result is a detached, recursively frozen record.
 
-This is a metadata contract only. No checked-in Tool binding or automated Tencent
-publication is provided by this API. It does not query the cloud, prove engineering
+This is a metadata contract only. No checked-in Tool binding is provided by this API. The separate
+`Publish remote runtime` Action performs Tencent publication. It does not query the cloud, prove engineering
 qualification, authorize execution, compute actual build inputs or activate profiles.
 The publishing Action must validate actual build inputs, Tool configuration and
 qualification evidence before publishing a usable record. Consumers trust their
@@ -75,8 +75,9 @@ credentials, customer inputs or private deployment endpoints.
 
 ## Publication workflow and generated files
 
-The following is the agreed publisher workflow; the schema-1 metadata API does
-not yet implement the Action or an unpublished-placeholder schema.
+The `Publish remote runtime` Action implements the following workflow. It is
+explicitly dispatched on a repository branch; it has no push/PR trigger. The
+schema-1 metadata API does not implement an unpublished-placeholder schema.
 
 Runtime release files at `packs/<source-directory>/releases/<profile>/<environment>.lock.json`
 are owned by the publishing GitHub Action. Developers and coding agents must not
@@ -195,5 +196,82 @@ metadata, missing/corrupt images and registry errors fail the reuse check; they
 never count as permission to reuse. Existing Docker credentials may be used
 explicitly for a private registry; credentials are not recorded in the descriptor.
 
-These helpers prepare the publishing Action; they do not publish images, create
-Tools, write release locks or change Service configuration by themselves.
+The publishing Action uses these helpers; by themselves they do not publish
+images, create Tools, write release locks or change Service configuration.
+
+
+## Tencent publishing Action configuration
+
+`publish-runtime.yml` is separate from the legacy GHCR/local-development image
+release workflow. A repository maintainer selects `chip`, `freecad` or `pcb`, and
+`test` or `prod`. Test candidates can come from trusted repository feature
+branches; prod candidates must come from `main`. It never deploys the Service,
+changes its Pack pin, deletes a Tool or changes an existing Tool's image.
+Configure GitHub Environments named `test` and `prod`, with branch restrictions
+and reviewers appropriate to the credentials. Only trusted maintainers may run
+credentialed candidate code. Fork PRs have no publication trigger. Protect prod
+with a main-only Environment rule as well as the workflow check.
+
+Environment secrets:
+
+| Name | Purpose |
+| --- | --- |
+| `TENCENT_SECRET_ID`, `TENCENT_SECRET_KEY` | Dedicated CAM identity for AGS CreateSandboxTool and DescribeSandboxToolList; no deletion permission is used |
+| `TENCENT_REGISTRY_USERNAME`, `TENCENT_REGISTRY_PASSWORD` | Push/read credentials for the selected CCR/TCR repository; these are registry login credentials, not assumed to equal the CAM key pair |
+
+Environment variables:
+
+| Name | Purpose |
+| --- | --- |
+| `TENCENT_REGION` | AGS region, checked into the resulting release record |
+| `TENCENT_IMAGE_PREFIX` | Registry host plus namespace, without scheme/tag; the publisher appends `<domain>-<environment>` |
+| `TENCENT_TOOL_CONFIGURATION` | Trusted CreateSandboxTool configuration JSON, described below |
+
+Provision the repositories and image-pull role before running. The role must let
+AGS pull the private immutable image. The Tool configuration includes
+`ToolType: "custom"`, `Persistent: false`, a `DefaultTimeout` expressed in seconds
+(e.g. `"300s"`), `RoleArn`, `NetworkConfiguration`, and `CustomConfiguration` with
+`ImageRegistryType` (`personal` or `enterprise`). Choose network and resource
+settings to match the Service deployment. Do not put credentials in this JSON.
+The image field is supplied by the publisher; mounts and computer configurations
+are rejected. The publisher does not invent cloud endpoints, role ARNs or
+resource settings. Configuration is included in the publication identity and
+is strictly checked against cloud readback; unexpected defaults fail closed
+until their normalization is reviewed against real cloud evidence.
+
+The Action builds the minimal DPR-02 context with the exact recorded arguments,
+pushes to the configured repository and verifies the registry manifest, platform
+and blobs by immutable digest. The prepared plan and registry evidence are
+uploaded **before** CreateSandboxTool. Upload failure prevents Tool creation.
+A stable hash of environment, region, Pack/profile, immutable image and Tool
+configuration supplies the API ClientToken and deterministic Tool name. An
+existing matching Tool is reused only after ACTIVE/configuration checks. Creation
+timeouts are followed by bounded paginated queries, never another create in the
+same invocation. Re-running uses the same token/name for the same binding and
+queries before creation; it does not generate a fresh token to bypass uncertainty
+or quota errors. A collision or mismatched readback fails. The API's unique-name
+and idempotency constraints are part of this safety boundary.
+
+Successful result evidence is uploaded before the generated lock is written.
+Evidence artifacts have 90-day retention; archive them separately if a longer
+retention period is required. Failed or interrupted runs can leave an image or
+Tool without a release lock; inspect the run's intent and reconcile the same
+identity. There is no automatic cleanup. Repository-wide publication concurrency
+avoids competing content-lock writers. Source advancement is still checked at
+writeback: a compare-and-swap push accepts only the publication commit whose
+single parent is source A, and only while the remote branch still equals A.
+Branch protection may reject the bot write; it must not be disabled to force a
+release. Generated writes use GITHUB_TOKEN, and explicit-only dispatch prevents
+recursive publication.
+
+The generated qualification gates are exactly `registry-integrity`,
+`ags-tool-active`, and `ags-tool-configuration`. These are publication checks,
+**not native success/failure/cancellation/recovery qualification**. Consumers
+must retain their domain qualification requirements; publishing a Tool does
+not enable a profile. Real GitHub/Tencent execution remains unqualified until
+credentials/configuration and the corresponding cloud gates have been exercised.
+The SDK is a development dependency used only by the publisher; cloud keys are
+passed only to the Tool step and never enter an image or release record.
+
+API references: [CreateSandboxTool](https://cloud.tencent.com/document/api/1814/124812)
+and [Tool/readback structures](https://cloud.tencent.com/document/api/1814/124823).

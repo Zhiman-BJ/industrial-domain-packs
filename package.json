@@ -618,5 +618,8 @@
     "@industrial-agent-harness/domain-runtime": {
       "optional": true
     }
+  },
+  "devDependencies": {
+    "tencentcloud-sdk-nodejs-ags": "4.1.326"
   }
 }

@@ -92,6 +92,6 @@ C++ 工具链、其他 EDA/PDK 前提及工程验收边界。macOS ARM64 已运�
 
 远端发布与消费方可通过 `getRuntimeRelease` 校验 schema-1 运行发布记录，见[发布身份](docs/release-format.md)。该元数据 API 不负责发布 Tool，也不代表执行 profile 已通过资格验收。
 
-Runtime release lock 由发布 GitHub Action 维护，不要手动修改生成的 image digest、Tool ID 或发布证据。修改发布流程前，请阅读[发布流程与最终 hash 计算顺序](docs/release-format.md#publication-workflow-and-generated-files)。Action 流程尚待实现，当前提供的是元数据接口。
+Runtime release lock 由发布 GitHub Action 维护，不要手动修改生成的 image digest、Tool ID 或发布证据。修改发布流程前，请阅读[发布流程与最终 hash 计算顺序](docs/release-format.md#publication-workflow-and-generated-files)。使用手动触发的 `Publish remote runtime` Action，具体见[腾讯云配置与资格范围](docs/release-format.md#tencent-publishing-action-configuration)。
 
 新增或修改任何 domain 的远端 runtime profile 前，请阅读[统一打包规范](docs/release-format.md#remote-runtime-image-packaging)。

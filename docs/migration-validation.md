@@ -81,3 +81,30 @@ cancellation/recovery or cloud qualification.
 
 Each built context's fingerprint was compared with the final source checkout and
 matched. These are local build identities, not published registry/Tool bindings.
+
+## 2026-10-22 — DPR-03 Tencent publisher, local validation
+
+The explicit `Publish remote runtime` Action builds/verifies immutable remote
+images, persists an intent before AGS creation, reconciles timeouts, checks
+ACTIVE/configuration readback and writes generated release records plus the final
+content lock to the unchanged source branch. It does not deploy the Service or
+delete Tools. Configuration and publication-only gates are documented in
+`release-format.md`; the existing GHCR release channel remains separate.
+
+On macOS arm64 / Node 24.21.0, the complete JavaScript suite passed 151 tests with
+2 existing skips; the separate architecture suite passed 11 tests. The new tests
+exercise stable/environment-scoped identities, persistence failure, ambiguous
+creation, pagination, readback mismatch/null normalization and real local-Git
+writeback/source-advancement races. Initial sandboxed network-listener tests hit
+EPERM and passed when rerun with loopback-listener permission. Actionlint 1.7.7
+checks the workflow. Runtime recipes and native execution code are unchanged;
+DPR-02 build evidence remains applicable, not a new cloud qualification.
+
+No GitHub/Tencent publication has been run: the repository has no test/prod
+Environment credentials/configuration yet. Registry upload, AGS API defaults,
+CAM permissions and protected-branch bot writeback still require real Action
+validation. The generated metadata must not be interpreted as native domain
+qualification. Dependency audit also reports the existing MCP SDK/Ajv advisories
+and a publisher-only transitive uuid advisory (v3/v5/v6 buffer APIs); the Tencent
+SDK path uses uuid.v4 without a supplied buffer. No dependency overrides or
+unrelated runtime upgrades were applied in this task.

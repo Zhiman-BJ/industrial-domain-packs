@@ -131,6 +131,6 @@ were downloaded and hash-checked, without asserting native execution support.
 
 Remote publishers and consumers can validate schema-1 runtime release records with `getRuntimeRelease`; see [release identity](docs/release-format.md). This metadata API does not publish Tools or qualify execution profiles.
 
-Runtime release lock values are maintained by the publishing GitHub Action; do not hand-edit generated image digests, Tool IDs or publication evidence. Before changing publication, read the [publication workflow and final hashing order](docs/release-format.md#publication-workflow-and-generated-files). The Action workflow is planned; this PR supplies the metadata API.
+Runtime release lock values are maintained by the publishing GitHub Action; do not hand-edit generated image digests, Tool IDs or publication evidence. Before changing publication, read the [publication workflow and final hashing order](docs/release-format.md#publication-workflow-and-generated-files). Use the explicitly dispatched `Publish remote runtime` Action; see the [Tencent configuration and qualification limits](docs/release-format.md#tencent-publishing-action-configuration).
 
 Before adding or changing any remote runtime profile, read the [shared packaging rules](docs/release-format.md#remote-runtime-image-packaging).
