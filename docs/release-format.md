@@ -165,7 +165,10 @@ docker buildx build --platform linux/amd64 -f /tmp/chip-context/packs/chip/image
 The context directory must not already exist. Optional fourth argument is a JSON
 object of reviewed build-argument overrides. Pass those same effective arguments
 and platform to Docker. The output records `buildInputDigest`, file hashes/modes,
-recipe, effective arguments and immutable external image references. The helper
+recipe, effective arguments and immutable external image references. This tracks
+checked-in inputs and explicit dependency declarations; it does not poll mutable
+APT repositories for updates or promise bit-for-bit reproducible builds. Updating
+a dependency requires changing its reviewed declaration/pin. The helper
 copies the same bytes it hashes. Build from its output context, not a separately
 read or modified checkout; do not modify the prepared context before building.
 The checkout's `.dockerignore` does not govern this fresh context, which contains

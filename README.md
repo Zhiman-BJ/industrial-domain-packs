@@ -44,7 +44,7 @@ docker buildx build --platform linux/amd64 --load \
 
 `validate.sh` starts one isolated ephemeral container per task, checks real simulation completion, native verification and VCD structure, and writes `result.json`. See [qualification](docs/migration-validation.md) for exercised paths and limits. Images are validated locally; source CI does not build or publish tool images.
 
-After deliberate source changes, stage reviewed files under packs/ and lib/ and run `npm run lock`. This changes the release identity. Build consumer and sandbox images from the same pinned package, then drain the old coordinator before switching.
+After deliberate source changes, stage reviewed files under packs/ and lib/ and run `npm run lock`. This changes the release identity. Pin consumers to a reviewed Pack commit and sandboxes to the selected profile's immutable image; see [release identity](docs/release-format.md) for build-source versus publication identities.
 
 Build a committed **source-only** archive for any Pack with `python3 scripts/package-pack.py chip --output dist` (also godot, pcb, freecad, cad, cuda). Archives contain import notices and file hashes. A pinned repository may serve as the Docker build context; this does not mean its entire contents belong in the image. Remote image contents follow the [packaging rules](docs/release-format.md#remote-runtime-image-packaging).
 
