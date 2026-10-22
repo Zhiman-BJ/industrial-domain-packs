@@ -305,3 +305,27 @@ The full Node suite passed 204 tests with 2 skipped (206 total), all 11 Python
 verifier tests passed, and content-lock/diff checks passed. Input tag promotion
 and PCB publication remain pending. CI continues to check metadata and the
 trusted publisher-owned input tags without downloading layers.
+
+## 2026-10-22 — completed local shared image publication
+
+`npm run publish:images` completed successfully from source `188d515` on macOS
+arm64 with Docker Desktop/Buildx producing linux/amd64 images and regctl v0.11.7.
+All three manifests/configs and blob HEAD identities passed; all input tags were
+read back successfully. Chip reused its existing image; FreeCAD and PCB reused
+cached OCI build layers and previously uploaded immutable digests, then promoted
+their input tags. The earlier FreeCAD and PCB large-layer chunk uploads completed
+successfully. No Tool was created and no release/content lock was changed.
+
+| Domain | Immutable digest | Layers | Verification |
+| --- | --- | --- | --- |
+| Chip | `sha256:ef6531dc6b7e3fcb7bdd0f04a05d197b73ac4765e3a6f653c8838140a6189d7a` | 29 | registry-heads |
+| FreeCAD | `sha256:da7d8d5d1593ea46fdd55807d4bba52db2c0348496b46e89416376f97e65a5ce` | 16 | registry-heads |
+| PCB | `sha256:9fd7098faef318a95e77b8e08886d029be0f764794e1568c8820556726e1ade0` | 11 | registry-heads |
+
+Evidence lives in the local Git common directory under
+`runtime-image-publications/188d515765f44855856d0609f9fde3e096b41529/<domain>/attempt-*/registry-heads.json`.
+Independent incremental review found no blocking issues and reran all 11 Python
+and 18 focused Node tests successfully. Full-byte readback was previously proven
+for Chip only; this record does not claim full-byte readback or new native AGS
+execution qualification for FreeCAD/PCB. GitHub Tool publication remains disabled
+until this workflow change is merged; required-check enforcement needs admin setup.
