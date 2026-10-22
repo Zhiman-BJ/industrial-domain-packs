@@ -329,3 +329,19 @@ and 18 focused Node tests successfully. Full-byte readback was previously proven
 for Chip only; this record does not claim full-byte readback or new native AGS
 execution qualification for FreeCAD/PCB. GitHub Tool publication remains disabled
 until this workflow change is merged; required-check enforcement needs admin setup.
+
+## 2026-10-22 — AGS personal CCR image reference correction
+
+Test publication run `39777033553` passed registry checks but all three created
+Tools entered FAILED. AGS StatusReason explicitly rejected digest-only personal
+CCR image references and required tag or tag+digest. Corrected Tool requests to
+use the existing input tag plus immutable digest, preserving canonical digest-only
+identities in release locks and registry API reads. Tests cover tagged request
+reuse/resume, canonical lock output and registry URL construction.
+
+Owner authorized deleting only the three failed test Tools (`sdt-k02zv7lz`,
+`sdt-7d1p957v`, `sdt-ack99r9f`); deletion was confirmed and seven ACTIVE Tools
+remained. No ACTIVE Tool was modified or removed. Independent incremental review
+found no blocking findings; 15 focused tests passed. The complete suite passed
+205 tests with two skipped (207 total), with content-lock and diff checks passing.
+Live retry qualification follows this code correction.

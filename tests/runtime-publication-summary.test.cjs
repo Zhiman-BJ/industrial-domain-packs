@@ -81,7 +81,12 @@ test("batch validates source-bound records and rejects incomplete or altered res
     region: config.region,
     packId: s.packId,
     profile: s.profile,
-    image: repositoryFor("chip") + "@sha256:" + "b".repeat(64),
+    image:
+      repositoryFor("chip") +
+      ":input-" +
+      input.buildInputDigest.slice(7) +
+      "@sha256:" +
+      "b".repeat(64),
     configuration: { ...config.toolConfiguration, RoleArn: roleArn },
   });
   const plan = {

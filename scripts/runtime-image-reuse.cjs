@@ -10,7 +10,9 @@ async function verifyImage(
   metadataOnly = false,
   blobHeads = false,
 ) {
-  const [repository, digest] = image.reference.split("@");
+  const [repository, digest] = image.reference
+    .replace(/:[^/:@]+(?=@sha256:)/, "")
+    .split("@");
   const slash = repository.indexOf("/");
   const url = `https://${repository.slice(0, slash)}/v2/${repository.slice(slash + 1)}/manifests/${digest}`;
   const args = [

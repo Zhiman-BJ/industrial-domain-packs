@@ -73,7 +73,10 @@ function releaseRecord(plan, result, evidence) {
       buildInputDigest: plan.input.buildInputDigest,
       runtimeDigest: runtimes[0][1],
       image: {
-        reference: plan.tool.request.CustomConfiguration.Image,
+        reference: plan.tool.request.CustomConfiguration.Image.replace(
+          /:[^/:@]+(?=@sha256:)/,
+          "",
+        ),
         platform: plan.input.platform,
       },
       provider: "tencent-ags",
@@ -103,7 +106,12 @@ function resumePlan({
   repository,
 }) {
   const image = plan.tool?.request?.CustomConfiguration?.Image;
-  if (typeof image !== "string" || !image.startsWith(repository + "@"))
+  if (
+    typeof image !== "string" ||
+    !image.startsWith(
+      repository + ":input-" + input.buildInputDigest.slice(7) + "@",
+    )
+  )
     throw Error("Prior intent repository mismatch");
   const tool = planTool({
     environment: s.environment,
@@ -253,7 +261,11 @@ async function main(phase) {
       region,
       packId: s.packId,
       profile: s.profile,
-      image: image.reference,
+      // AGS personal CCR requires a tag even when the digest is pinned.
+      image: image.reference.replace(
+        "@",
+        ":input-" + input.buildInputDigest.slice(7) + "@",
+      ),
       configuration,
     });
     write(planFile, {

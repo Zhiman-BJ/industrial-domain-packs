@@ -34,7 +34,7 @@ for (const scenario of [
       region: config.region,
       packId: s.packId,
       profile: s.profile,
-      image: image.reference,
+      image: image.reference.replace("@", ":input-" + hash.slice(7) + "@"),
       configuration: { ...config.toolConfiguration, RoleArn: "role" },
     });
     const row = {

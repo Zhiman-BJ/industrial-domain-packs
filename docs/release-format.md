@@ -200,6 +200,10 @@ manifest/config digests and platform, without downloading layers. A missing tag
 permits a local build; in Actions it fails with instructions to prepare images
 locally. A cloud query error, corrupt image or incomplete response fails publication.
 Only trusted publishers should write these input tags; do not retarget them.
+AGS personal CCR does not accept digest-only image references. Tool creation uses
+`repository:input-<buildInputDigest>@sha256:<imageDigest>`, retaining both the
+existing input tag and immutable digest. Registry API reads and release locks use
+the canonical `repository@sha256:<imageDigest>` identity.
 
 ## Local image preparation
 
@@ -412,9 +416,9 @@ A repository administrator must configure an active main Ruleset (or branch
 protection) requiring `Runtime images ready` from GitHub Actions, with branches
 required to be up to date before merging. Preserve existing required checks,
 including `Architecture contract`. Do not grant routine bypass. Adding the workflow
-alone does not enforce merging restrictions. The implementing account has write
-access but no administration access, so this required-check setting is pending
-administrator configuration.
+alone does not enforce merging restrictions. Verified on 2026-10-22: main branch protection requires `chip`,
+`Architecture contract` and `Runtime images ready` from GitHub Actions, with
+up-to-date branches and administrator enforcement enabled.
 
 This is an ordinary `pull_request` workflow: same-repository contributors are
 trusted with repository Secrets, as in feature publication. Fork and Dependabot

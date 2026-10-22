@@ -91,3 +91,18 @@ test("normal publication uses blob HEAD checks with a three minute bound and no 
   assert.deepEqual(api.logs, []);
   assert.deepEqual(api.cleared, []);
 });
+
+test("tag plus digest uses untagged repository for registry API requests", async () => {
+  const api = load(async (cmd, args) => {
+    assert.equal(
+      args[2],
+      "https://registry.example/v2/runtime/manifests/sha256:" + "a".repeat(64),
+    );
+    return { stdout: "{}" };
+  });
+  await api.verifyImage(
+    { ...image, reference: image.reference.replace("@", ":input-tag@") },
+    true,
+    true,
+  );
+});
