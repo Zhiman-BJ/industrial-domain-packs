@@ -345,3 +345,18 @@ remained. No ACTIVE Tool was modified or removed. Independent incremental review
 found no blocking findings; 15 focused tests passed. The complete suite passed
 205 tests with two skipped (207 total), with content-lock and diff checks passing.
 Live retry qualification follows this code correction.
+
+## 2026-10-22 — first test Tool publication and writeback regression
+
+Run `39778046006` successfully created and verified all three test Tools using
+input-tag-plus-digest references. Final lock writeback stopped at `npm test`:
+a pre-publication facade test incorrectly assumed the real checkout could never
+contain a covered Chip test lock. Removed that checkout-state assumption; isolated
+missing-coverage, tampering, platform and successful-read tests remain intact.
+
+All seven release tests passed both in the unpublished checkout and an isolated
+copy with a valid covered test lock. The complete suite passed 205 tests with two
+skipped (207 total); content-lock and diff checks passed. Incremental review was
+skipped for this four-line test-only removal; previous implementation reviews
+remain applicable. The next publication should reuse the three ACTIVE Tools and
+complete lock writeback without creating replacements.
