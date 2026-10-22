@@ -231,3 +231,17 @@ timed-out bulk uploads from GitHub runners; equivalent local uploads completed.
 The publication workflow remains manually disabled until this revision merges,
 so old main cannot restart heavy uploads. Existing GitHub Secrets/Variables all
 have active consumers and were retained. Native runtime qualification is unchanged.
+
+## 2026-10-22 — PR image readiness check
+
+Added `Runtime images ready` for all pull requests targeting main, checking the
+candidate merge commit with the same image-input fingerprints as local preparation.
+The gate performs read-only registry metadata verification and fails on absent
+images, query errors or identity mismatch. Six focused tests cover these outcomes;
+the complete Node suite passed 192 tests with 2 skipped (194 total). Architecture
+policy, content-lock check and actionlint passed. No native runtime code changed.
+Repository API permissions report write access without administration access;
+required-check enforcement on main remains pending administrator configuration.
+Independent review of the incremental gate found no blocking issues and reran all
+six readiness tests successfully. Live GitHub/registry execution is checked
+separately from these local fixtures.

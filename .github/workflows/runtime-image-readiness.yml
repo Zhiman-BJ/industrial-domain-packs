@@ -1,0 +1,46 @@
+name: Runtime image readiness
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: runtime-image-readiness-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  images:
+    name: Runtime images ready
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      # pull_request's default checkout is the candidate merge commit, not head.
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Check cloud credentials are available
+        env:
+          TENCENT_SECRET_ID: ${{ secrets.TENCENT_SECRET_ID }}
+          TENCENT_SECRET_KEY: ${{ secrets.TENCENT_SECRET_KEY }}
+          TENCENT_REGISTRY_USERNAME: ${{ secrets.TENCENT_REGISTRY_USERNAME }}
+          TENCENT_REGISTRY_PASSWORD: ${{ secrets.TENCENT_REGISTRY_PASSWORD }}
+        run: |
+          node -e 'require("./scripts/publish-images-local.cjs").validateEnvironment(process.env)'
+      - uses: docker/login-action@v3
+        with:
+          registry: ccr.ccs.tencentyun.com
+          username: ${{ secrets.TENCENT_REGISTRY_USERNAME }}
+          password: ${{ secrets.TENCENT_REGISTRY_PASSWORD }}
+      - name: Verify all candidate image identities (metadata only)
+        env:
+          TENCENT_SECRET_ID: ${{ secrets.TENCENT_SECRET_ID }}
+          TENCENT_SECRET_KEY: ${{ secrets.TENCENT_SECRET_KEY }}
+        run: node scripts/runtime-image-readiness.cjs

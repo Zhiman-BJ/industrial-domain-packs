@@ -371,3 +371,32 @@ above 80% also emits a GitHub Actions warning annotation. Query failures emit an
 explicit unknown-capacity warning rather than failing the publication. This is
 an advisory check, not a reservation or an automatic deletion policy. Images are
 shared by test/prod; any future cleanup must protect references from both.
+
+### PR image readiness gate
+
+`Runtime images ready` runs for every PR targeting main, on GitHub's candidate
+merge commit. It computes all three domains' actual build inputs, locates their
+input tags only in `industrial-mcp-remote`, and verifies immutable manifest/config
+identity and platform without downloading layers. It creates no Tools and writes
+no locks. Documentation or Tool-only changes reuse images when build inputs match.
+A missing image, registry error or invalid metadata fails the check. Run
+`npm run publish:images` locally on the candidate source, then rerun the failed
+check. If main changed the combined build inputs, update the branch from main
+before local preparation. Local input tags are promoted only after full blob
+verification; they are a trusted-publisher convention, not a signed attestation.
+
+A repository administrator must configure an active main Ruleset (or branch
+protection) requiring `Runtime images ready` from GitHub Actions, with branches
+required to be up to date before merging. Preserve existing required checks,
+including `Architecture contract`. Do not grant routine bypass. Adding the workflow
+alone does not enforce merging restrictions. The implementing account has write
+access but no administration access, so this required-check setting is pending
+administrator configuration.
+
+This is an ordinary `pull_request` workflow: same-repository contributors are
+trusted with repository Secrets, as in feature publication. Fork and Dependabot
+PRs without cloud Secrets fail closed; a maintainer must review and move accepted
+changes to a trusted repository branch for this check. Do not use
+`pull_request_target` to execute untrusted candidate code with cloud credentials.
+Publication after merge still rechecks cloud state because images can disappear
+after PR validation.

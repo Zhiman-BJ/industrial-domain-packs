@@ -99,3 +99,5 @@ Runtime release lock 由发布 GitHub Action 维护，不要手动修改生成�
 新增或修改任何 domain 的远端 runtime profile 前，请阅读[统一打包规范](docs/release-format.md#remote-runtime-image-packaging)。 Action 无需填写参数：main 使用 prod，其他分支使用 test；直接查询腾讯云判断 image/Tool 复用。环境配置保存在 `publication/test.cjs` 和 `publication/prod.cjs`，每个文件集中列出各 domain，发布结果和容量预警展示在 Action Summary。
 
 发布流程分为独立的 Check 和按需 Publish job；没有变更的 pack 跳过 Publish，仍会出现在最终汇总中。
+
+面向 main 的 PR 会运行 `Runtime images ready`；管理员需将其设为必须通过且要求分支保持最新的检查。缺少镜像时，需先完成本地准备才能通过。详见[发布格式](docs/release-format.md#pr-image-readiness-gate)。

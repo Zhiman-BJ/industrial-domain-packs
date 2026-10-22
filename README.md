@@ -138,3 +138,5 @@ Runtime release lock values are maintained by the publishing GitHub Action; do n
 Before adding or changing any remote runtime profile, read the [shared packaging rules](docs/release-format.md#remote-runtime-image-packaging). Dispatch takes no inputs: main selects prod, other branches select test; image/Tool reuse is checked against Tencent Cloud. Environment configuration lives in `publication/test.cjs` and `publication/prod.cjs`, with domains grouped in each file, and results plus capacity warnings appear in the Action Summary.
 
 Publishing runs separate Check and conditional Publish jobs; unchanged packs skip Publish and still appear in the final summary.
+
+PRs targeting main run `Runtime images ready`; an administrator must make it a required, up-to-date check. Missing images block readiness until local preparation succeeds. See [release format](docs/release-format.md#pr-image-readiness-gate).
