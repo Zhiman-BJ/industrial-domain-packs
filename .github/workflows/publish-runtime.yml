@@ -1,10 +1,13 @@
 name: Publish remote runtime
 
-# Main publishes prod automatically; other branches publish test on dispatch.
+# Main publishes prod; same-repository PR heads publish test and receive locks.
 on:
   push:
     branches: [main]
   workflow_dispatch:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
 
 permissions:
   contents: write
@@ -14,10 +17,45 @@ concurrency:
   group: runtime-publication-${{ github.repository }}
   cancel-in-progress: false
 
+env:
+  PUBLICATION_REF: ${{ github.event_name == 'pull_request' && format('refs/heads/{0}', github.head_ref) || github.ref }}
+  PUBLICATION_SOURCE: ${{ github.event.pull_request.head.sha || github.sha }}
+
 jobs:
+  gate:
+    name: Select publication source
+    if: >-
+      (github.event_name != 'pull_request' && github.ref_type == 'branch') ||
+      (github.event_name == 'pull_request' &&
+       github.event.pull_request.head.repo.full_name == github.repository &&
+       github.event.pull_request.head.ref != 'main' &&
+       github.actor != 'dependabot[bot]')
+    runs-on: ubuntu-24.04
+    outputs:
+      publish: ${{ steps.source.outputs.publish }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.PUBLICATION_SOURCE }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - run: node scripts/content-lock.cjs --check
+      - name: Ignore generated lock writeback for publication
+        id: source
+        run: node scripts/runtime-publication-trigger.cjs
+      - name: Require token that triggers PR checks after writeback
+        if: steps.source.outputs.publish == 'true' && env.PUBLICATION_REF != 'refs/heads/main'
+        env:
+          WRITEBACK_TOKEN: ${{ secrets.PACK_BUMP_PAT }}
+        run: node -e 'if (!process.env.WRITEBACK_TOKEN) throw Error("PACK_BUMP_PAT is required for feature-branch lock writeback")'
+
   check:
-    name: Check ${{ matrix.domain }} ${{ github.ref == 'refs/heads/main' && 'prod' || 'test' }}
-    if: github.ref_type == 'branch'
+    name: Check ${{ matrix.domain }} ${{ (github.event_name != 'pull_request' && github.ref == 'refs/heads/main') && 'prod' || 'test' }}
+    needs: gate
+    if: needs.gate.outputs.publish == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     strategy:
@@ -26,14 +64,14 @@ jobs:
         domain: [chip, freecad, pcb]
     env:
       PUBLICATION_DOMAIN: ${{ matrix.domain }}
-      PUBLICATION_ENVIRONMENT: ${{ github.ref == 'refs/heads/main' && 'prod' || 'test' }}
+      PUBLICATION_ENVIRONMENT: ${{ (github.event_name != 'pull_request' && github.ref == 'refs/heads/main') && 'prod' || 'test' }}
       TENCENT_ROLE_ARN: ${{ vars.TENCENT_ROLE_ARN }}
     steps:
       - name: Set publication scratch directory
         run: echo "PUBLICATION_DIRECTORY=$RUNNER_TEMP/runtime-publication" >> "$GITHUB_ENV"
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ env.PUBLICATION_SOURCE }}
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
@@ -55,7 +93,7 @@ jobs:
           script: |
             const {findIntent} = require('./scripts/runtime-publication-resume.cjs');
             const prior = await findIntent(github, {
-              ...context.repo, source: context.sha,
+              ...context.repo, source: process.env.PUBLICATION_SOURCE,
               domain: process.env.PUBLICATION_DOMAIN,
               environment: process.env.PUBLICATION_ENVIRONMENT,
               runId: Number(process.env.GITHUB_RUN_ID),
@@ -106,7 +144,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ env.PUBLICATION_SOURCE }}
       - uses: actions/setup-node@v4
         with:
           node-version: "24"
@@ -121,7 +159,7 @@ jobs:
         run: node scripts/runtime-publication-matrix.cjs
 
   publish:
-    name: Publish ${{ matrix.domain }} ${{ github.ref == 'refs/heads/main' && 'prod' || 'test' }}
+    name: Publish ${{ matrix.domain }} ${{ (github.event_name != 'pull_request' && github.ref == 'refs/heads/main') && 'prod' || 'test' }}
     needs: plan
     if: needs.plan.outputs.has-changes == 'true'
     runs-on: ubuntu-24.04
@@ -132,14 +170,14 @@ jobs:
         domain: ${{ fromJSON(needs.plan.outputs.domains) }}
     env:
       PUBLICATION_DOMAIN: ${{ matrix.domain }}
-      PUBLICATION_ENVIRONMENT: ${{ github.ref == 'refs/heads/main' && 'prod' || 'test' }}
+      PUBLICATION_ENVIRONMENT: ${{ (github.event_name != 'pull_request' && github.ref == 'refs/heads/main') && 'prod' || 'test' }}
       TENCENT_ROLE_ARN: ${{ vars.TENCENT_ROLE_ARN }}
     steps:
       - name: Set publication scratch directory
         run: echo "PUBLICATION_DIRECTORY=$RUNNER_TEMP/runtime-publication" >> "$GITHUB_ENV"
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ env.PUBLICATION_SOURCE }}
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
@@ -173,7 +211,7 @@ jobs:
         id: intent
         uses: actions/upload-artifact@v4
         with:
-          name: runtime-intent-${{ matrix.domain }}-${{ env.PUBLICATION_ENVIRONMENT }}-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          name: runtime-intent-${{ matrix.domain }}-${{ env.PUBLICATION_ENVIRONMENT }}-${{ env.PUBLICATION_SOURCE }}-${{ github.run_id }}-${{ github.run_attempt }}
           if-no-files-found: error
           retention-days: 90
           path: |
@@ -199,11 +237,11 @@ jobs:
             ${{ runner.temp }}/runtime-publication/image-operation.json
             ${{ runner.temp }}/runtime-publication/result.json
 
-  # Keep checkout on GITHUB_TOKEN: its writeback push does not trigger workflows.
+  # Feature writeback uses PAT so the new head receives ordinary PR checks.
   finish:
     name: Write locks and publication summary
-    needs: [check, plan, publish]
-    if: always() && github.ref_type == 'branch'
+    needs: [gate, check, plan, publish]
+    if: always() && needs.gate.outputs.publish == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     env:
@@ -215,8 +253,9 @@ jobs:
         run: echo "PUBLICATION_DIRECTORY=$RUNNER_TEMP/runtime-results" >> "$GITHUB_ENV"
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ env.PUBLICATION_SOURCE }}
           fetch-depth: 0
+          token: ${{ env.PUBLICATION_REF != 'refs/heads/main' && secrets.PACK_BUMP_PAT || github.token }}
       - uses: actions/setup-node@v4
         with:
           node-version: "24"

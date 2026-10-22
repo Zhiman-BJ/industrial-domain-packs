@@ -14,11 +14,15 @@ for (const scenario of [
   "missing-tool",
   "reuse",
   "query-error",
+  "pr-head",
 ]) {
   test(`check phase is read-only: ${scenario}`, async (t) => {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), "publication-readonly-"));
     t.after(() => fs.rmSync(dir, { recursive: true, force: true }));
-    const s = selection("chip", "refs/heads/main"),
+    const s = selection(
+        "chip",
+        scenario === "pr-head" ? "refs/heads/feature" : "refs/heads/main",
+      ),
       config = publicationConfig(s);
     const source = "a".repeat(40),
       hash = "sha256:" + "b".repeat(64);
@@ -110,8 +114,15 @@ for (const scenario of [
         env: {
           PUBLICATION_DIRECTORY: dir,
           PUBLICATION_DOMAIN: "chip",
-          GITHUB_REF: "refs/heads/main",
-          GITHUB_SHA: source,
+          GITHUB_REF:
+            scenario === "pr-head" ? "refs/pull/57/merge" : "refs/heads/main",
+          GITHUB_SHA: scenario === "pr-head" ? "c".repeat(40) : source,
+          ...(scenario === "pr-head"
+            ? {
+                PUBLICATION_REF: "refs/heads/feature",
+                PUBLICATION_SOURCE: source,
+              }
+            : {}),
           TENCENT_ROLE_ARN: "role",
           TENCENT_SECRET_ID: "test",
           TENCENT_SECRET_KEY: "test",
@@ -133,6 +144,12 @@ for (const scenario of [
       await context.module.exports.testMain("check");
       const result = JSON.parse(fs.readFileSync(path.join(dir, "check.json")));
       assert.equal(result.needsPublication, scenario !== "reuse");
+      if (scenario === "pr-head") {
+        const plan = JSON.parse(fs.readFileSync(path.join(dir, "plan.json")));
+        assert.equal(plan.source, source);
+        assert.equal(plan.selection.branch, "feature");
+        assert.equal(plan.selection.environment, "test");
+      }
       assert.equal(
         fs.existsSync(path.join(dir, "result.json")),
         scenario === "reuse",

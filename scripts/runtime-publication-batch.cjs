@@ -133,8 +133,8 @@ function main(phase) {
       ...options,
     })?.trim() || "";
   const git = (...args) => run("git", args);
-  const ref = required("GITHUB_REF"),
-    source = required("GITHUB_SHA"),
+  const ref = process.env.PUBLICATION_REF || required("GITHUB_REF"),
+    source = process.env.PUBLICATION_SOURCE || required("GITHUB_SHA"),
     roleArn = required("TENCENT_ROLE_ARN");
   if (phase !== "summary" && git("rev-parse", "HEAD") !== source)
     throw Error("Source commit mismatch");

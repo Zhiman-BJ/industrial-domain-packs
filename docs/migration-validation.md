@@ -379,3 +379,17 @@ a subsequent documentation push triggers checks on the final lock-bearing tree.
 The account now has ten Tools. Prod creation requires capacity planning, and
 protected-main lock writeback still needs qualification against the enforced PR
 and required-check rules. Neither limitation was bypassed in this test.
+
+## 2026-10-22 — automatic PR test publication preparation
+
+Same-repository PRs targeting main now select the feature head SHA/branch for test
+publication and lock writeback. Feature pushes use existing PACK_BUMP_PAT so the
+new head receives ordinary checks; a generated-commit guard skips recursive
+publication. Fork and Dependabot-triggered PR publication are excluded. Missing
+images still stop the read-only Check phase. Main prod writeback is unchanged.
+
+The full Node suite passed 215 tests with two skipped (217 total); actionlint,
+content-lock and diff checks passed. Tests cover PR head versus merge identity,
+generated commit recognition and negative cases including code/dependency changes
+and incorrect source parents. The guard also recognized real writeback commit
+dc2d758. Live automatic PR trigger/writeback/skip qualification is pending push.

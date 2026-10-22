@@ -183,14 +183,20 @@ async function main(phase) {
   fs.mkdirSync(dir, { recursive: true });
   const planFile = path.join(dir, "plan.json");
   if (phase === "configure") {
-    const s = selection(required("PUBLICATION_DOMAIN"), required("GITHUB_REF"));
+    const s = selection(
+      required("PUBLICATION_DOMAIN"),
+      process.env.PUBLICATION_REF || required("GITHUB_REF"),
+    );
     const config = publicationConfig(s);
     fs.appendFileSync(
       required("GITHUB_OUTPUT"),
       `registry-host=${config.imagePrefix.split("/")[0]}\n`,
     );
   } else if (phase === "prepare" || phase === "check") {
-    const s = selection(required("PUBLICATION_DOMAIN"), required("GITHUB_REF"));
+    const s = selection(
+      required("PUBLICATION_DOMAIN"),
+      process.env.PUBLICATION_REF || required("GITHUB_REF"),
+    );
     const roleArn = required("TENCENT_ROLE_ARN");
     const config = publicationConfig(s);
     const region = config.region,
@@ -199,7 +205,7 @@ async function main(phase) {
     if (git("status", "--porcelain"))
       throw Error("Publication source must be clean");
     const source = git("rev-parse", "HEAD");
-    if (source !== required("GITHUB_SHA"))
+    if (source !== (process.env.PUBLICATION_SOURCE || required("GITHUB_SHA")))
       throw Error("Source commit mismatch");
     const pack = require("../lib/index.cjs");
     pack.verifyIntegrity();

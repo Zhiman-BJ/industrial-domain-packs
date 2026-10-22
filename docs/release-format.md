@@ -79,7 +79,7 @@ credentials, customer inputs or private deployment endpoints.
 ## Publication workflow and generated files
 
 The `Publish remote runtime` Action implements the following workflow. It is
-explicitly dispatched on a repository branch; it has no push/PR trigger. The
+triggered by same-repository PR updates, pushes to main, or manual branch dispatch. The
 schema-1 metadata API does not implement an unpublished-placeholder schema.
 
 Runtime release files at `packs/<source-directory>/releases/<profile>/<environment>.lock.json`
@@ -272,8 +272,8 @@ remain the handoff; no second image-version lock is introduced.
 ## Tencent publishing Action configuration
 
 `Publish remote runtime` runs automatically on pushes to `main` (including PR
-merges), using prod configuration. Trusted feature branches publish test through
-manual dispatch, with no domain or environment inputs. Manual dispatch on `main`
+merges), using prod configuration. Same-repository PRs targeting main automatically publish test from the head
+branch. Manual branch dispatch is also available, with no domain or environment inputs. Manual dispatch on `main`
 also permits retrying prod publication. The `Check` matrix inspects chip/freecad/pcb build inputs and cloud resources
 without creating or updating them. A selection job collects those checks and
 creates a `Publish` matrix containing only packs that need Tool creation/resource
@@ -363,11 +363,10 @@ validates every domain's evidence, writes all release locks together, computes
 the final content lock, runs checks, and makes one source-branch writeback commit.
 Any domain failure prevents the batch writeback. A compare-and-swap push requires
 that the source branch still equals the build source. Branch protection is not
-bypassed. Repository-wide workflow concurrency serializes publication, and
-the writeback uses checkout's repository `GITHUB_TOKEN`, whose pushes do not
-trigger another workflow run ([GitHub documentation](https://docs.github.com/en/actions/concepts/security/github_token)).
-Keep this checkout on `GITHUB_TOKEN`; switching it to a PAT would remove that
-loop prevention.
+bypassed. Repository-wide workflow concurrency serializes publication. Feature writeback
+uses `PACK_BUMP_PAT` to trigger ordinary PR checks; a validated generated-commit
+guard skips recursive publication (see below). Main still uses `GITHUB_TOKEN`;
+protected-main writeback remains pending and is not bypassed.
 
 The Action Summary lists immutable image references, Tool IDs, reused/restored
 images, created/updated/reused Tools and cloud status separately from
@@ -437,3 +436,29 @@ against CCR using real large layers. Chunking may avoid long-request failures,
 but runner-to-CCR throughput and stability remain unqualified. This is not a
 prerequisite for local publication; network-heavy work remains local until that
 experiment establishes a reliable alternative.
+
+
+### PR test publication and feature-branch writeback
+
+Opening, updating or reopening a same-repository PR targeting main automatically
+runs `Publish remote runtime` for test. Fork and Dependabot-triggered PR runs do
+not receive a publication path. Manual dispatch remains available. The publishing
+checkout uses the PR head SHA and writes to its head branch; PR merge refs are
+never writeback destinations. Ordinary image readiness still checks the candidate
+merge tree. Missing prepared images stop publication with the local preparation
+command; after uploading, rerun the failed workflow (upload itself sends no event).
+
+Feature writeback uses the existing `PACK_BUMP_PAT`, so the new head triggers
+ordinary PR checks. The token must allow contents writes to this repository;
+missing credentials fail before cloud mutation. Generated writeback commits are
+recognized by bot author, exact publication subject, single source parent,
+release-only changed paths, source-bound locks and unchanged package settings
+apart from adding lock file entries. Such commits run ordinary checks but skip
+cloud publication, preventing recursion. This also applies to manual dispatch
+on a generated commit; to retry publication, rerun the original source workflow.
+The existing compare-and-swap writeback
+still rejects a moved source branch. A PAT pushes as its owner, so actor name alone
+is not used to detect generated commits.
+
+This feature-branch path does not resolve protected-main prod writeback. Prod
+capacity and protected-main publication remain separate pending work.

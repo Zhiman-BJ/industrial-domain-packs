@@ -131,7 +131,7 @@ were downloaded and hash-checked, without asserting native execution support.
 
 Remote publishers and consumers can validate schema-1 runtime release records with `getRuntimeRelease`; see [release identity](docs/release-format.md). This metadata API does not publish Tools or qualify execution profiles.
 
-Prepare shared images locally and verify manifest/config plus every layer’s HEAD digest/size (Buildx OCI export and regctl chunked upload) with `npm run publish:images` first; see [local prerequisites and environment variables](docs/release-format.md#local-image-preparation). Actions only verify image metadata, publish Tools and write the final lock.
+Prepare shared images locally and verify manifest/config plus every layer’s HEAD digest/size (Buildx OCI export and regctl chunked upload) with `npm run publish:images` first; see [local prerequisites and environment variables](docs/release-format.md#local-image-preparation). Same-repository PRs targeting main automatically verify image metadata, publish test Tools and write the final lock back to the feature branch. The writeback triggers ordinary PR checks and skips recursive publication.
 
 Runtime release lock values are maintained by the publishing GitHub Action; do not hand-edit generated image digests, Tool IDs or publication evidence. Before changing publication, read the [publication workflow and final hashing order](docs/release-format.md#publication-workflow-and-generated-files). `Publish remote runtime` automatically publishes prod on pushes to main; manually dispatch feature branches for test; see the [Tencent configuration and qualification limits](docs/release-format.md#tencent-publishing-action-configuration).
 
