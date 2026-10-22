@@ -6,6 +6,7 @@ const { verifyImage } = require("./runtime-image-reuse.cjs");
 const {
   planTool,
   ensureTool,
+  checkTool,
   digest,
   configurationDigest,
 } = require("./runtime-tool-publication.cjs");
@@ -145,6 +146,28 @@ function required(name) {
   if (!process.env[name]) throw Error("Missing configuration: " + name);
   return process.env[name];
 }
+function agsClient(region) {
+  const { ags } = require("tencentcloud-sdk-nodejs-ags");
+  return new ags.v20250920.Client({
+    credential: {
+      secretId: required("TENCENT_SECRET_ID"),
+      secretKey: required("TENCENT_SECRET_KEY"),
+    },
+    region,
+    profile: {
+      httpProfile: { endpoint: "ags.tencentcloudapi.com", reqTimeout: 30 },
+    },
+  });
+}
+async function checkPlan(plan, dir) {
+  const checked = await checkTool(plan.tool, agsClient(plan.tool.region));
+  if (checked.result) write(path.join(dir, "result.json"), checked.result);
+  write(path.join(dir, "check.json"), {
+    domain: plan.selection.directory,
+    needsPublication: checked.action !== "reuse",
+    toolAction: checked.action,
+  });
+}
 async function main(phase) {
   const root = path.resolve(__dirname, "..");
   process.chdir(root);
@@ -158,7 +181,7 @@ async function main(phase) {
       required("GITHUB_OUTPUT"),
       `registry-host=${config.imagePrefix.split("/")[0]}\n`,
     );
-  } else if (phase === "prepare") {
+  } else if (phase === "prepare" || phase === "check") {
     const s = selection(required("PUBLICATION_DOMAIN"), required("GITHUB_REF"));
     const roleArn = required("TENCENT_ROLE_ARN");
     const config = publicationConfig(s);
@@ -208,10 +231,20 @@ async function main(phase) {
       write(planFile, restored);
       write(path.join(dir, "registry.json"), registry);
       write(path.join(dir, "image-operation.json"), "restored");
+      if (phase === "check") await checkPlan(restored, dir);
       return;
     }
     let image = await findImage({ repository, input });
     const reused = Boolean(image);
+    if (!reused && phase === "check") {
+      write(path.join(dir, "check.json"), {
+        domain: s.directory,
+        needsPublication: true,
+        imageAction: "build",
+        toolAction: "create",
+      });
+      return;
+    }
     if (!reused) {
       const tag = repository + ":input-" + input.buildInputDigest.slice(7);
       const metadata = path.join(dir, "build-metadata.json");
@@ -267,28 +300,20 @@ async function main(phase) {
     });
     write(path.join(dir, "registry.json"), registry);
     write(path.join(dir, "image-operation.json"), reused ? "reused" : "built");
+    if (phase === "check")
+      await checkPlan(JSON.parse(fs.readFileSync(planFile)), dir);
   } else if (phase === "tool") {
     const plan = JSON.parse(fs.readFileSync(planFile));
     if (!/^\d+$/.test(required("PUBLICATION_INTENT_ARTIFACT_ID")))
       throw Error("Durably uploaded intent is required");
-    const { ags } = require("tencentcloud-sdk-nodejs-ags");
-    const client = new ags.v20250920.Client({
-      credential: {
-        secretId: required("TENCENT_SECRET_ID"),
-        secretKey: required("TENCENT_SECRET_KEY"),
-      },
-      region: plan.tool.region,
-      profile: {
-        httpProfile: { endpoint: "ags.tencentcloudapi.com", reqTimeout: 30 },
-      },
-    });
+    const client = agsClient(plan.tool.region);
     const result = await ensureTool(plan.tool, client, {
       persist: async () => {
         /* prior Action step uploaded this exact plan */
       },
     });
     write(path.join(dir, "result.json"), result);
-  } else throw Error("Expected configure, prepare or tool phase");
+  } else throw Error("Expected configure, check, prepare or tool phase");
 }
 module.exports = { selection, publicationConfig, releaseRecord, resumePlan };
 if (require.main === module)

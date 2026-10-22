@@ -14,7 +14,15 @@ const { configurationDigest } = require("./runtime-tool-publication.cjs");
 const { pushPublication } = require("./runtime-publication-writeback.cjs");
 const domains = ["chip", "freecad", "pcb"];
 const { repositoryFor } = require("./runtime-cloud-image.cjs");
-function collectResults({ directory, selected, ref, source, runId, roleArn }) {
+function collectResults({
+  directory,
+  selected,
+  publishedDomains = selected,
+  ref,
+  source,
+  runId,
+  roleArn,
+}) {
   const pack = require("../lib/index.cjs");
   pack.verifyIntegrity();
   if (
@@ -29,7 +37,11 @@ function collectResults({ directory, selected, ref, source, runId, roleArn }) {
       config = publicationConfig(s),
       profile = pack.getPack(s.packId).profiles.find((p) => p.id === s.profile);
     const row = { domain, environment: s.environment, status: "incomplete" };
-    const folder = path.join(directory, `runtime-result-${domain}-${runId}`);
+    const published = path.join(directory, `runtime-result-${domain}-${runId}`);
+    // Follow this check's selected domains, never a stale result from an older attempt.
+    const folder = publishedDomains.includes(domain)
+      ? published
+      : path.join(directory, `runtime-check-${domain}-${runId}`);
     if (!fs.existsSync(path.join(folder, "plan.json"))) {
       if (fs.existsSync(path.join(folder, "image.json"))) {
         row.image = JSON.parse(
@@ -130,6 +142,9 @@ function main(phase) {
   const options = {
     directory: required("PUBLICATION_DIRECTORY"),
     selected,
+    publishedDomains: JSON.parse(
+      process.env.PUBLICATION_CHANGED_DOMAINS || "[]",
+    ),
     ref,
     source,
     runId: required("GITHUB_RUN_ID"),

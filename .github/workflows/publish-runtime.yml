@@ -15,8 +15,8 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  publish:
-    name: Publish ${{ matrix.domain }} ${{ github.ref == 'refs/heads/main' && 'prod' || 'test' }}
+  check:
+    name: Check ${{ matrix.domain }} ${{ github.ref == 'refs/heads/main' && 'prod' || 'test' }}
     if: github.ref_type == 'branch'
     runs-on: ubuntu-24.04
     timeout-minutes: 120
@@ -43,7 +43,6 @@ jobs:
       - name: Read checked-in publication configuration
         id: config
         run: node scripts/publish-runtime.cjs configure
-      - uses: docker/setup-buildx-action@v3
       - uses: docker/login-action@v3
         with:
           registry: ${{ steps.config.outputs.registry-host }}
@@ -76,7 +75,92 @@ jobs:
           github-token: ${{ github.token }}
           merge-multiple: true
           path: ${{ runner.temp }}/runtime-publication
-      - name: Build or verify image; prepare Tool intent
+      - name: Check image and Tool reuse (read only)
+        env:
+          TENCENT_SECRET_ID: ${{ secrets.TENCENT_SECRET_ID }}
+          TENCENT_SECRET_KEY: ${{ secrets.TENCENT_SECRET_KEY }}
+        run: node scripts/publish-runtime.cjs check
+      - name: Preserve check results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: runtime-check-${{ matrix.domain }}-${{ github.run_id }}
+          overwrite: true
+          if-no-files-found: ignore
+          retention-days: 90
+          path: |
+            ${{ runner.temp }}/runtime-publication/check.json
+            ${{ runner.temp }}/runtime-publication/plan.json
+            ${{ runner.temp }}/runtime-publication/registry.json
+            ${{ runner.temp }}/runtime-publication/image.json
+            ${{ runner.temp }}/runtime-publication/image-operation.json
+            ${{ runner.temp }}/runtime-publication/result.json
+
+  plan:
+    name: Select packs needing publication
+    needs: check
+    runs-on: ubuntu-24.04
+    outputs:
+      domains: ${{ steps.matrix.outputs.domains }}
+      has-changes: ${{ steps.matrix.outputs.has-changes }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: runtime-check-*-${{ github.run_id }}
+          path: ${{ runner.temp }}/runtime-checks
+      - name: Select changed packs
+        id: matrix
+        env:
+          PUBLICATION_DIRECTORY: ${{ runner.temp }}/runtime-checks
+        run: node scripts/runtime-publication-matrix.cjs
+
+  publish:
+    name: Publish ${{ matrix.domain }} ${{ github.ref == 'refs/heads/main' && 'prod' || 'test' }}
+    needs: plan
+    if: needs.plan.outputs.has-changes == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        domain: ${{ fromJSON(needs.plan.outputs.domains) }}
+    env:
+      PUBLICATION_DOMAIN: ${{ matrix.domain }}
+      PUBLICATION_ENVIRONMENT: ${{ github.ref == 'refs/heads/main' && 'prod' || 'test' }}
+      TENCENT_ROLE_ARN: ${{ vars.TENCENT_ROLE_ARN }}
+    steps:
+      - name: Set publication scratch directory
+        run: echo "PUBLICATION_DIRECTORY=$RUNNER_TEMP/runtime-publication" >> "$GITHUB_ENV"
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Read checked-in publication configuration
+        id: config
+        run: node scripts/publish-runtime.cjs configure
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ steps.config.outputs.registry-host }}
+          username: ${{ secrets.TENCENT_REGISTRY_USERNAME }}
+          password: ${{ secrets.TENCENT_REGISTRY_PASSWORD }}
+      - name: Restore checked publication plan
+        uses: actions/download-artifact@v4
+        with:
+          name: runtime-check-${{ matrix.domain }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/runtime-publication
+      - name: Recheck image; build only if missing; prepare Tool intent
         env:
           TENCENT_SECRET_ID: ${{ secrets.TENCENT_SECRET_ID }}
           TENCENT_SECRET_KEY: ${{ secrets.TENCENT_SECRET_KEY }}
@@ -119,12 +203,13 @@ jobs:
   # Keep checkout on GITHUB_TOKEN: its writeback push does not trigger workflows.
   finish:
     name: Write locks and publication summary
-    needs: publish
+    needs: [check, plan, publish]
     if: always() && github.ref_type == 'branch'
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     env:
       PUBLICATION_DOMAINS: '["chip","freecad","pcb"]'
+      PUBLICATION_CHANGED_DOMAINS: ${{ needs.plan.outputs.domains || '[]' }}
       TENCENT_ROLE_ARN: ${{ vars.TENCENT_ROLE_ARN }}
     steps:
       - name: Set collection scratch directory
@@ -140,11 +225,16 @@ jobs:
       - run: npm ci --ignore-scripts
       - uses: actions/download-artifact@v4
         with:
+          pattern: runtime-check-*-${{ github.run_id }}
+          path: ${{ runner.temp }}/runtime-results
+      - uses: actions/download-artifact@v4
+        if: needs.publish.result != 'skipped'
+        with:
           pattern: runtime-result-*-${{ github.run_id }}
           path: ${{ runner.temp }}/runtime-results
       - name: Write release locks and final content hash once
         id: writeback
-        if: needs.publish.result == 'success'
+        if: needs.check.result == 'success' && needs.plan.result == 'success' && (needs.publish.result == 'success' || needs.publish.result == 'skipped')
         run: node scripts/runtime-publication-batch.cjs writeback
       - name: Show cloud results and lock writeback status
         if: always()

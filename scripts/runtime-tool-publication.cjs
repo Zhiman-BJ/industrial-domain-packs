@@ -174,6 +174,40 @@ async function findTool(plan, client) {
   }
   throw Error("Tool pagination limit exceeded");
 }
+function verifyResourceOnlyChange(plan, tool) {
+  const normalized = structuredClone(tool);
+  for (const key of ["CPU", "Memory", "Storage"]) {
+    const value = plan.request.CustomConfiguration.Resources?.[key];
+    if (value === undefined)
+      delete normalized.CustomConfiguration.Resources?.[key];
+    else {
+      normalized.CustomConfiguration.Resources ??= {};
+      normalized.CustomConfiguration.Resources[key] = value;
+    }
+  }
+  readback(plan, normalized);
+}
+async function checkTool(plan, client) {
+  const tool = await findTool(plan, client);
+  if (!tool) return { action: "create" };
+  if (
+    tool.ToolName !== plan.request.ToolName ||
+    tool.Description !== plan.request.Description
+  )
+    throw Error("Tool publication identity mismatch");
+  if (tool.Status === "CREATING") return { action: "wait" };
+  if (tool.Status !== "ACTIVE")
+    throw Error("Tool is not usable: " + tool.Status);
+  try {
+    return {
+      action: "reuse",
+      result: { ...readback(plan, tool), toolOperation: "reused" },
+    };
+  } catch {
+    verifyResourceOnlyChange(plan, tool);
+    return { action: "update" };
+  }
+}
 async function ensureTool(
   plan,
   client,
@@ -213,17 +247,7 @@ async function ensureTool(
           };
         } catch (error) {
           // Prove that only CPU/memory/storage differ before updating anything.
-          const normalized = structuredClone(tool);
-          for (const key of ["CPU", "Memory", "Storage"]) {
-            const value = plan.request.CustomConfiguration.Resources?.[key];
-            if (value === undefined)
-              delete normalized.CustomConfiguration.Resources?.[key];
-            else {
-              normalized.CustomConfiguration.Resources ??= {};
-              normalized.CustomConfiguration.Resources[key] = value;
-            }
-          }
-          readback(plan, normalized);
+          verifyResourceOnlyChange(plan, tool);
           if (!updated) {
             if (typeof persist !== "function")
               throw Error("Durable publication intent required");
@@ -265,6 +289,7 @@ async function ensureTool(
 module.exports = {
   planTool,
   ensureTool,
+  checkTool,
   readback,
   digest,
   configurationDigest,

@@ -113,6 +113,28 @@ test("batch validates source-bound records and rejects incomplete or altered res
     }),
   );
   assert.equal(collectResults(options)[0].record.providerToolId, "sdt-example");
+  const checked = path.join(directory, "runtime-check-chip-" + runId);
+  fs.renameSync(folder, checked);
+  const reuseOptions = { ...options, publishedDomains: [] };
+  assert.equal(
+    collectResults(reuseOptions)[0].record.providerToolId,
+    "sdt-example",
+  );
+  // A partial publish result must supersede earlier check evidence, not hide failure.
+  fs.mkdirSync(folder);
+  fs.copyFileSync(
+    path.join(checked, "plan.json"),
+    path.join(folder, "plan.json"),
+  );
+  assert.equal(collectResults(options)[0].record, undefined);
+  // A stale partial result from a previous attempt cannot override fresh reuse.
+  assert.equal(
+    collectResults(reuseOptions)[0].record.providerToolId,
+    "sdt-example",
+  );
+  fs.rmSync(folder, { recursive: true });
+  fs.renameSync(checked, folder);
+
   assert.equal(
     collectResults({ ...options, selected: ["chip", "pcb"] })[1].record,
     undefined,

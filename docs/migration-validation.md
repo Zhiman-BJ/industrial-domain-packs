@@ -191,3 +191,20 @@ lock commits do not recursively trigger workflows. Actionlint and all 11
 architecture policy tests passed. Independent review checked branch/environment
 selection, resume, writeback authentication and documentation with no findings.
 No live publication was triggered during this change.
+
+## 2026-10-22 — separate check and conditional publication jobs
+
+The Check matrix is read-only. A selection job produces the Publish matrix from
+its results; fully reusable packs skip Publish while retaining verified results
+for final lock writeback and summary. Publish rechecks cloud state and retains
+durable intent handling. Current selection controls artifact collection, so a
+stale partial publication artifact from an earlier attempt cannot replace fresh
+reuse evidence, and a failed current publication cannot fall back to a check.
+
+Validation: 181 tests, 179 passed and 2 skipped, including four orchestration
+checks proving no image build or Tool mutation in Check and propagation of cloud
+query errors. Architecture policy, content-lock check and actionlint passed.
+Independent review found a mixed-rerun artifact selection issue; it was fixed,
+covered by regression tests and reviewed again with no remaining blockers.
+No new live workflow was dispatched for this revision; the first automatic prod
+run from the prior merged revision was still in progress during these checks.

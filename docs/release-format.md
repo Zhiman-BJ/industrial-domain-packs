@@ -200,8 +200,12 @@ Only trusted publishers should write these input tags; do not retarget them.
 `Publish remote runtime` runs automatically on pushes to `main` (including PR
 merges), using prod configuration. Trusted feature branches publish test through
 manual dispatch, with no domain or environment inputs. Manual dispatch on `main`
-also permits retrying prod publication. Each of chip/freecad/pcb checks its actual build inputs and cloud
-resources. Unchanged resources are reused, not rebuilt. Shared worker changes
+also permits retrying prod publication. The `Check` matrix inspects chip/freecad/pcb build inputs and cloud resources
+without creating or updating them. A selection job collects those checks and
+creates a `Publish` matrix containing only packs that need image builds, Tool
+creation/resource updates, or reconciliation of a pending Tool. When everything
+is reusable, the entire Publish job is skipped. Publish rechecks cloud state
+before mutations; a check result is not a reservation. Unchanged resources are reused, not rebuilt. Shared worker changes
 naturally change every affected domain's build hash. Tool-only configuration
 changes do not change image build inputs. Publication does not deploy Service.
 
@@ -276,7 +280,10 @@ publication. Retain workflow history and intent artifacts while unresolved.
 Artifacts have 90-day retention. Cloud operations use bounded polling; no blind
 create/update replay occurs after a timeout. Name collisions or other drift fail.
 
-Domain jobs upload results even on partial failure. The final job collects and
+Check jobs upload verified reuse results and publication decisions. Publish jobs
+upload results even on partial failure. The final job uses publication results
+for packs selected by the current checks and check results for unchanged packs; a partial publication never
+falls back to earlier successful check evidence. The final job collects and
 validates every domain's evidence, writes all release locks together, computes
 the final content lock, runs checks, and makes one source-branch writeback commit.
 Any domain failure prevents the batch writeback. A compare-and-swap push requires

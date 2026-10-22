@@ -268,3 +268,27 @@ test("CPU/memory changes preserve Tool name and update existing Tool once with v
   assert.equal(disk.toolOperation, "updated");
   assert.equal(updates, 2);
 });
+
+test("read-only Tool check selects create, reuse and resource update without mutation", async () => {
+  const { checkTool } = require("../scripts/runtime-tool-publication.cjs");
+  const p = planTool({
+    ...base,
+    configuration: {
+      ...base.configuration,
+      CustomConfiguration: {
+        ...base.configuration.CustomConfiguration,
+        Resources: { CPU: "1", Memory: "1Gi" },
+      },
+    },
+  });
+  const c = cloud(p);
+  assert.equal((await checkTool(p, c)).action, "create");
+  assert.equal(c.calls.length, 0);
+  await c.CreateSandboxTool(p.request);
+  assert.equal((await checkTool(p, c)).action, "reuse");
+  c.row().CustomConfiguration.Resources.CPU = "2";
+  assert.equal((await checkTool(p, c)).action, "update");
+  assert.equal(c.calls.length, 1);
+  c.row().CustomConfiguration.Command = ["unexpected"];
+  await assert.rejects(checkTool(p, c), /configuration differs/);
+});
