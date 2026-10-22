@@ -1,6 +1,7 @@
 import hashlib
 import importlib.util
 import io
+import json
 from pathlib import Path
 import unittest
 from unittest.mock import patch
@@ -59,6 +60,26 @@ class RegistryVerification(unittest.TestCase):
         with patch.object(verifier.urllib.request, 'urlopen', side_effect=error):
             with self.assertRaisesRegex(ValueError, 'token realm'):
                 registry.request('manifests', 'sha256:' + '0' * 64)
+
+    def test_single_manifest_checks_actual_config_platform_and_all_blobs(self):
+        config = json.dumps({'os': 'linux', 'architecture': 'arm64'}).encode()
+        layer = b'layer'
+        digest = lambda b: 'sha256:' + hashlib.sha256(b).hexdigest()
+        descriptor = lambda b: {'digest': digest(b), 'size': len(b)}
+        manifest = json.dumps({'schemaVersion': 2, 'mediaType': 'application/vnd.oci.image.manifest.v1+json',
+                               'config': descriptor(config), 'layers': [descriptor(layer)]}).encode()
+        data = {digest(config): config, digest(layer): layer, digest(manifest): manifest}
+        class Response(io.BytesIO):
+            headers = {}
+        registry = verifier.PublicRegistry('https://registry.example', 'public/runtime')
+        registry.request = lambda kind, ref, *args: Response(data[ref])
+        with self.assertRaisesRegex(ValueError, 'platform'):
+            registry.manifest(digest(manifest), 'linux/amd64')
+        result = registry.manifest(digest(manifest), 'linux/arm64')
+        self.assertEqual(result['platform'], 'linux/arm64')
+        data[digest(layer)] = b'corrupt'
+        with self.assertRaisesRegex(ValueError, 'identity'):
+            registry.manifest(digest(manifest), 'linux/arm64')
 
     def test_manifest_digest_binds_descriptors(self):
         class Response(io.BytesIO):

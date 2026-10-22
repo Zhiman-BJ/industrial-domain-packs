@@ -120,7 +120,10 @@ async function main(args) {
         "type=bind,source=" + root + ",target=/input,readonly",
         "--mount",
         "type=bind,source=" + output + ",target=/work",
+        "--entrypoint",
+        "python3",
         image,
+        "/opt/domain-packs/packs/chip/runtime/native-profile.py",
         "/input",
         "/work",
       ],
@@ -131,7 +134,6 @@ async function main(args) {
       logs += boundedFile(output, "tool.log", 2 * 1048576);
     const report = JSON.parse(boundedFile(output, "report.json", 65536));
     const wave = boundedFile(output, "wave.vcd", 8 * 1048576);
-    const { identity } = require("../../../lib/index.cjs");
     const { verifier } = require("../runtime/verifier.cjs");
     const values = [
       { kind: "log.tool", bytes: Buffer.from(logs) },
@@ -145,7 +147,7 @@ async function main(args) {
     });
     if (
       !result.code &&
-      report.packIdentity?.contentSha256 === identity.contentSha256 &&
+      report.profileId === "rtl-cpu" &&
       verification.status === "passed"
     )
       code = 0;

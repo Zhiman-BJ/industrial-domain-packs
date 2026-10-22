@@ -63,8 +63,8 @@ embed B or B's content digest, avoiding self-reference. B is pinned externally b
 the Service; `buildSourceContentSha256` continues to identify A, not B. Changing
 only publication metadata does not by itself prove the image is reusable: the
 build-input checker must validate the actual prepared build context and dependencies.
-Current Docker recipes copy broad package contents; excluding publication records
-from a future build fingerprint without preparing a matching context is unsafe.
+The build fingerprint must describe the actual image inputs under the packaging
+rules below; it must not silently ignore files that the recipe copies.
 
 The standalone `lib/runtime-release.cjs` validator/reader is for trusted publishing
 and testing code. The package `getRuntimeRelease` facade additionally enforces full
@@ -121,3 +121,74 @@ content is finalized and before committing B. It is not written into the release
 record that it covers, avoiding a self-reference. `buildSourceContentSha256` is
 still A's pre-build content hash, not this final B content hash. Neither hash
 substitutes for the actual Docker build-input fingerprint.
+
+
+## Remote runtime image packaging
+
+All domains must follow the same remote runtime packaging rules, using the
+FreeCAD and PCB recipes as the reference:
+
+- Copy only the files required by the selected execution profile: its manifest,
+  runtime code, shared worker, dependency locks/installers and required assets.
+  Do not copy the entire repository, `packs/` or `lib/` as a shortcut.
+- Keep runtime publication records (`releases/`), the repository-wide
+  `content-lock.json`, and unrelated documentation out of runtime images and
+  their build inputs. Dependency locks are actual build inputs and must remain
+  included; they are different from publication records and the Pack content lock.
+- Validate the full Pack content lock during publication and when the Service
+  loads its pinned Pack. Do not require the sandbox to carry or revalidate the
+  entire Pack source tree. Use the existing shared worker's runtime-identity and
+  input-snapshot checks inside the sandbox; do not add a separate whole-Pack
+  source-lock mechanism there. Runtime identity matching is not a recomputed
+  image hash and does not replace immutable image binding.
+- Derive the build fingerprint from actual runtime source, dependencies, recipe,
+  base-image identities, target platform and effective build arguments. Shared
+  worker changes affect every profile that copies it. Publication-only and
+  unrelated documentation changes must not trigger image rebuilds.
+- Write the image/Tool publication results first, then regenerate the final Pack
+  content lock. Publication output must not feed back into image build inputs.
+
+Apply these rules to new profiles and changes to existing profiles in every
+domain. Packaging consistency does not itself establish native qualification.
+
+
+## Build input calculation and image reuse
+
+The publisher prepares a fresh, minimal Docker context with the checked-in
+helper, then builds from that directory:
+
+```sh
+node scripts/runtime-build.cjs packs/chip/images/Dockerfile.rtl-cpu linux/amd64 /tmp/chip-context > /tmp/chip-inputs.json
+docker buildx build --platform linux/amd64 -f /tmp/chip-context/packs/chip/images/Dockerfile.rtl-cpu /tmp/chip-context
+```
+
+The context directory must not already exist. Optional fourth argument is a JSON
+object of reviewed build-argument overrides. Pass those same effective arguments
+and platform to Docker. The output records `buildInputDigest`, file hashes/modes,
+recipe, effective arguments and immutable external image references. The helper
+copies the same bytes it hashes. Build from its output context, not a separately
+read or modified checkout; do not modify the prepared context before building.
+The checkout's `.dockerignore` does not govern this fresh context, which contains
+only enumerated files and the Dockerfile.
+
+The reader intentionally supports the existing recipes' explicit file `COPY`,
+image stages, cache mounts and literal `ARG` defaults. Broad/directory copies,
+local glob/variable sources, `ADD`, bind-mounted inputs and unrecognized syntax
+fail rather than silently excluding inputs. All external `FROM`, `COPY --from`
+and Dockerfile frontend references must be digest-pinned. Extend the reader and
+its tests together when a recipe actually requires additional syntax.
+
+`scripts/runtime-image-reuse.cjs` provides the publisher's `reuseImage` helper.
+Its candidate must be a previously qualified release record from a reviewed,
+integrity-checked Pack. It validates that record, compares build inputs, platform
+and runtime identity, then calls the existing registry artifact verifier to
+verify the immutable manifest, actual config platform and referenced blobs.
+Qualification references remain attached to that same publication/image; they
+are not copied to a different digest and native result samples are not rerun here.
+A missing prior release or changed input returns a build decision. Invalid
+metadata, missing/corrupt images and registry errors fail the reuse check; they
+never count as permission to reuse. Existing Docker credentials may be used
+explicitly for a private registry; credentials are not recorded in the descriptor.
+
+These helpers prepare the publishing Action; they do not publish images, create
+Tools, write release locks or change Service configuration by themselves.

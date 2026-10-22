@@ -25,7 +25,7 @@ npm install --ignore-scripts 'https://codeload.github.com/Zhiman-BJ/industrial-d
 
 The package `@zhiman-bj/industrial-domain-packs` exports `catalog`, `identity`, `getSandboxProfile()` and integrity checks. `content-lock.json` identifies maintained code and metadata. Pin the full commit in both package.json and package-lock.json. No npm registry publication is required for this Git dependency.
 
-The remote service consumes the trusted `chip-pack/rtl-cpu` profile, including its descriptor, Verifier, native entry, bounded artifact exporter and Dockerfile. It checks the sandbox's content identity before native execution. The native entry calls the same EDA `semantic.prepare` and `semantic.observe` used by local execution; both canonical adapters use `runtime/verifier.cjs`. Image versions and Pack identities are part of capability disclosure and persisted jobs. The local Harness consumer transition remains separate; existing installations do not change automatically.
+The remote service consumes the trusted `chip-pack/rtl-cpu` profile, including its descriptor, Verifier, native entry, bounded artifact exporter and Dockerfile. The shared worker checks runtime identity and input-snapshot integrity before native execution; full Pack content integrity is checked outside the sandbox. The native entry calls the same EDA `semantic.prepare` and `semantic.observe` used by local execution; both canonical adapters use `runtime/verifier.cjs`. Image versions and Pack identities are part of capability disclosure and persisted jobs. The local Harness consumer transition remains separate; existing installations do not change automatically.
 
 ## Development and validation
 
@@ -46,7 +46,7 @@ docker buildx build --platform linux/amd64 --load \
 
 After deliberate source changes, stage reviewed files under packs/ and lib/ and run `npm run lock`. This changes the release identity. Build consumer and sandbox images from the same pinned package, then drain the old coordinator before switching.
 
-Build a committed **source-only** archive for any Pack with `python3 scripts/package-pack.py chip --output dist` (also godot, pcb, freecad, cad, cuda). Archives contain import notices and file hashes; executable images use the complete pinned package as their build context.
+Build a committed **source-only** archive for any Pack with `python3 scripts/package-pack.py chip --output dist` (also godot, pcb, freecad, cad, cuda). Archives contain import notices and file hashes. A pinned repository may serve as the Docker build context; this does not mean its entire contents belong in the image. Remote image contents follow the [packaging rules](docs/release-format.md#remote-runtime-image-packaging).
 
 ## Ownership and license
 
@@ -132,3 +132,5 @@ were downloaded and hash-checked, without asserting native execution support.
 Remote publishers and consumers can validate schema-1 runtime release records with `getRuntimeRelease`; see [release identity](docs/release-format.md). This metadata API does not publish Tools or qualify execution profiles.
 
 Runtime release lock values are maintained by the publishing GitHub Action; do not hand-edit generated image digests, Tool IDs or publication evidence. Before changing publication, read the [publication workflow and final hashing order](docs/release-format.md#publication-workflow-and-generated-files). The Action workflow is planned; this PR supplies the metadata API.
+
+Before adding or changing any remote runtime profile, read the [shared packaging rules](docs/release-format.md#remote-runtime-image-packaging).
