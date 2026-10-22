@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "releaseId": "pub-b1d4ee64b267b3495566756dbfc27b3ca552caf796fdb4db536b240f11574577",
+  "packId": "pcb-pack",
+  "domain": "pcb",
+  "runtimeProfile": "pcb-verify-cpu",
+  "environment": "test",
+  "region": "ap-guangzhou",
+  "buildSourceCommit": "3efa363824ac97d661aaa612a6312dcc544b51a5",
+  "buildSourceContentSha256": "1527b7fa0bc98ae998a7cb1e7e450a5a6dc59b629ab76144c1c5469184db55c9",
+  "buildInputDigest": "sha256:df85e59ed88f76b959e7a45c0394dac096060699dc79e96cbe1da7fc0732c659",
+  "runtimeDigest": "sha256:62ee1ce7ed0058bcc8cab1ff61d6cb278c30cbbb811334529ba0b966030ac8a6",
+  "image": {
+    "reference": "ccr.ccs.tencentyun.com/industrial-mcp-remote/pcb-kicad@sha256:9fd7098faef318a95e77b8e08886d029be0f764794e1568c8820556726e1ade0",
+    "platform": "linux/amd64"
+  },
+  "provider": "tencent-ags",
+  "providerToolId": "sdt-lxd25fhf",
+  "toolConfigurationDigest": "sha256:7cea64c2ce877b4aa7be873bfc150904e2a4bde03f1f5567ea0d29c6a5e46464",
+  "qualification": {
+    "status": "passed",
+    "gates": [
+      "registry-metadata",
+      "ags-tool-active",
+      "ags-tool-configuration"
+    ],
+    "evidence": [
+      "https://github.com/Zhiman-BJ/industrial-domain-packs/actions/runs/39778930538"
+    ]
+  }
+}
