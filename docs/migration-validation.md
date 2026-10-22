@@ -81,3 +81,113 @@ cancellation/recovery or cloud qualification.
 
 Each built context's fingerprint was compared with the final source checkout and
 matched. These are local build identities, not published registry/Tool bindings.
+
+## 2026-10-22 — DPR-03 Tencent publisher, local validation
+
+The explicit `Publish remote runtime` Action builds/verifies immutable remote
+images, persists an intent before AGS creation, reconciles timeouts, checks
+ACTIVE/configuration readback and writes generated release records plus the final
+content lock to the unchanged source branch. It does not deploy the Service or
+delete Tools. Configuration and publication-only gates are documented in
+`release-format.md`; the existing GHCR release channel remains separate.
+
+On macOS arm64 / Node 24.21.0, the complete JavaScript suite passed 160 tests with
+2 existing skips; the separate architecture suite passed 11 tests. The new tests
+exercise stable/environment-scoped identities, persistence failure, ambiguous
+creation, pagination, readback mismatch/null normalization and real local-Git
+writeback/source-advancement races. Initial sandboxed network-listener tests hit
+EPERM and passed when rerun with loopback-listener permission. Actionlint 1.7.7
+checks the workflow. Runtime recipes and native execution code are unchanged;
+DPR-02 build evidence remains applicable, not a new cloud qualification.
+
+No GitHub/Tencent publication has been run: test/prod Environment configuration is still absent. Shared Tencent
+SecretId/SecretKey were subsequently configured at repository scope with explicit
+owner approval; Environment creation was rejected by GitHub because the current
+account lacks repository administrator rights. A read-only query verified all six
+existing Tools are ACTIVE and retains their distinct resource/timeout settings;
+this does not qualify a new publication. Registry upload, AGS API defaults,
+CAM permissions and protected-branch bot writeback still require real Action
+validation. The generated metadata must not be interpreted as native domain
+qualification. Dependency audit also reports the existing MCP SDK/Ajv advisories
+and a publisher-only transitive uuid advisory (v3/v5/v6 buffer APIs); the Tencent
+SDK path uses uuid.v4 without a supplied buffer. No dependency overrides or
+unrelated runtime upgrades were applied in this task.
+
+
+Independent review identified a rerun gap: rebuilding after an uncertain Tool
+creation could change the image digest and hence its idempotency identity. The
+fix restores and validates the previous intent across runs/attempts before any
+build; missing/expired evidence after a cloud attempt fails closed. Regression
+tests cover a hypothetical different rebuild digest and expired/missing intent,
+in addition to the existing timeout test. Cloud error-code diagnostics remain a
+minor deferred finding; real default materialization, Environment protections,
+native qualification and existing dependency advisories remain explicit external
+or separately scoped limits, not claims made by this local validation.
+
+## 2026-10-22 — resource updates and shared image publication revision
+
+An isolated Guangzhou custom Tool used an existing Chip image from the allowed
+namespace, a diagnostic Python HTTP process and token-authenticated access. CPU/
+memory changed from 1 core/1 GiB to 2 cores/2 GiB. The old instance retained cgroup
+quota 100000/100000 and memory 1073741824; the new instance had 200000/100000 and
+2147483648. The old process boot UUID stayed constant and elapsed time increased.
+Both instances were observed STOPPED and the test Tool absent after cleanup.
+
+Disk update first exposed propagation lag: Tool readback changed from 1Gi to 5Gi,
+but an immediately started instance still reported root capacity 1078984704 bytes.
+A second isolated test waited 15 seconds after update: old root/tmp/home/mnt stayed
+1078984704; new paths reported 5373952000. Instance API resource readback likewise
+showed 1024Mi versus 5120Mi. Old process continuity was preserved. Temporary Tools
+were deleted; subsequent API queries confirmed all four disk-test instances
+STOPPED and both Tools absent. This proves an observed eventual update, not a bounded
+15-second propagation guarantee or a pause/resume guarantee.
+
+Read-only CCR checks found actual per-repository quota 100 tags, with Chip 3,
+PCB 5 and FreeCAD 2 tags. No global or per-repository lifecycle strategy existed.
+The new capacity helper was exercised against the live Chip repository and
+returned 3/100, remaining 97. No image was published or deleted in these tests.
+The revised workflow uses repository configuration/secrets rather than the
+previous GitHub Environment prerequisite, cloud input-tag reuse, mutable resource
+sizing, one batch writeback and per-domain summaries. End-to-end Action publication
+is still not qualified by these targeted cloud checks.
+
+Final revision checks: 172 tests, 170 passed and 2 skipped; architecture policy
+checks passed; real Chip stdio MCP smoke returned 25 tools with required tools
+present; actionlint passed after correcting the final job scratch-directory
+context. Independent review covered the complete diff and follow-up fixes:
+removed a hardcoded memory test that blocked valid configuration edits and allowed
+same-source test-branch intent reuse without relaxing environment/source checks.
+The existing pull role was configured as repository variable TENCENT_ROLE_ARN.
+Registry username/password Secrets are still absent; the live publication Action
+has not been dispatched. Existing native qualification is unchanged.
+
+## 2026-10-22 — publication configuration grouped by environment
+
+Replaced six per-domain JSON files with `publication/test.cjs` and
+`publication/prod.cjs`. The files export plain objects with all domains and native
+JS comments; no YAML dependency remains. Existing Ajv validates and translates
+the objects. The six translated Tencent configurations were compared with the
+pre-migration JSON values, including fixed fallback timeouts, and were identical.
+The input files of all three actual Docker recipes were checked: none changed.
+The package inventory and integrity verifier now cover the two CJS files; ordinary
+consumers do not execute them. The consumer test rejects altered configuration
+bytes, and configuration tests cover unknown fields, invalid types, missing
+domains/profile mismatches and isolation from Node's cached configuration object.
+Registry login Secrets were provisioned with owner approval after the previous
+record; the full publishing Action has still not been dispatched.
+
+Migration validation: 175 tests, 173 passed and 2 skipped; all 11 architecture
+policy tests and content-lock verification passed. Package dry-run includes both
+CJS files and no legacy publication JSON. Real Chip stdio MCP smoke returned 25
+tools with required tools present. Independent review found no blocking or minor
+issues and independently checked configuration equivalence and 14 focused tests.
+
+## 2026-10-22 — automatic prod publication trigger
+
+`Publish remote runtime` now runs on pushes to main, including PR merges.
+Feature branches retain manual test publication; manual main dispatch supports
+prod retries. The writeback keeps checkout's default GITHUB_TOKEN, so generated
+lock commits do not recursively trigger workflows. Actionlint and all 11
+architecture policy tests passed. Independent review checked branch/environment
+selection, resume, writeback authentication and documentation with no findings.
+No live publication was triggered during this change.

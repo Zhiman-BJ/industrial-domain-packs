@@ -593,6 +593,8 @@
     "packs/pcb/skills/pcb-layout-inspect/SKILL.md",
     "packs/pcb/uv.lock",
     "packs/pcb/validate.sh",
+    "publication/prod.cjs",
+    "publication/test.cjs",
     "content-lock.json",
     "LICENSE",
     "THIRD_PARTY_NOTICES.md",
@@ -618,5 +620,9 @@
     "@industrial-agent-harness/domain-runtime": {
       "optional": true
     }
+  },
+  "devDependencies": {
+    "tencentcloud-sdk-nodejs-ags": "4.1.326",
+    "tencentcloud-sdk-nodejs-common": "4.1.220"
   }
 }

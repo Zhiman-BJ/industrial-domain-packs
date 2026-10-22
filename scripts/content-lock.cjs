@@ -5,9 +5,21 @@ const { execFileSync } = require("node:child_process");
 const root = path.resolve(__dirname, "..");
 const hash = (bytes) => crypto.createHash("sha256").update(bytes).digest("hex");
 // Include tracked and deliberately staged new sources; never local caches.
-const names = execFileSync("git", ["ls-files", "-z", "--", "packs", "lib"], {
-  cwd: root,
-})
+const names = execFileSync(
+  "git",
+  [
+    "ls-files",
+    "-z",
+    "--",
+    "packs",
+    "lib",
+    "publication/test.cjs",
+    "publication/prod.cjs",
+  ],
+  {
+    cwd: root,
+  },
+)
   .toString()
   .split("\0")
   .filter(Boolean)
