@@ -128,3 +128,5 @@ RTL execution or change Chip's existing Python 3.13, Verilator, C++ toolchain,
 other EDA/PDK prerequisites or engineering qualification. The macOS ARM64
 archive/wheel and 64×64 PNG probe were exercised; the other three platform assets
 were downloaded and hash-checked, without asserting native execution support.
+
+Remote publishers and consumers can validate schema-1 runtime release records with `getRuntimeRelease`; see [release identity](docs/release-format.md). This metadata API does not publish Tools or qualify execution profiles.

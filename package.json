@@ -13,6 +13,7 @@
     "lib/container.cjs",
     "lib/index.cjs",
     "lib/resources.cjs",
+    "lib/runtime-release.cjs",
     "lib/worker-http.py",
     "packs/AGENTS.md",
     "packs/cad/PROVENANCE.md",
