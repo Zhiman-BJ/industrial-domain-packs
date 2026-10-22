@@ -216,18 +216,25 @@ uploads and full verification. No `TENCENT_ROLE_ARN`, test/prod selection or Git
 token is required locally. Keep values outside version control.
 
 Prerequisites: Node.js 24+, installed npm dependencies, Git, Python 3, a running
-Docker engine and Buildx. The script logs into CCR with password-stdin and uses a
+Docker engine, Buildx and `regctl` (CLI version checked: v0.11.7). The script logs into CCR with password-stdin and uses a
 reusable `domain-pack-local` docker-container builder, without switching the
 user's default builder. Docker's configured credential store manages the login.
 On ARM hosts the engine must support building the declared linux/amd64 platform.
 
 All three domains are checked automatically. Matching images are fully verified
-and reused. Missing images are built and pushed by digest, with no input tag yet;
+and reused. Missing images are built into a local OCI layout, then `regctl image copy`
+uploads by digest with 8 MiB chunks for larger blobs, with no input tag yet;
 after every layer passes digest/size verification, the script promotes the same
 manifest to `input-<full buildInputDigest>` and checks tag readback. Verification
 failure never publishes a new input tag. The script never creates Tools or
-updates release/content locks. Build/upload has a 90-minute bound; full registry
+updates release/content locks. Build and upload each have a 90-minute bound; full registry
 verification has a 20-minute bound and tag promotion has a 3-minute bound.
+
+The OCI layout and an attempt-specific regctl settings file contain no registry
+credentials; regctl reads the existing Docker credential store. The script does
+not change global regctl settings. OCI layouts consume local disk space until
+the operator removes old attempt directories. Install regctl from its
+[official releases](https://github.com/regclient/regclient/releases).
 
 Local evidence and partial image identities are retained under the repository's
 Git common directory at `runtime-image-publications/<source-commit>/<domain>/attempt-*`.

@@ -88,6 +88,7 @@ async function publishImage(
   const reused = Boolean(image);
   if (!image) {
     const metadata = path.join(directory, "build-metadata.json");
+    const layout = path.join(directory, "image.oci");
     const args = [
       "buildx",
       "build",
@@ -99,7 +100,7 @@ async function publishImage(
       "--sbom=false",
       "--progress=plain",
       "--output",
-      `type=image,name=${repository},push=true,push-by-digest=true`,
+      `type=oci,tar=false,dest=${layout}`,
       "--metadata-file",
       metadata,
       "-f",
@@ -113,6 +114,31 @@ async function publishImage(
     if (!/^sha256:[a-f0-9]{64}$/.test(hash))
       throw Error("Missing immutable image digest");
     image = { reference: repository + "@" + hash, platform: input.platform };
+    write(path.join(directory, "image.json"), image);
+    // Scope registry tuning to this attempt. Docker's existing credential helper
+    // supplies authentication; no password is copied into regctl configuration.
+    const env = {
+      ...process.env,
+      REGCTL_CONFIG: path.join(directory, "regctl.json"),
+    };
+    execute(
+      "regctl",
+      [
+        "registry",
+        "set",
+        "ccr.ccs.tencentyun.com",
+        "--blob-chunk",
+        "8388608",
+        "--blob-max",
+        "8388608",
+      ],
+      { env, timeout: 15000 },
+    );
+    execute(
+      "regctl",
+      ["image", "copy", "ocidir://" + layout + "@" + hash, image.reference],
+      { env, stdio: "inherit", timeout: 90 * 60 * 1000 },
+    );
   }
   // Retain partial results for diagnosis, but do not expose a new input tag yet.
   write(path.join(directory, "image.json"), image);
@@ -162,6 +188,7 @@ async function main() {
   for (const [cmd, args] of [
     ["git", ["--version"]],
     ["python3", ["--version"]],
+    ["regctl", ["version"]],
     ["docker", ["buildx", "version"]],
     ["docker", ["info", "--format", "{{.ServerVersion}}"]],
   ]) {

@@ -257,3 +257,22 @@ different digests and query errors still fail immediately. Six regression cases
 passed, including cancellation of in-flight queries and stopping pagination after
 the deadline. The full Node suite passed 198 tests with 2 skipped (200 total).
 Content-lock and diff checks passed. FreeCAD/PCB publication remains in progress.
+
+## 2026-10-22 — OCI export and chunked local upload
+
+FreeCAD built successfully with its pinned AppImage, but Buildx direct large-layer
+uploads encountered broken pipe/closed connection errors. That attempt was
+cancelled without publishing an input tag. Owner approved using regctl to upload
+the local OCI layout with 8 MiB chunks; full verification and tag promotion remain
+mandatory. An isolated two-chunk CCR probe returned 202 for both chunks and 201
+on completion; its readback was not qualified because the probe rejected the
+registry redirect. It created no image manifest, tag or Tool.
+
+Official regctl v0.11.7 darwin/arm64 binary SHA-256 matched the release asset.
+Real FreeCAD OCI export and regctl local digest resolution matched
+`sha256:da7d8d5d1593ea46fdd55807d4bba52db2c0348496b46e89416376f97e65a5ce`.
+The full Node suite passed 199 tests with 2 skipped (201 total); content-lock
+and diff checks passed. Independent incremental review passed, including an
+upload-failure test that prevents tag promotion. Large-layer regctl upload and
+subsequent full verification are still being exercised; no new native runtime
+qualification is claimed.

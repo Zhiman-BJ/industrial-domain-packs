@@ -35,7 +35,13 @@ test("empty and whitespace-only variables fail without printing supplied secrets
 const fs = require("node:fs"),
   os = require("node:os");
 const { publishImage } = require("../scripts/publish-images-local.cjs");
-for (const scenario of ["build", "reuse", "verify-failure", "query-failure"])
+for (const scenario of [
+  "build",
+  "reuse",
+  "verify-failure",
+  "query-failure",
+  "upload-failure",
+])
   test(`local image handoff: ${scenario}`, async (t) => {
     const directory = fs.mkdtempSync(path.join(os.tmpdir(), "local-image-"));
     t.after(() => fs.rmSync(directory, { recursive: true, force: true }));
@@ -63,15 +69,37 @@ for (const scenario of ["build", "reuse", "verify-failure", "query-failure"])
           },
         };
       },
-      execute: (cmd, args) => {
+      execute: (cmd, args, options) => {
+        if (cmd === "regctl") {
+          assert.equal(
+            options.env.REGCTL_CONFIG,
+            path.join(directory, "regctl.json"),
+          );
+          if (args[0] === "registry") {
+            calls.push("upload-config");
+            assert.equal(args[args.indexOf("--blob-chunk") + 1], "8388608");
+            assert.equal(args[args.indexOf("--blob-max") + 1], "8388608");
+          } else {
+            calls.push("upload");
+            assert.deepEqual(args.slice(0, 2), ["image", "copy"]);
+            assert.equal(args.at(-1), image.reference);
+            assert.equal(
+              args.at(-2),
+              "ocidir://" + path.join(directory, "image.oci") + "@" + hash,
+            );
+            if (scenario === "upload-failure") throw Error("upload failed");
+          }
+          return;
+        }
         assert.equal(cmd, "docker");
         if (args[1] === "build") {
           calls.push("build");
           assert.match(
             args[args.indexOf("--output") + 1],
-            /push-by-digest=true/,
+            /^type=oci,tar=false,dest=/,
           );
           assert.equal(args.includes("--tag"), false);
+          assert.doesNotMatch(args[args.indexOf("--output") + 1], /push/);
           fs.writeFileSync(
             path.join(directory, "build-metadata.json"),
             JSON.stringify({ "containerimage.digest": hash }),
@@ -98,7 +126,7 @@ for (const scenario of ["build", "reuse", "verify-failure", "query-failure"])
       deps,
     );
     if (scenario.endsWith("failure")) {
-      await assert.rejects(promise, /corrupt layer|cloud denied/);
+      await assert.rejects(promise, /corrupt layer|cloud denied|upload failed/);
       assert.equal(calls.includes("promote"), false);
     } else {
       const r = await promise;
@@ -107,7 +135,16 @@ for (const scenario of ["build", "reuse", "verify-failure", "query-failure"])
         calls,
         scenario === "reuse"
           ? ["find", "verify"]
-          : ["find", "build", "verify", "find", "promote", "find"],
+          : [
+              "find",
+              "build",
+              "upload-config",
+              "upload",
+              "verify",
+              "find",
+              "promote",
+              "find",
+            ],
       );
     }
   });
