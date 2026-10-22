@@ -288,3 +288,20 @@ messages are liveness indications, not byte-progress estimates. Four regression
 cases cover bounds, timer cleanup and secret-safe failure reporting. The full
 Node suite passed 203 tests with 2 skipped (205 total); content-lock and diff
 checks passed. Live FreeCAD/PCB full verification remains pending.
+
+## 2026-10-22 — registry HEAD integrity gate
+
+Owner approved replacing mandatory local full readback with manifest/config
+hash and platform verification plus HEAD checks for every referenced blob.
+The previous FreeCAD full readback was stopped; PCB digest upload continued.
+This gate trusts registry content-addressed storage and its digest/size headers;
+it does not claim independent readback of all remote bytes. Full verification
+remains available as a diagnostic command.
+
+Live FreeCAD verification succeeded for digest
+`sha256:da7d8d5d1593ea46fdd55807d4bba52db2c0348496b46e89416376f97e65a5ce`,
+linux/amd64, all 16 layers plus config, with verification mode `registry-heads`.
+The full Node suite passed 204 tests with 2 skipped (206 total), all 11 Python
+verifier tests passed, and content-lock/diff checks passed. Input tag promotion
+and PCB publication remain pending. CI continues to check metadata and the
+trusted publisher-owned input tags without downloading layers.

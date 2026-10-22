@@ -65,7 +65,7 @@ for (const scenario of [
           identity: {
             digest: hash,
             platform: image.platform,
-            verification: "full-blobs",
+            verification: "registry-heads",
           },
         };
       },

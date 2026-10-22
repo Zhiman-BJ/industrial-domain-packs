@@ -8,6 +8,7 @@ async function verifyImage(
   image,
   dockerCredentials = false,
   metadataOnly = false,
+  blobHeads = false,
 ) {
   const [repository, digest] = image.reference.split("@");
   const slash = repository.indexOf("/");
@@ -19,14 +20,16 @@ async function verifyImage(
     "--platform",
     image.platform,
   ];
+  if (blobHeads) args.push("--blob-heads");
   if (metadataOnly) args.push("--metadata-only");
   if (dockerCredentials) args.push("--docker-credentials");
-  const minutes = metadataOnly ? 3 : 90;
-  const label = metadataOnly
+  const lightweight = metadataOnly || blobHeads;
+  const minutes = lightweight ? 3 : 90;
+  const label = lightweight
     ? "Image metadata verification"
     : "Full image verification";
   const started = Date.now();
-  const progress = metadataOnly
+  const progress = lightweight
     ? null
     : setInterval(() => {
         console.error(
@@ -39,7 +42,7 @@ async function verifyImage(
       timeout: minutes * 60 * 1000,
     });
     const evidence = JSON.parse(stdout);
-    if (!metadataOnly)
+    if (!lightweight)
       console.error(
         `[image verification] complete in ${Math.floor((Date.now() - started) / 1000)}s`,
       );
@@ -91,4 +94,6 @@ async function reuseImage({
     evidence,
   };
 }
-module.exports = { reuseImage, verifyImage };
+const verifyRegistryImage = (image, dockerCredentials = false) =>
+  verifyImage(image, dockerCredentials, false, true);
+module.exports = { reuseImage, verifyImage, verifyRegistryImage };

@@ -92,7 +92,7 @@ C++ 工具链、其他 EDA/PDK 前提及工程验收边界。macOS ARM64 已运�
 
 远端发布与消费方可通过 `getRuntimeRelease` 校验 schema-1 运行发布记录，见[发布身份](docs/release-format.md)。该元数据 API 不负责发布 Tool，也不代表执行 profile 已通过资格验收。
 
-先运行 `npm run publish:images` 在本地准备并完整校验共享镜像（Buildx 导出 OCI，regctl 分块上传），所需环境变量和工具见[本地镜像准备](docs/release-format.md#local-image-preparation)。Action 只校验镜像元数据、发布 Tool，并一次性写回最终 lock。
+先运行 `npm run publish:images` 在本地准备共享镜像，校验 manifest/config 并通过 HEAD 核对每层的 digest 和大小，不完整下载镜像层（Buildx 导出 OCI，regctl 分块上传），所需环境变量和工具见[本地镜像准备](docs/release-format.md#local-image-preparation)。Action 只校验镜像元数据、发布 Tool，并一次性写回最终 lock。
 
 Runtime release lock 由发布 GitHub Action 维护，不要手动修改生成的 image digest、Tool ID 或发布证据。修改发布流程前，请阅读[发布流程与最终 hash 计算顺序](docs/release-format.md#publication-workflow-and-generated-files)。`Publish remote runtime` 在合入 main 后自动发布 prod，feature 分支手动触发发布 test，具体见[腾讯云配置与资格范围](docs/release-format.md#tencent-publishing-action-configuration)。
 

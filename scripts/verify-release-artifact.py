@@ -38,14 +38,14 @@ class PublicRegistry:
         self.jobs = jobs
         self.results = []
 
-    def request(self, kind, reference, extra_headers=None):
+    def request(self, kind, reference, extra_headers=None, method="GET"):
         url = f'{self.host}/v2/{self.repository}/{kind}/{reference}'
         headers = {'Accept': ACCEPT, 'Cache-Control': 'no-cache'}
         headers.update(extra_headers or {})
         if self.token:
             headers['Authorization'] = 'Bearer ' + self.token
         try:
-            return urllib.request.urlopen(urllib.request.Request(url, headers=headers), timeout=120)
+            return urllib.request.urlopen(urllib.request.Request(url, headers=headers, method=method), timeout=120)
         except urllib.error.HTTPError as error:
             if error.code != 401 or self.token:
                 raise
@@ -61,7 +61,7 @@ class PublicRegistry:
             with urllib.request.urlopen(urllib.request.Request(realm + '?' + query, headers=token_headers), timeout=120) as response:
                 body = json.load(response)
                 self.token = body.get('token') or body['access_token']
-            return self.request(kind, reference, extra_headers)
+            return self.request(kind, reference, extra_headers, method=method)
 
     def blob(self, digest, size=None):
         validate_digest(digest)
@@ -105,7 +105,18 @@ class PublicRegistry:
         self.results.append(result)
         return result
 
-    def manifest(self, reference, platform='linux/amd64', metadata_only=False):
+    def blob_head(self, digest, size):
+        validate_digest(digest)
+        with self.request('blobs', digest, method='HEAD') as response:
+            if (response.status != 200
+                    or response.headers.get('Docker-Content-Digest') != digest
+                    or response.headers.get('Content-Length') != str(size)):
+                raise ValueError('Registry blob HEAD identity mismatch or missing headers')
+        result = {'digest': digest, 'size': size, 'verification': 'registry-head'}
+        self.results.append(result)
+        return result
+
+    def manifest(self, reference, platform='linux/amd64', metadata_only=False, blob_heads=False):
         with self.request('manifests', reference) as response:
             raw = response.read(16 * 1024 * 1024)
             declared = response.headers.get('Docker-Content-Digest')
@@ -122,7 +133,7 @@ class PublicRegistry:
             matches = [m for m in body['manifests'] if m.get('platform', {}).get('os') == os_name and m.get('platform', {}).get('architecture') == arch and (len(parts) == 2 or m.get('platform', {}).get('variant') == parts[2])]
             if len(matches) != 1:
                 raise ValueError('Expected exactly one manifest for ' + platform)
-            result['platformManifest'] = self.manifest(matches[0]['digest'], platform, metadata_only)
+            result['platformManifest'] = self.manifest(matches[0]['digest'], platform, metadata_only, blob_heads)
             result['platform'] = result['platformManifest']['platform']
         else:
             config_descriptor = body['config']
@@ -144,10 +155,12 @@ class PublicRegistry:
                 validate_digest(descriptor['digest'])
                 if type(descriptor['size']) is not int or descriptor['size'] < 0:
                     raise ValueError('Invalid descriptor size')
-                if not metadata_only:
+                if blob_heads:
+                    self.blob_head(descriptor['digest'], descriptor['size'])
+                elif not metadata_only:
                     self.blob(descriptor['digest'], descriptor['size'])
             result.update(configDigest=body['config']['digest'], downloadSize=sum(d['size'] for d in descriptors), layerCount=len(body.get('layers', [])))
-        result['verification'] = 'metadata-only' if metadata_only else 'full-blobs'
+        result['verification'] = 'registry-heads' if blob_heads else ('metadata-only' if metadata_only else 'full-blobs')
         return result
 
 
@@ -208,7 +221,9 @@ def main():
     image.add_argument('--platform', default='linux/amd64')
     image.add_argument('--jobs', type=int, choices=range(1, 33), default=8, metavar='1..32')
     image.add_argument('--output')
-    image.add_argument('--metadata-only', action='store_true', help='Verify manifest/config/platform without downloading image layers')
+    modes = image.add_mutually_exclusive_group()
+    modes.add_argument('--blob-heads', action='store_true', help='Verify manifest/config and each blob HEAD digest/size without downloading layers')
+    modes.add_argument('--metadata-only', action='store_true', help='Verify manifest/config/platform without downloading image layers')
     image.add_argument('--docker-credentials', action='store_true', help='Authenticate a private image using existing Docker credentials; never emit credentials')
 
     asset = commands.add_parser('asset', help='Verify a plain HTTPS release asset against its sha256')
@@ -228,7 +243,7 @@ def main():
     repo, kind, reference = match.groups()
     validate_digest(reference)
     registry = PublicRegistry(f'{url.scheme}://{url.netloc}', repo, docker_credentials(url.netloc) if args.docker_credentials else None, args.jobs)
-    identity = registry.blob(reference, args.size) if kind == 'blobs' else registry.manifest(reference, args.platform, args.metadata_only)
+    identity = registry.blob(reference, args.size) if kind == 'blobs' else registry.manifest(reference, args.platform, args.metadata_only, args.blob_heads)
     evidence = {'schemaVersion': 1, 'verifiedAt': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()), 'url': args.url, 'authentication': 'docker-registry-bearer' if args.docker_credentials else 'anonymous-bearer', 'identity': identity, 'blobs': registry.results}
     encoded = json.dumps(evidence, indent=2) + '\n'
     if args.output:

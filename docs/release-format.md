@@ -93,7 +93,7 @@ records do not need comments or an extra generated-marker field.
    release. Until placeholder support is implemented, do not insert fake values
    into a schema-1 record. On later updates, keep the last successful record
    intact until its replacement is ready.
-2. Prepare and fully verify images locally. Trigger the publishing Action on
+2. Prepare and verify images locally. Trigger the publishing Action on
    candidate source commit A. Validate A's content lock and derive its actual
    build-input fingerprint, then require a matching prepared image in CCR. Create a new Tool for a new runtime image binding and verify
    its configuration and required publication gates.
@@ -194,7 +194,8 @@ or `pcb-kicad`. Test and prod share images. A release lock is an output for
 consumers, not a prerequisite or cache index for publishing. Existing legacy tags
 without a build-input identity cannot prove reuse eligibility. The publisher
 resolves a matching tag to an immutable digest. Local preparation verifies its
-manifest, actual config platform and every referenced blob. Actions verify only
+manifest and actual config platform, then checks every referenced blob via HEAD
+for existence, digest and size (without downloading layers). Actions verify only
 manifest/config digests and platform, without downloading layers. A missing tag
 permits a local build; in Actions it fails with instructions to prepare images
 locally. A cloud query error, corrupt image or incomplete response fails publication.
@@ -212,7 +213,7 @@ The script reports all missing environment variables before invoking local tools
 or contacting cloud services. Required variables are `TENCENT_SECRET_ID`,
 `TENCENT_SECRET_KEY`, `TENCENT_REGISTRY_USERNAME` and `TENCENT_REGISTRY_PASSWORD`.
 The CAM pair queries existing images and capacity; the registry pair authenticates
-uploads and full verification. No `TENCENT_ROLE_ARN`, test/prod selection or GitHub
+uploads and registry integrity checks. No `TENCENT_ROLE_ARN`, test/prod selection or GitHub
 token is required locally. Keep values outside version control.
 
 Prerequisites: Node.js 24+, installed npm dependencies, Git, Python 3, a running
@@ -221,17 +222,29 @@ reusable `domain-pack-local` docker-container builder, without switching the
 user's default builder. Docker's configured credential store manages the login.
 On ARM hosts the engine must support building the declared linux/amd64 platform.
 
-All three domains are checked automatically. Matching images are fully verified
-and reused. Missing images are built into a local OCI layout, then `regctl image copy`
-uploads by digest with 8 MiB chunks for larger blobs, with no input tag yet;
-after every layer passes digest/size verification, the script promotes the same
-manifest to `input-<full buildInputDigest>` and checks tag readback. Verification
-failure never publishes a new input tag. The script never creates Tools or
-updates release/content locks. Build and upload each have a 90-minute bound; full registry
-verification has a 90-minute bound and tag promotion has a 3-minute bound.
-Full verification reports elapsed time every 30 seconds and an explicit timeout
-failure; these are liveness messages, not byte-progress estimates. Metadata-only
-verification retains its 3-minute bound.
+All three domains are checked automatically. Matching images are verified and
+reused. Missing images are built into a local OCI layout, then `regctl image copy`
+uploads by digest with 8 MiB chunks for larger blobs, with no input tag yet.
+Verification reads and hashes manifest/config, checks the actual platform, and
+issues HEAD for every config/layer descriptor. Each HEAD must return HTTP 200,
+the exact `Docker-Content-Digest` and `Content-Length`; missing headers, missing
+blobs, mismatches and request failures block publication. Only then does the
+script promote the same manifest to `input-<full buildInputDigest>` and check tag
+readback. Evidence is stored as `registry-heads.json` with verification mode
+`registry-heads`, never represented as full-byte readback.
+
+This relies on the registry honoring content-addressed storage and reporting
+truthful digest/size headers. It verifies publication completeness without an
+independent download of every remote byte. regctl checks digest and size during
+chunked upload. Full readback remains available for diagnostics through
+`python3 scripts/verify-release-artifact.py image <manifest-URL> --docker-credentials`
+(omit both `--blob-heads` and `--metadata-only`).
+
+The script never creates Tools or updates release/content locks. Build and upload
+each have a 90-minute bound; registry HEAD/metadata verification and tag promotion
+each have a 3-minute bound. The JavaScript full-verification helper retains a
+90-minute bound and elapsed-time messages every 30 seconds for optional full
+checks; elapsed time is not a byte-progress estimate.
 
 The OCI layout and an attempt-specific regctl settings file contain no registry
 credentials; regctl reads the existing Docker credential store. The script does
@@ -361,7 +374,7 @@ produce a successful release lock. Cloud error-code detail after uncertain Tool
 calls remains a diagnostic limitation.
 
 New Action qualification gates are `registry-metadata`, `ags-tool-active`, and
-`ags-tool-configuration`; these are **not native domain qualification**. Local full-layer verification and Action metadata verification are separate checks;
+`ags-tool-configuration`; these are **not native domain qualification**. Local registry HEAD verification and Action metadata verification are separate checks;
 `registry-metadata` does not claim that the Action downloaded layers. The split
 GitHub/Tencent publishing workflow still needs real execution qualification.
 Publisher SDKs are development dependencies. Cloud credentials are passed only
@@ -392,8 +405,8 @@ no locks. Documentation or Tool-only changes reuse images when build inputs matc
 A missing image, registry error or invalid metadata fails the check. Run
 `npm run publish:images` locally on the candidate source, then rerun the failed
 check. If main changed the combined build inputs, update the branch from main
-before local preparation. Local input tags are promoted only after full blob
-verification; they are a trusted-publisher convention, not a signed attestation.
+before local preparation. Local input tags are promoted only after manifest/config and all blob HEAD
+checks; they are a trusted-publisher convention, not a signed attestation.
 
 A repository administrator must configure an active main Ruleset (or branch
 protection) requiring `Runtime images ready` from GitHub Actions, with branches

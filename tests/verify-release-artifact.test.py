@@ -101,6 +101,47 @@ class RegistryVerification(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'platform'):
             registry.manifest(digest(manifest), 'linux/arm64', metadata_only=True)
 
+    def test_head_verification_checks_every_descriptor_without_layer_gets(self):
+        config = json.dumps({'os': 'linux', 'architecture': 'amd64'}).encode()
+        digest = lambda b: 'sha256:' + hashlib.sha256(b).hexdigest()
+        layer_digest = 'sha256:' + 'a' * 64
+        manifest = json.dumps({'mediaType': 'application/vnd.oci.image.manifest.v1+json',
+            'config': {'digest': digest(config), 'size': len(config)},
+            'layers': [{'digest': layer_digest, 'size': 1000000000}]}).encode()
+        class Response(io.BytesIO):
+            headers = {}
+            status = 200
+        registry = verifier.PublicRegistry('https://registry.example', 'public/runtime')
+        heads = []
+        def request(kind, ref, extra_headers=None, method='GET'):
+            if method == 'HEAD':
+                heads.append(ref)
+                response = Response()
+                response.headers = {'Docker-Content-Digest': ref, 'Content-Length': str(len(config) if ref == digest(config) else 1000000000)}
+                return response
+            return Response({digest(manifest): manifest, digest(config): config}[ref])
+        registry.request = request
+        result = registry.manifest(digest(manifest), blob_heads=True)
+        self.assertEqual(result['verification'], 'registry-heads')
+        self.assertEqual(heads, [digest(config), layer_digest])
+
+    def test_blob_head_fails_closed_on_wrong_or_missing_headers_status_or_request(self):
+        digest = 'sha256:' + 'a' * 64
+        registry = verifier.PublicRegistry('https://registry.example', 'public/runtime')
+        class Response(io.BytesIO):
+            status = 200
+            headers = {'Docker-Content-Digest': digest, 'Content-Length': '5'}
+        registry.request = lambda *a, **kw: Response()
+        self.assertEqual(registry.blob_head(digest, 5)['size'], 5)
+        for headers, status in [({}, 200), ({'Docker-Content-Digest': digest, 'Content-Length': '6'}, 200),
+                ({'Docker-Content-Digest': 'sha256:' + 'b' * 64, 'Content-Length': '5'}, 200),
+                ({'Docker-Content-Digest': digest, 'Content-Length': '5'}, 404)]:
+            Response.headers, Response.status = headers, status
+            with self.assertRaises(ValueError): registry.blob_head(digest, 5)
+        def fail(*args, **kwargs): raise urllib.error.URLError('unavailable')
+        registry.request = fail
+        with self.assertRaises(urllib.error.URLError): registry.blob_head(digest, 5)
+
     def test_manifest_digest_binds_descriptors(self):
         class Response(io.BytesIO):
             headers = {}

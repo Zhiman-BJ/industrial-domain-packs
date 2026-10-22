@@ -77,3 +77,17 @@ test("other verification failures fail closed without leaking subprocess output"
   );
   assert.deepEqual(api.cleared, [42]);
 });
+test("normal publication uses blob HEAD checks with a three minute bound and no full readback", async () => {
+  const api = load(async (cmd, args, options) => {
+    assert.ok(args.includes("--blob-heads"));
+    assert.ok(!args.includes("--metadata-only"));
+    assert.equal(options.timeout, 3 * 60 * 1000);
+    return { stdout: '{"identity":{"verification":"registry-heads"}}' };
+  });
+  assert.equal(
+    (await api.verifyRegistryImage(image, true)).identity.verification,
+    "registry-heads",
+  );
+  assert.deepEqual(api.logs, []);
+  assert.deepEqual(api.cleared, []);
+});

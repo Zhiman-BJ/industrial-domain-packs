@@ -28,9 +28,11 @@ function verifyIdentity(image, evidence) {
   if (
     evidence?.identity?.digest !== image.reference.split("@")[1] ||
     evidence?.identity?.platform !== image.platform ||
-    evidence?.identity?.verification !== "full-blobs"
+    evidence?.identity?.verification !== "registry-heads"
   )
-    throw Error("Full registry verification did not match the image");
+    throw Error(
+      "Registry manifest/config and blob HEAD verification did not match the image",
+    );
 }
 async function waitForImage(
   options,
@@ -82,7 +84,8 @@ async function publishImage(
   const find =
     dependencies.find || require("./runtime-cloud-image.cjs").findImage;
   const verify =
-    dependencies.verify || require("./runtime-image-reuse.cjs").verifyImage;
+    dependencies.verify ||
+    require("./runtime-image-reuse.cjs").verifyRegistryImage;
   const execute = dependencies.execute || run;
   let image = await find({ repository, input });
   const reused = Boolean(image);
@@ -144,7 +147,7 @@ async function publishImage(
   write(path.join(directory, "image.json"), image);
   const evidence = await verify(image, true);
   verifyIdentity(image, evidence);
-  write(path.join(directory, "registry-full.json"), evidence);
+  write(path.join(directory, "registry-heads.json"), evidence);
   if (!reused) {
     // A concurrent producer must never silently replace another image for this input.
     const concurrent = await find({ repository, input });
