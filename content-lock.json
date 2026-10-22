@@ -1,12 +1,13 @@
 {
   "schemaVersion": 1,
-  "contentSha256": "27d14b3eb5734da0c720ea5103e48438e9e119cf7014340a50541bc5c61e183b",
+  "contentSha256": "cfa82d6dfebaef7ebf4bc466d2fcb80b47924c465137b7f55b9850706b21cc5a",
   "files": {
     "lib/consumer.cjs": "4d670732dbf3d5a3da33cac41007573e1f47b514a7165ac1df1748c9c2f960ab",
     "lib/consumer.json": "6648e4205c510820a67e8a07788ef777b038269e473747e68a00ea6398015719",
     "lib/container.cjs": "d77ba68d399bbc6add9129dd9d4f338f9aedce66bd6385062531dc1880dfe819",
-    "lib/index.cjs": "6d769ef97ae4ed3672ba929efcfa8421314c554933fe5a1ddaa1e121636458e8",
+    "lib/index.cjs": "cfd9142f4f6e32f4b0eadf7e91e61d45a9ce0dc97e57ae783d904c2b93c24968",
     "lib/resources.cjs": "aa4e069d70cafecf5d84216436d4d42a913f4c68ca8ca562b3bd85c9c3854965",
+    "lib/runtime-release.cjs": "384939be0cf85a12cd174f4499e202ef0f9458f2af770334bffa0e8ad99325df",
     "lib/worker-http.py": "180fb027e07742e8ce83c14946a5ca81248f9da47300b2c07a9b73344b298e87",
     "packs/AGENTS.md": "287b23e04e2cce8f211d39256dcb0507ad3eba03153c4f7cc2815f07f342d3c1",
     "packs/cad/PROVENANCE.md": "6a35ea81875b21744a4cb98cd8e119d1287a445d3861f185c7c6cd19a052a747",
