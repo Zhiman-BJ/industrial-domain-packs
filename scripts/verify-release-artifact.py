@@ -105,7 +105,7 @@ class PublicRegistry:
         self.results.append(result)
         return result
 
-    def manifest(self, reference, platform='linux/amd64'):
+    def manifest(self, reference, platform='linux/amd64', metadata_only=False):
         with self.request('manifests', reference) as response:
             raw = response.read(16 * 1024 * 1024)
             declared = response.headers.get('Docker-Content-Digest')
@@ -122,7 +122,7 @@ class PublicRegistry:
             matches = [m for m in body['manifests'] if m.get('platform', {}).get('os') == os_name and m.get('platform', {}).get('architecture') == arch and (len(parts) == 2 or m.get('platform', {}).get('variant') == parts[2])]
             if len(matches) != 1:
                 raise ValueError('Expected exactly one manifest for ' + platform)
-            result['platformManifest'] = self.manifest(matches[0]['digest'], platform)
+            result['platformManifest'] = self.manifest(matches[0]['digest'], platform, metadata_only)
             result['platform'] = result['platformManifest']['platform']
         else:
             config_descriptor = body['config']
@@ -141,8 +141,13 @@ class PublicRegistry:
             result['platform'] = platform
             descriptors = [body['config'], *body.get('layers', [])]
             for descriptor in descriptors:
-                self.blob(descriptor['digest'], descriptor['size'])
+                validate_digest(descriptor['digest'])
+                if type(descriptor['size']) is not int or descriptor['size'] < 0:
+                    raise ValueError('Invalid descriptor size')
+                if not metadata_only:
+                    self.blob(descriptor['digest'], descriptor['size'])
             result.update(configDigest=body['config']['digest'], downloadSize=sum(d['size'] for d in descriptors), layerCount=len(body.get('layers', [])))
+        result['verification'] = 'metadata-only' if metadata_only else 'full-blobs'
         return result
 
 
@@ -203,6 +208,7 @@ def main():
     image.add_argument('--platform', default='linux/amd64')
     image.add_argument('--jobs', type=int, choices=range(1, 33), default=8, metavar='1..32')
     image.add_argument('--output')
+    image.add_argument('--metadata-only', action='store_true', help='Verify manifest/config/platform without downloading image layers')
     image.add_argument('--docker-credentials', action='store_true', help='Authenticate a private image using existing Docker credentials; never emit credentials')
 
     asset = commands.add_parser('asset', help='Verify a plain HTTPS release asset against its sha256')
@@ -222,7 +228,7 @@ def main():
     repo, kind, reference = match.groups()
     validate_digest(reference)
     registry = PublicRegistry(f'{url.scheme}://{url.netloc}', repo, docker_credentials(url.netloc) if args.docker_credentials else None, args.jobs)
-    identity = registry.blob(reference, args.size) if kind == 'blobs' else registry.manifest(reference, args.platform)
+    identity = registry.blob(reference, args.size) if kind == 'blobs' else registry.manifest(reference, args.platform, args.metadata_only)
     evidence = {'schemaVersion': 1, 'verifiedAt': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()), 'url': args.url, 'authentication': 'docker-registry-bearer' if args.docker_credentials else 'anonymous-bearer', 'identity': identity, 'blobs': registry.results}
     encoded = json.dumps(evidence, indent=2) + '\n'
     if args.output:

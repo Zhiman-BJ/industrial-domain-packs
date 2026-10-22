@@ -81,6 +81,26 @@ class RegistryVerification(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'identity'):
             registry.manifest(digest(manifest), 'linux/arm64')
 
+    def test_metadata_mode_never_downloads_layers_but_validates_config(self):
+        config = json.dumps({'os': 'linux', 'architecture': 'amd64'}).encode()
+        digest = lambda b: 'sha256:' + hashlib.sha256(b).hexdigest()
+        manifest = json.dumps({'schemaVersion': 2, 'mediaType': 'application/vnd.oci.image.manifest.v1+json',
+            'config': {'digest': digest(config), 'size': len(config)},
+            'layers': [{'digest': 'sha256:' + 'a' * 64, 'size': 1000000000}]}).encode()
+        class Response(io.BytesIO):
+            headers = {}
+        registry = verifier.PublicRegistry('https://registry.example', 'public/runtime')
+        reads = []
+        def request(kind, ref, *args):
+            reads.append(ref)
+            return Response({digest(manifest): manifest, digest(config): config}[ref])
+        registry.request = request
+        result = registry.manifest(digest(manifest), 'linux/amd64', metadata_only=True)
+        self.assertEqual(reads, [digest(manifest), digest(config)])
+        self.assertEqual(result['verification'], 'metadata-only')
+        with self.assertRaisesRegex(ValueError, 'platform'):
+            registry.manifest(digest(manifest), 'linux/arm64', metadata_only=True)
+
     def test_manifest_digest_binds_descriptors(self):
         class Response(io.BytesIO):
             headers = {}

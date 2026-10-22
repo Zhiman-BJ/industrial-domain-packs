@@ -4,7 +4,11 @@ const { execFile } = require("node:child_process");
 const { promisify } = require("node:util");
 const { validateRuntimeRelease } = require("../lib/runtime-release.cjs");
 const run = promisify(execFile);
-async function verifyImage(image, dockerCredentials = false) {
+async function verifyImage(
+  image,
+  dockerCredentials = false,
+  metadataOnly = false,
+) {
   const [repository, digest] = image.reference.split("@");
   const slash = repository.indexOf("/");
   const url = `https://${repository.slice(0, slash)}/v2/${repository.slice(slash + 1)}/manifests/${digest}`;
@@ -15,10 +19,11 @@ async function verifyImage(image, dockerCredentials = false) {
     "--platform",
     image.platform,
   ];
+  if (metadataOnly) args.push("--metadata-only");
   if (dockerCredentials) args.push("--docker-credentials");
   const { stdout } = await run("python3", args, {
     maxBuffer: 4 * 1024 * 1024,
-    timeout: 20 * 60 * 1000,
+    timeout: (metadataOnly ? 3 : 20) * 60 * 1000,
   });
   return JSON.parse(stdout);
 }

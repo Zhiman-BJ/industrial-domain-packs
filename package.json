@@ -607,7 +607,8 @@
     "test": "node scripts/check-architecture-contract.cjs && node --test tests/*.test.cjs tests/architecture/*.test.cjs",
     "lock": "node scripts/content-lock.cjs",
     "lock:check": "node scripts/content-lock.cjs --check",
-    "test:architecture-contract": "node scripts/check-architecture-contract.cjs && node --test tests/architecture/contract-policy.test.cjs"
+    "test:architecture-contract": "node scripts/check-architecture-contract.cjs && node --test tests/architecture/contract-policy.test.cjs",
+    "publish:images": "node scripts/publish-images-local.cjs"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.30.1",

@@ -208,3 +208,26 @@ Independent review found a mixed-rerun artifact selection issue; it was fixed,
 covered by regression tests and reviewed again with no remaining blockers.
 No new live workflow was dispatched for this revision; the first automatic prod
 run from the prior merged revision was still in progress during these checks.
+
+## 2026-10-22 — local image preparation and lightweight Tool publication
+
+Moved image builds, pushes and complete blob verification to `npm run publish:images`.
+The local command requires all four Tencent credentials before invoking tools,
+uses shared image inputs without an environment selector, and promotes the input
+tag only after full verification. It does not write release locks or create Tools.
+Actions verify manifest/config metadata and publish Tools, then retain the single
+batch release/content-lock writeback. Missing prepared images fail Check.
+
+Validation: 188 Node tests, 186 passed and 2 skipped; 9 Python verifier tests
+passed. Architecture policy, content-lock verification and actionlint passed.
+Independent review found a repeated-build context collision; fresh attempt
+directories and a regression test resolved it, and follow-up review passed.
+Real local Buildx push-by-digest/tag promotion and the revised Action have not
+yet been qualified end to end.
+
+The old prod and feature publication runs were cancelled after prolonged layer
+upload stalls. Bounded registry probes showed fast authentication but slow or
+timed-out bulk uploads from GitHub runners; equivalent local uploads completed.
+The publication workflow remains manually disabled until this revision merges,
+so old main cannot restart heavy uploads. Existing GitHub Secrets/Variables all
+have active consumers and were retained. Native runtime qualification is unchanged.

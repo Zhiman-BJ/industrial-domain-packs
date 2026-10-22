@@ -47,8 +47,8 @@ Required fields (unknown fields are rejected, including arbitrary launch setting
 | schemaVersion / releaseId | `1`; bounded stable lowercase identifier for this publication |
 | packId / domain / runtimeProfile | Exact pinned catalog selection |
 | environment / region | `test` or `prod`; exact trusted deployment region |
-| buildSourceCommit | Full 40-character source Git SHA, commit A used for the build |
-| buildSourceContentSha256 | Original A content-lock SHA-256, 64 lowercase hex characters |
+| buildSourceCommit | Full 40-character candidate source Git SHA, commit A with matching image build inputs |
+| buildSourceContentSha256 | Candidate A content-lock SHA-256, 64 lowercase hex characters |
 | buildInputDigest | `sha256:` plus 64 hex characters; identity of actual build inputs, computed and validated by the publishing Action |
 | runtimeDigest | Existing nonempty opaque runtime identity string; this API introduces no competing runtime hash algorithm |
 | image | Exactly `reference` (registry/repository@sha256 digest) and `platform`; no mutable tag, URL scheme or credential authority; platform must match the catalog profile |
@@ -57,7 +57,10 @@ Required fields (unknown fields are rejected, including arbitrary launch setting
 | qualification | `status: passed`, nonempty unique `gates` and `evidence` string arrays; the consumer checks the required gates and evidence for its target environment |
 
 Runtime image source identity and consumer publication identity are separate. A
-build uses source commit A and its content lock. Writing a release record produces
+candidate source is commit A with its content lock. The image may have been
+prepared locally on another commit with identical build inputs; the input digest
+binds that reuse, while these source fields identify the candidate checked by
+Actions. Writing a release record produces
 commit B and a new content lock that covers the record itself. The record does not
 embed B or B's content digest, avoiding self-reference. B is pinned externally by
 the Service; `buildSourceContentSha256` continues to identify A, not B. Changing
@@ -90,9 +93,9 @@ records do not need comments or an extra generated-marker field.
    release. Until placeholder support is implemented, do not insert fake values
    into a schema-1 record. On later updates, keep the last successful record
    intact until its replacement is ready.
-2. Trigger the publishing Action on source commit A. Validate A's source content
-   lock and derive the actual build-input fingerprint before building or safely
-   reusing an image. Create a new Tool for a new runtime image binding and verify
+2. Prepare and fully verify images locally. Trigger the publishing Action on
+   candidate source commit A. Validate A's content lock and derive its actual
+   build-input fingerprint, then require a matching prepared image in CCR. Create a new Tool for a new runtime image binding and verify
    its configuration and required publication gates.
 3. Only after success, fill or replace the corresponding release record with the
    real immutable image reference, Tool ID and evidence. The source identity
@@ -190,10 +193,54 @@ buildInputDigest>` tag directly in personal CCR. All lookups and pushes stay in
 or `pcb-kicad`. Test and prod share images. A release lock is an output for
 consumers, not a prerequisite or cache index for publishing. Existing legacy tags
 without a build-input identity cannot prove reuse eligibility. The publisher
-resolves a matching tag to an immutable digest and verifies its manifest, actual
-config platform and referenced blobs. A confirmed missing tag permits a build;
-a cloud query error, corrupt image or incomplete response fails publication.
+resolves a matching tag to an immutable digest. Local preparation verifies its
+manifest, actual config platform and every referenced blob. Actions verify only
+manifest/config digests and platform, without downloading layers. A missing tag
+permits a local build; in Actions it fails with instructions to prepare images
+locally. A cloud query error, corrupt image or incomplete response fails publication.
 Only trusted publishers should write these input tags; do not retarget them.
+
+## Local image preparation
+
+Run from a clean committed checkout after `npm ci --ignore-scripts`:
+
+```sh
+npm run publish:images
+```
+
+The script reports all missing environment variables before invoking local tools
+or contacting cloud services. Required variables are `TENCENT_SECRET_ID`,
+`TENCENT_SECRET_KEY`, `TENCENT_REGISTRY_USERNAME` and `TENCENT_REGISTRY_PASSWORD`.
+The CAM pair queries existing images and capacity; the registry pair authenticates
+uploads and full verification. No `TENCENT_ROLE_ARN`, test/prod selection or GitHub
+token is required locally. Keep values outside version control.
+
+Prerequisites: Node.js 24+, installed npm dependencies, Git, Python 3, a running
+Docker engine and Buildx. The script logs into CCR with password-stdin and uses a
+reusable `domain-pack-local` docker-container builder, without switching the
+user's default builder. Docker's configured credential store manages the login.
+On ARM hosts the engine must support building the declared linux/amd64 platform.
+
+All three domains are checked automatically. Matching images are fully verified
+and reused. Missing images are built and pushed by digest, with no input tag yet;
+after every layer passes digest/size verification, the script promotes the same
+manifest to `input-<full buildInputDigest>` and checks tag readback. Verification
+failure never publishes a new input tag. The script never creates Tools or
+updates release/content locks. Build/upload has a 90-minute bound; full registry
+verification has a 20-minute bound and tag promotion has a 3-minute bound.
+
+Local evidence and partial image identities are retained under the repository's
+Git common directory at `runtime-image-publications/<source-commit>/<domain>/attempt-*`.
+A `running` directory prevents simultaneous preparation from worktrees sharing
+that Git directory. After a hard kill, inspect its owner record and confirm the
+process has stopped before removing a stale lock. Coordinate publication from
+one machine at a time; this local lock is not cross-machine coordination.
+
+Prepare images before starting the feature test Action or merging to main.
+Images are shared across environments, and generated release-lock commits do not
+change build inputs. If an Action starts before image preparation completes,
+finish preparation and rerun that Action. The existing namespace and input tags
+remain the handoff; no second image-version lock is introduced.
 
 ## Tencent publishing Action configuration
 
@@ -202,8 +249,9 @@ merges), using prod configuration. Trusted feature branches publish test through
 manual dispatch, with no domain or environment inputs. Manual dispatch on `main`
 also permits retrying prod publication. The `Check` matrix inspects chip/freecad/pcb build inputs and cloud resources
 without creating or updating them. A selection job collects those checks and
-creates a `Publish` matrix containing only packs that need image builds, Tool
-creation/resource updates, or reconciliation of a pending Tool. When everything
+creates a `Publish` matrix containing only packs that need Tool creation/resource
+updates or reconciliation of a pending Tool. Missing images stop Check; Actions
+never build or push images. When everything
 is reusable, the entire Publish job is skipped. Publish rechecks cloud state
 before mutations; a check result is not a reservation. Unchanged resources are reused, not rebuilt. Shared worker changes
 naturally change every affected domain's build hash. Tool-only configuration
@@ -235,7 +283,7 @@ Repository secrets:
 | Name | Purpose |
 | --- | --- |
 | `TENCENT_SECRET_ID`, `TENCENT_SECRET_KEY` | CAM identity for AGS create/list/update and read-only CCR image/quota queries |
-| `TENCENT_REGISTRY_USERNAME`, `TENCENT_REGISTRY_PASSWORD` | CCR push/read login credentials; not assumed to equal the CAM key pair |
+| `TENCENT_REGISTRY_USERNAME`, `TENCENT_REGISTRY_PASSWORD` | Read private CCR manifest/config metadata; still required even though Actions no longer upload |
 
 Repository variable `TENCENT_ROLE_ARN` supplies the existing AGS image-pull role.
 GitHub Environments are not required. Only trusted maintainers may run candidate
@@ -248,7 +296,7 @@ references. Mounts and computer configurations are rejected.
 | --- | --- | --- |
 | CPU, memory or disk size | Reuse if build inputs match | Update existing Tool and verify readback |
 | Command/Args, Ports, Probe, network or pull role | Reuse if build inputs match | New Tool identity |
-| Dockerfile, copied code, declared dependencies, build arguments/platform | Reuse matching cloud image, otherwise build | New Tool if image digest changes |
+| Dockerfile, copied code, declared dependencies, build arguments/platform | Local preparation builds/verifies missing image first | New Tool if image digest changes |
 | No changes | Reuse | Reuse ACTIVE matching Tool |
 
 Tool `DefaultTimeout` is a fixed creation fallback (Chip 1800s, CAD/PCB 900s),
@@ -270,12 +318,12 @@ seconds is an observation, not a guaranteed maximum propagation delay. Tool
 readback qualification does not promise instantaneous instance resource changes.
 See [validation evidence](migration-validation.md).
 
-Before rebuilding, retries for the same source/domain/environment restore the
+Before Tool publication, retries for the same source/domain/environment restore the
 prior uploaded plan and reverify its exact immutable image. Two test branches at
 the same source commit may reuse that intent; only the writeback branch is rebound,
 while source, environment, build inputs and full cloud configuration remain checked. Intent is uploaded
 before Tool creation/update. If an earlier cloud step ran but intent has expired
-or disappeared, fail for reconciliation rather than rebuilding an uncertain
+or disappeared, fail for reconciliation rather than continuing an uncertain
 publication. Retain workflow history and intent artifacts while unresolved.
 Artifacts have 90-day retention. Cloud operations use bounded polling; no blind
 create/update replay occurs after a timeout. Name collisions or other drift fail.
@@ -294,16 +342,17 @@ trigger another workflow run ([GitHub documentation](https://docs.github.com/en/
 Keep this checkout on `GITHUB_TOKEN`; switching it to a PAT would remove that
 loop prevention.
 
-The Action Summary lists immutable image references, Tool IDs, built/reused/
-restored images, created/updated/reused Tools and cloud status separately from
-lock writeback. A successful image push followed by a Tool failure remains
-visible. Build/push/Tool failures fail the Action; partial resources are retained
+The Action Summary lists immutable image references, Tool IDs, reused/restored
+images, created/updated/reused Tools and cloud status separately from
+lock writeback. Local image preparation reports built/reused images and immutable digests.
+Missing images, metadata verification errors and Tool failures fail the Action; partial resources are retained
 for reconciliation, not automatically deleted. Unconfirmed Tool outcomes never
 produce a successful release lock. Cloud error-code detail after uncertain Tool
 calls remains a diagnostic limitation.
 
-Qualification gates are `registry-integrity`, `ags-tool-active`, and
-`ags-tool-configuration`; these are **not native domain qualification**. The full
+New Action qualification gates are `registry-metadata`, `ags-tool-active`, and
+`ags-tool-configuration`; these are **not native domain qualification**. Local full-layer verification and Action metadata verification are separate checks;
+`registry-metadata` does not claim that the Action downloaded layers. The split
 GitHub/Tencent publishing workflow still needs real execution qualification.
 Publisher SDKs are development dependencies. Cloud credentials are passed only
 to cloud-query/Tool steps, never image build arguments or release records.

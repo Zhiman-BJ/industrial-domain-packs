@@ -1,7 +1,7 @@
 const fs = require("node:fs"),
   path = require("node:path");
 const { execFileSync } = require("node:child_process");
-const { prepareContext } = require("./runtime-build.cjs");
+const { inputs } = require("./runtime-build.cjs");
 const { verifyImage } = require("./runtime-image-reuse.cjs");
 const {
   planTool,
@@ -82,7 +82,7 @@ function releaseRecord(plan, result, evidence) {
       qualification: {
         status: "passed",
         gates: [
-          "registry-integrity",
+          "registry-metadata",
           "ags-tool-active",
           "ags-tool-configuration",
         ],
@@ -199,10 +199,11 @@ async function main(phase) {
     const profile = pack
       .getPack(s.packId)
       .profiles.find((p) => p.id === s.profile);
-    const input = prepareContext(
-      { root, recipe: s.recipe, platform: profile.platform },
-      path.join(dir, "context"),
-    );
+    const input = inputs({
+      root,
+      recipe: s.recipe,
+      platform: profile.platform,
+    });
     if (!/^[a-z0-9.-]+\/[a-z0-9/_-]+$/.test(prefix))
       throw Error("Invalid image repository prefix");
     const repository = repositoryFor(s.directory);
@@ -222,7 +223,7 @@ async function main(phase) {
         reference: restored.tool.request.CustomConfiguration.Image,
         platform: input.platform,
       };
-      const registry = await verifyImage(image, true);
+      const registry = await verifyImage(image, true, true);
       if (
         registry.identity?.digest !== image.reference.split("@")[1] ||
         registry.identity?.platform !== input.platform
@@ -234,49 +235,14 @@ async function main(phase) {
       if (phase === "check") await checkPlan(restored, dir);
       return;
     }
-    let image = await findImage({ repository, input });
-    const reused = Boolean(image);
-    if (!reused && phase === "check") {
-      write(path.join(dir, "check.json"), {
-        domain: s.directory,
-        needsPublication: true,
-        imageAction: "build",
-        toolAction: "create",
-      });
-      return;
-    }
-    if (!reused) {
-      const tag = repository + ":input-" + input.buildInputDigest.slice(7);
-      const metadata = path.join(dir, "build-metadata.json");
-      const args = [
-        "buildx",
-        "build",
-        "--platform",
-        input.platform,
-        "--provenance=false",
-        "--sbom=false",
-        "--push",
-        "--tag",
-        tag,
-        "--metadata-file",
-        metadata,
-        "-f",
-        path.join(dir, "context", s.recipe),
-      ];
-      for (const [key, value] of Object.entries(input.buildArgs))
-        args.push("--build-arg", `${key}=${value}`);
-      args.push(path.join(dir, "context"));
-      run("docker", args, { stdio: "inherit" });
-      const hash = JSON.parse(fs.readFileSync(metadata))[
-        "containerimage.digest"
-      ];
-      if (!/^sha256:[a-f0-9]{64}$/.test(hash))
-        throw Error("Missing immutable build digest");
-      image = { reference: repository + "@" + hash, platform: input.platform };
-    }
+    const image = await findImage({ repository, input });
+    if (!image)
+      throw Error(
+        `Missing verified image for ${s.directory}; run npm run publish:images locally on this source before retrying the Action`,
+      );
     write(path.join(dir, "image.json"), image);
-    write(path.join(dir, "image-operation.json"), reused ? "reused" : "built");
-    const registry = await verifyImage(image, true);
+    write(path.join(dir, "image-operation.json"), "reused");
+    const registry = await verifyImage(image, true, true);
     if (
       registry.identity?.digest !== image.reference.split("@")[1] ||
       registry.identity?.platform !== input.platform
@@ -299,7 +265,7 @@ async function main(phase) {
       relative,
     });
     write(path.join(dir, "registry.json"), registry);
-    write(path.join(dir, "image-operation.json"), reused ? "reused" : "built");
+    write(path.join(dir, "image-operation.json"), "reused");
     if (phase === "check")
       await checkPlan(JSON.parse(fs.readFileSync(planFile)), dir);
   } else if (phase === "tool") {
@@ -315,7 +281,13 @@ async function main(phase) {
     write(path.join(dir, "result.json"), result);
   } else throw Error("Expected configure, check, prepare or tool phase");
 }
-module.exports = { selection, publicationConfig, releaseRecord, resumePlan };
+module.exports = {
+  selection,
+  publicationConfig,
+  releaseRecord,
+  resumePlan,
+  recipes,
+};
 if (require.main === module)
   main(process.argv[2]).catch((error) => {
     console.error("Runtime publication failed:", error.code || error.message);

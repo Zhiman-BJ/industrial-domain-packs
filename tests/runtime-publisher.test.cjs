@@ -45,7 +45,7 @@ test("release binds source A and publication checks without asserting engineerin
   assert.equal(r.buildSourceCommit, p.source);
   assert.equal(r.buildSourceContentSha256, p.sourceContent);
   assert.deepEqual(r.qualification.gates, [
-    "registry-integrity",
+    "registry-metadata",
     "ags-tool-active",
     "ags-tool-configuration",
   ]);

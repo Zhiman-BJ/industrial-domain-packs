@@ -69,7 +69,7 @@ for (const scenario of [
         },
       },
       "./runtime-build.cjs": {
-        prepareContext: () => ({
+        inputs: () => ({
           platform: image.platform,
           buildInputDigest: hash,
           buildArgs: {},
@@ -123,10 +123,10 @@ for (const scenario of [
       context,
       { filename },
     );
-    if (scenario === "query-error") {
+    if (["query-error", "missing-image"].includes(scenario)) {
       await assert.rejects(
         context.module.exports.testMain("check"),
-        /query denied/,
+        /query denied|Missing verified image/,
       );
       assert.equal(fs.existsSync(path.join(dir, "check.json")), false);
     } else {
