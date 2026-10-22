@@ -197,9 +197,10 @@ Only trusted publishers should write these input tags; do not retarget them.
 
 ## Tencent publishing Action configuration
 
-Manually dispatch `Publish remote runtime` on a trusted repository branch, with
-no domain or environment inputs. `main` uses prod configuration; every other
-branch uses test. Each of chip/freecad/pcb checks its actual build inputs and cloud
+`Publish remote runtime` runs automatically on pushes to `main` (including PR
+merges), using prod configuration. Trusted feature branches publish test through
+manual dispatch, with no domain or environment inputs. Manual dispatch on `main`
+also permits retrying prod publication. Each of chip/freecad/pcb checks its actual build inputs and cloud
 resources. Unchanged resources are reused, not rebuilt. Shared worker changes
 naturally change every affected domain's build hash. Tool-only configuration
 changes do not change image build inputs. Publication does not deploy Service.
@@ -281,7 +282,10 @@ the final content lock, runs checks, and makes one source-branch writeback commi
 Any domain failure prevents the batch writeback. A compare-and-swap push requires
 that the source branch still equals the build source. Branch protection is not
 bypassed. Repository-wide workflow concurrency serializes publication, and
-explicit dispatch prevents generated-commit loops.
+the writeback uses checkout's repository `GITHUB_TOKEN`, whose pushes do not
+trigger another workflow run ([GitHub documentation](https://docs.github.com/en/actions/concepts/security/github_token)).
+Keep this checkout on `GITHUB_TOKEN`; switching it to a PAT would remove that
+loop prevention.
 
 The Action Summary lists immutable image references, Tool IDs, built/reused/
 restored images, created/updated/reused Tools and cloud status separately from

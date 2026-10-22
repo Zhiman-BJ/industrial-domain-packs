@@ -181,3 +181,13 @@ policy tests and content-lock verification passed. Package dry-run includes both
 CJS files and no legacy publication JSON. Real Chip stdio MCP smoke returned 25
 tools with required tools present. Independent review found no blocking or minor
 issues and independently checked configuration equivalence and 14 focused tests.
+
+## 2026-10-22 — automatic prod publication trigger
+
+`Publish remote runtime` now runs on pushes to main, including PR merges.
+Feature branches retain manual test publication; manual main dispatch supports
+prod retries. The writeback keeps checkout's default GITHUB_TOKEN, so generated
+lock commits do not recursively trigger workflows. Actionlint and all 11
+architecture policy tests passed. Independent review checked branch/environment
+selection, resume, writeback authentication and documentation with no findings.
+No live publication was triggered during this change.

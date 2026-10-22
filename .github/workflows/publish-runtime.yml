@@ -1,7 +1,9 @@
 name: Publish remote runtime
 
-# Explicit dispatch avoids generated-lock loops. Domain selection is automatic.
+# Main publishes prod automatically; other branches publish test on dispatch.
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -15,7 +17,7 @@ concurrency:
 jobs:
   publish:
     name: Publish ${{ matrix.domain }} ${{ github.ref == 'refs/heads/main' && 'prod' || 'test' }}
-    if: github.event_name == 'workflow_dispatch' && github.ref_type == 'branch'
+    if: github.ref_type == 'branch'
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     strategy:
@@ -114,6 +116,7 @@ jobs:
             ${{ runner.temp }}/runtime-publication/image-operation.json
             ${{ runner.temp }}/runtime-publication/result.json
 
+  # Keep checkout on GITHUB_TOKEN: its writeback push does not trigger workflows.
   finish:
     name: Write locks and publication summary
     needs: publish
