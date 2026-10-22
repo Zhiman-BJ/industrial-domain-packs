@@ -276,3 +276,15 @@ and diff checks passed. Independent incremental review passed, including an
 upload-failure test that prevents tag promotion. Large-layer regctl upload and
 subsequent full verification are still being exercised; no new native runtime
 qualification is claimed.
+
+## 2026-10-22 — full image verification time bound
+
+The FreeCAD regctl digest upload completed, but the subsequent full readback
+terminated at the previous 20-minute bound without publishing the input tag.
+Owner approved a 90-minute full-verification bound and safe elapsed-time messages
+every 30 seconds. Metadata verification remains bounded to 3 minutes; all image
+bytes must still pass digest/size verification before tag promotion. Elapsed-time
+messages are liveness indications, not byte-progress estimates. Four regression
+cases cover bounds, timer cleanup and secret-safe failure reporting. The full
+Node suite passed 203 tests with 2 skipped (205 total); content-lock and diff
+checks passed. Live FreeCAD/PCB full verification remains pending.

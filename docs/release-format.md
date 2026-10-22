@@ -228,7 +228,10 @@ after every layer passes digest/size verification, the script promotes the same
 manifest to `input-<full buildInputDigest>` and checks tag readback. Verification
 failure never publishes a new input tag. The script never creates Tools or
 updates release/content locks. Build and upload each have a 90-minute bound; full registry
-verification has a 20-minute bound and tag promotion has a 3-minute bound.
+verification has a 90-minute bound and tag promotion has a 3-minute bound.
+Full verification reports elapsed time every 30 seconds and an explicit timeout
+failure; these are liveness messages, not byte-progress estimates. Metadata-only
+verification retains its 3-minute bound.
 
 The OCI layout and an attempt-specific regctl settings file contain no registry
 credentials; regctl reads the existing Docker credential store. The script does

@@ -21,11 +21,41 @@ async function verifyImage(
   ];
   if (metadataOnly) args.push("--metadata-only");
   if (dockerCredentials) args.push("--docker-credentials");
-  const { stdout } = await run("python3", args, {
-    maxBuffer: 4 * 1024 * 1024,
-    timeout: (metadataOnly ? 3 : 20) * 60 * 1000,
-  });
-  return JSON.parse(stdout);
+  const minutes = metadataOnly ? 3 : 90;
+  const label = metadataOnly
+    ? "Image metadata verification"
+    : "Full image verification";
+  const started = Date.now();
+  const progress = metadataOnly
+    ? null
+    : setInterval(() => {
+        console.error(
+          `[image verification] still verifying all blobs; elapsed ${Math.floor((Date.now() - started) / 1000)}s (limit ${minutes} minutes)`,
+        );
+      }, 30000);
+  try {
+    const { stdout } = await run("python3", args, {
+      maxBuffer: 4 * 1024 * 1024,
+      timeout: minutes * 60 * 1000,
+    });
+    const evidence = JSON.parse(stdout);
+    if (!metadataOnly)
+      console.error(
+        `[image verification] complete in ${Math.floor((Date.now() - started) / 1000)}s`,
+      );
+    return evidence;
+  } catch (error) {
+    // Subprocess errors contain arguments and possibly signed registry redirects.
+    // Report only controlled diagnostics; never forward the error object/stderr.
+    if (error.killed && error.signal === "SIGTERM") {
+      throw Error(
+        `${label} timed out after ${minutes} minutes; image remains unverified`,
+      );
+    }
+    throw Error(`${label} failed; image remains unverified`);
+  } finally {
+    if (progress !== null) clearInterval(progress);
+  }
 }
 async function reuseImage({
   input,
