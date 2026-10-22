@@ -393,3 +393,20 @@ content-lock and diff checks passed. Tests cover PR head versus merge identity,
 generated commit recognition and negative cases including code/dependency changes
 and incorrect source parents. The guard also recognized real writeback commit
 dc2d758. Live automatic PR trigger/writeback/skip qualification is pending push.
+
+## 2026-10-22 — automatic PR writeback and merge completion gate
+
+PR-triggered run `39782131497` completed successfully on head `d798ac9` and pushed
+feature lock commit `ba28180` using PACK_BUMP_PAT. The push automatically triggered
+ordinary PR checks and publication run `39782302527`; the latter recognized the
+generated commit and skipped cloud publication. No manual event or empty commit
+was needed.
+
+Owner then approved consolidating image readiness into the same workflow and
+requiring successful test publication/writeback before merge. Main protection now
+also requires `Test runtime published` from GitHub Actions. The final gate rejects
+failed/cancelled dependencies and skipped writeback; generated commits must have
+three covered, source-bound locks before taking the non-recursive check path.
+The full suite passed 230 tests with two skipped (232 total), actionlint and
+content-lock checks passed, and the current real generated commit passed the
+additional lock validation. Consolidated-workflow live qualification follows push.

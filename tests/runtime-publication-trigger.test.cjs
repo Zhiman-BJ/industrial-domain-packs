@@ -33,3 +33,41 @@ for (const [name, change] of Object.entries({
     change(v);
     assert.equal(api().isPublicationWriteback(v), false);
   });
+function successfulJobs() {
+  return {
+    gate: { result: "success", outputs: { publish: "true" } },
+    images: { result: "success" },
+    check: { result: "success" },
+    plan: { result: "success" },
+    publish: { result: "skipped" },
+    finish: { result: "success", outputs: { written: "success" } },
+  };
+}
+test("merge gate requires successful writeback even when all tools were reused", () => {
+  const needs = successfulJobs();
+  assert.equal(api().publicationReady(needs), true);
+  needs.finish.outputs.written = "skipped";
+  assert.equal(api().publicationReady(needs), false);
+});
+for (const job of ["gate", "images", "check", "plan", "publish", "finish"])
+  for (const status of ["failure", "cancelled"])
+    test(`merge gate blocks ${job} ${status}`, () => {
+      const needs = successfulJobs();
+      needs[job].result = status;
+      assert.equal(api().publicationReady(needs), false);
+    });
+test("validated generated writeback passes after readiness without recursive publication", () => {
+  const needs = successfulJobs();
+  needs.gate.outputs.publish = "false";
+  for (const job of ["check", "plan", "publish", "finish"])
+    needs[job] = { result: "skipped" };
+  assert.equal(api().publicationReady(needs), true);
+  needs.images.result = "failure";
+  assert.equal(api().publicationReady(needs), false);
+});
+test("missing or unrecognized gate output cannot bypass publication", () => {
+  const needs = successfulJobs();
+  needs.gate.outputs = {};
+  assert.equal(api().publicationReady(needs), false);
+  assert.equal(api().publicationReady({}), false);
+});

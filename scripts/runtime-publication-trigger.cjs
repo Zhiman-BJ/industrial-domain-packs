@@ -53,6 +53,19 @@ function isPublicationWriteback({
     )
   );
 }
+function publicationReady(needs) {
+  if (needs.gate?.result !== "success" || needs.images?.result !== "success")
+    return false;
+  if (needs.gate.outputs?.publish === "false") return true;
+  return (
+    needs.gate.outputs?.publish === "true" &&
+    needs.check?.result === "success" &&
+    needs.plan?.result === "success" &&
+    ["success", "skipped"].includes(needs.publish?.result) &&
+    needs.finish?.result === "success" &&
+    needs.finish.outputs?.written === "success"
+  );
+}
 function main() {
   const fs = require("node:fs");
   const { execFileSync } = require("node:child_process");
@@ -83,6 +96,20 @@ function main() {
       ),
     });
   }
+  if (skip) {
+    const pack = require("../lib/index.cjs");
+    const environment =
+      process.env.PUBLICATION_REF === "refs/heads/main" ? "prod" : "test";
+    for (const [id, profile] of [
+      ["chip-pack", "rtl-cpu"],
+      ["freecad-pack", "freecad-linux-cpu"],
+      ["pcb-pack", "pcb-verify-cpu"],
+    ]) {
+      const record = pack.getRuntimeRelease(id, profile, environment);
+      if (record.buildSourceCommit !== parents[0])
+        throw Error("Generated release source mismatch");
+    }
+  }
   fs.appendFileSync(process.env.GITHUB_OUTPUT, `publish=${!skip}\n`);
   console.log(
     skip
@@ -90,5 +117,5 @@ function main() {
       : "Source change: check images and publish runtime",
   );
 }
-module.exports = { isPublicationWriteback };
+module.exports = { isPublicationWriteback, publicationReady };
 if (require.main === module) main();

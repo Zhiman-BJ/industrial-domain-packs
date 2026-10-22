@@ -400,8 +400,9 @@ shared by test/prod; any future cleanup must protect references from both.
 
 ### PR image readiness gate
 
-`Runtime images ready` runs for every PR targeting main, on GitHub's candidate
-merge commit. It computes all three domains' actual build inputs, locates their
+`Runtime images ready` is the prerequisite job in `Publish remote runtime`,
+not a separate workflow. It runs for every PR targeting main on GitHub's candidate
+merge commit (and on the selected source for branch push/manual dispatch). It computes all three domains' actual build inputs, locates their
 input tags only in `industrial-mcp-remote`, and verifies immutable manifest/config
 identity and platform without downloading layers. It creates no Tools and writes
 no locks. Documentation or Tool-only changes reuse images when build inputs match.
@@ -416,7 +417,8 @@ protection) requiring `Runtime images ready` from GitHub Actions, with branches
 required to be up to date before merging. Preserve existing required checks,
 including `Architecture contract`. Do not grant routine bypass. Adding the workflow
 alone does not enforce merging restrictions. Verified on 2026-10-22: main branch protection requires `chip`,
-`Architecture contract` and `Runtime images ready` from GitHub Actions, with
+`Architecture contract`, `Runtime images ready` and `Test runtime published`
+from GitHub Actions, with
 up-to-date branches and administrator enforcement enabled.
 
 This is an ordinary `pull_request` workflow: same-repository contributors are
@@ -441,7 +443,8 @@ experiment establishes a reliable alternative.
 ### PR test publication and feature-branch writeback
 
 Opening, updating or reopening a same-repository PR targeting main automatically
-runs `Publish remote runtime` for test. Fork and Dependabot-triggered PR runs do
+runs `Publish remote runtime` for test. Its `Runtime images ready` job must
+succeed before the existing Check → Publish → lock writeback jobs can run. Fork and Dependabot-triggered PR runs do
 not receive a publication path. Manual dispatch remains available. The publishing
 checkout uses the PR head SHA and writes to its head branch; PR merge refs are
 never writeback destinations. Ordinary image readiness still checks the candidate
@@ -459,6 +462,14 @@ on a generated commit; to retry publication, rerun the original source workflow.
 The existing compare-and-swap writeback
 still rejects a moved source branch. A PAT pushes as its owner, so actor name alone
 is not used to detect generated commits.
+
+`Test runtime published` is a required final PR check. Source commits pass only
+after successful readiness, Check/selection, Tool publication or reuse, and an
+actually successful lock writeback step. Failures, cancellations and skipped
+writeback block merging. The pushed child becomes the new PR head and must pass
+its own checks: the generated-commit gate validates all three covered release
+locks against their source parent, then readiness and ordinary checks run without
+recursive publication. A prior head's success does not qualify the new head.
 
 This feature-branch path does not resolve protected-main prod writeback. Prod
 capacity and protected-main publication remain separate pending work.

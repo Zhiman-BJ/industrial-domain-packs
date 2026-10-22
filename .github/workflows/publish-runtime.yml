@@ -52,10 +52,45 @@ jobs:
           WRITEBACK_TOKEN: ${{ secrets.PACK_BUMP_PAT }}
         run: node -e 'if (!process.env.WRITEBACK_TOKEN) throw Error("PACK_BUMP_PAT is required for feature-branch lock writeback")'
 
+  images:
+    permissions:
+      contents: read
+    name: Runtime images ready
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      # pull_request's default checkout is the candidate merge commit, not head.
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Check cloud credentials are available
+        env:
+          TENCENT_SECRET_ID: ${{ secrets.TENCENT_SECRET_ID }}
+          TENCENT_SECRET_KEY: ${{ secrets.TENCENT_SECRET_KEY }}
+          TENCENT_REGISTRY_USERNAME: ${{ secrets.TENCENT_REGISTRY_USERNAME }}
+          TENCENT_REGISTRY_PASSWORD: ${{ secrets.TENCENT_REGISTRY_PASSWORD }}
+        run: |
+          node -e 'require("./scripts/publish-images-local.cjs").validateEnvironment(process.env)'
+      - uses: docker/login-action@v3
+        with:
+          registry: ccr.ccs.tencentyun.com
+          username: ${{ secrets.TENCENT_REGISTRY_USERNAME }}
+          password: ${{ secrets.TENCENT_REGISTRY_PASSWORD }}
+      - name: Verify all candidate image identities (metadata only)
+        env:
+          TENCENT_SECRET_ID: ${{ secrets.TENCENT_SECRET_ID }}
+          TENCENT_SECRET_KEY: ${{ secrets.TENCENT_SECRET_KEY }}
+        run: node scripts/runtime-image-readiness.cjs
+
   check:
     name: Check ${{ matrix.domain }} ${{ (github.event_name != 'pull_request' && github.ref == 'refs/heads/main') && 'prod' || 'test' }}
-    needs: gate
-    if: needs.gate.outputs.publish == 'true'
+    needs: [gate, images]
+    if: needs.gate.outputs.publish == 'true' && needs.images.result == 'success'
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     strategy:
@@ -239,9 +274,11 @@ jobs:
 
   # Feature writeback uses PAT so the new head receives ordinary PR checks.
   finish:
+    outputs:
+      written: ${{ steps.writeback.outcome }}
     name: Write locks and publication summary
     needs: [gate, check, plan, publish]
-    if: always() && needs.gate.outputs.publish == 'true'
+    if: always() && needs.gate.outputs.publish == 'true' && needs.check.result != 'skipped'
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     env:
@@ -279,3 +316,25 @@ jobs:
         env:
           PUBLICATION_WRITEBACK_STATUS: ${{ steps.writeback.outcome }}
         run: node scripts/runtime-publication-batch.cjs summary
+
+  test-published:
+    name: Test runtime published
+    if: always() && github.event_name == 'pull_request'
+    needs: [gate, images, check, plan, publish, finish]
+    permissions:
+      contents: read
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.PUBLICATION_SOURCE }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Require completed publication or validated generated writeback
+        env:
+          PUBLICATION_RESULTS: ${{ toJSON(needs) }}
+        run: |
+          node -e 'const {publicationReady}=require("./scripts/runtime-publication-trigger.cjs"); if (!publicationReady(JSON.parse(process.env.PUBLICATION_RESULTS))) throw Error("Test runtime publication and lock writeback are not complete")'
