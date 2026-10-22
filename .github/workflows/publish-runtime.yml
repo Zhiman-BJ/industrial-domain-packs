@@ -75,13 +75,14 @@ jobs:
             });
             if (prior) {
               core.setOutput('artifact-id', prior.artifactId);
+              core.setOutput('artifact-name', prior.artifactName);
               core.setOutput('run-id', prior.runId);
             }
       - name: Restore exact prior intent
         if: steps.previous.outputs.artifact-id != ''
         uses: actions/download-artifact@v4
         with:
-          artifact-ids: ${{ steps.previous.outputs.artifact-id }}
+          name: ${{ steps.previous.outputs.artifact-name }}
           run-id: ${{ steps.previous.outputs.run-id }}
           github-token: ${{ github.token }}
           merge-multiple: true

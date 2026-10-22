@@ -23,7 +23,11 @@ async function findIntent(
       throw Error(
         "Prior publication intent expired; reconcile the previous cloud attempt before publishing",
       );
-    return { artifactId: artifact.id, runId: artifact.workflow_run.id };
+    return {
+      artifactId: artifact.id,
+      artifactName: artifact.name,
+      runId: artifact.workflow_run.id,
+    };
   }
   const runs = await github.paginate(actions.listWorkflowRuns, {
     ...base,

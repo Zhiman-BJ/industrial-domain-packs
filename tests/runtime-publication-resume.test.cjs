@@ -36,6 +36,7 @@ const artifact = {
 test("later runs restore the earlier intent instead of rebuilding", async () => {
   assert.deepEqual(await findIntent(api([artifact]), context), {
     artifactId: 1,
+    artifactName: artifact.name,
     runId: 10,
   });
 });
