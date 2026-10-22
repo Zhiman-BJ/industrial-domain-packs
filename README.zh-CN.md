@@ -91,3 +91,5 @@ C++ 工具链、其他 EDA/PDK 前提及工程验收边界。macOS ARM64 已运�
 和 64×64 PNG 探针；其余三个平台只下载并核验了真实资产，不据此声明原生执行支持。
 
 远端发布与消费方可通过 `getRuntimeRelease` 校验 schema-1 运行发布记录，见[发布身份](docs/release-format.md)。该元数据 API 不负责发布 Tool，也不代表执行 profile 已通过资格验收。
+
+Runtime release lock 由发布 GitHub Action 维护，不要手动修改生成的 image digest、Tool ID 或发布证据。修改发布流程前，请阅读[发布流程与最终 hash 计算顺序](docs/release-format.md#publication-workflow-and-generated-files)。Action 流程尚待实现，当前提供的是元数据接口。

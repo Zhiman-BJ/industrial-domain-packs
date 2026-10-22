@@ -25,8 +25,9 @@ Source archives are read from Git objects rather than the working directory, so 
 `getRuntimeRelease(packId, profileId, environment, selection)` reads a release record
 from `packs/<source-directory>/releases/<profile>/<test|prod>.lock.json`. The source
 directory, domain and target platform come from the pinned catalog, not a caller
-path. `selection` must contain `region`, `buildInputDigest`, `runtimeDigest` and
-`workerProtocolVersion`, derived independently by a trusted consumer. All supplied
+path. `selection` must contain exactly `region` and `workerProtocolVersion`, supplied
+by the trusted deployment configuration and consumer protocol implementation.
+Build and runtime digests are returned publication metadata, not consumer inputs. All supplied
 selection fields must match. Extra fields are rejected. The complete Pack integrity
 check runs before reading; untracked release files, altered bytes, unsafe paths and
 symlinks are rejected. The result is a detached, recursively frozen record.
@@ -34,8 +35,9 @@ symlinks are rejected. The result is a detached, recursively frozen record.
 This is a metadata contract only. No checked-in Tool binding or automated Tencent
 publication is provided by this API. It does not query the cloud, prove engineering
 qualification, authorize execution, compute actual build inputs or activate profiles.
-Consumers must validate the actual build-input identity, Tool configuration and
-qualification evidence before enabling execution. A `passed` label is not proof.
+The publishing Action must validate actual build inputs, Tool configuration and
+qualification evidence before publishing a usable record. Consumers trust their
+reviewed Pack pin and check deployment routing and protocol compatibility. A `passed` label is not proof.
 Existing local/remote profile APIs and worker execution behavior are unchanged.
 
 Required fields (unknown fields are rejected, including arbitrary launch settings):
@@ -47,7 +49,7 @@ Required fields (unknown fields are rejected, including arbitrary launch setting
 | environment / region | `test` or `prod`; exact trusted deployment region |
 | buildSourceCommit | Full 40-character source Git SHA, commit A used for the build |
 | buildSourceContentSha256 | Original A content-lock SHA-256, 64 lowercase hex characters |
-| buildInputDigest | `sha256:` plus 64 hex characters; identity of actual build inputs, independently supplied by the consumer |
+| buildInputDigest | `sha256:` plus 64 hex characters; identity of actual build inputs, computed and validated by the publishing Action |
 | runtimeDigest | Existing nonempty opaque runtime identity string; this API introduces no competing runtime hash algorithm |
 | image | Exactly `reference` (registry/repository@sha256 digest) and `platform`; no mutable tag, URL scheme or credential authority; platform must match the catalog profile |
 | provider / providerToolId | `tencent-ags`; recorded `sdt-...` resource ID, scoped by region |
@@ -80,7 +82,7 @@ not yet implement the Action or an unpublished-placeholder schema.
 Runtime release files at `packs/<source-directory>/releases/<profile>/<environment>.lock.json`
 are owned by the publishing GitHub Action. Developers and coding agents must not
 hand-edit generated image digests, Tool IDs, build identities or qualification
-results. This ownership rule lives here and is linked from `AGENTS.md`; JSON
+results. This ownership rule lives here and is linked from both root READMEs (required reading for agents); JSON
 records do not need comments or an extra generated-marker field.
 
 1. Prepare runtime source and the intended profile/environment publication slot.

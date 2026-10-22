@@ -12,14 +12,14 @@ const expected = () => ({
   runtimeProfile: "cpu",
   environment: "test",
   region: "ap-guangzhou",
-  buildInputDigest: digest("a"),
-  runtimeDigest: digest("b"),
   workerProtocolVersion: 1,
 });
 const release = () => ({
   schemaVersion: 1,
   releaseId: "example-cpu-test-1",
   ...expected(),
+  buildInputDigest: digest("a"),
+  runtimeDigest: digest("b"),
   buildSourceCommit: "c".repeat(40),
   buildSourceContentSha256: "d".repeat(64),
   image: {
@@ -50,7 +50,7 @@ test("validates a release against trusted selection and returns an isolated immu
   assert.ok(Object.isFrozen(result.image));
 });
 
-test("rejects stale inputs and wrong routing, runtime or protocol selection", () => {
+test("rejects wrong routing or protocol selection", () => {
   for (const key of Object.keys(expected())) {
     const selection = expected();
     selection[key] = key === "workerProtocolVersion" ? 2 : "different";
@@ -65,6 +65,8 @@ test("rejects stale inputs and wrong routing, runtime or protocol selection", ()
 
 test("rejects malformed, mutable, incomplete and secret-bearing release records", () => {
   const mutations = [
+    (r) => { r.buildInputDigest = "invalid"; },
+    (r) => { delete r.runtimeDigest; },
     (r) => {
       r.image.reference = "registry.example.org/worker:latest";
     },
@@ -196,9 +198,7 @@ test("public consumer facade derives routing from the pinned catalog and rejects
     () =>
       pack.getRuntimeRelease("chip-pack", "rtl-cpu", "test", {
         region: "ap-guangzhou",
-        buildInputDigest: digest("a"),
-        runtimeDigest: digest("b"),
-        workerProtocolVersion: 1,
+    workerProtocolVersion: 1,
       }),
     /content lock/i,
   );
@@ -251,8 +251,7 @@ test("package consumer reads a covered lock and rejects altered bytes and a wron
         `
     const pack = require('./lib/index.cjs');
     const record = pack.getRuntimeRelease('chip-pack', 'rtl-cpu', 'test', {
-      region: 'ap-guangzhou', buildInputDigest: '${digest("a")}',
-      runtimeDigest: '${digest("b")}', workerProtocolVersion: 1,
+      region: 'ap-guangzhou', workerProtocolVersion: 1,
     });
     console.log(record.providerToolId);
   `,
@@ -278,8 +277,6 @@ test("public facade rejects extra or contradictory routing in trusted selection"
   const pack = require("../lib/index.cjs");
   const selection = {
     region: "ap-guangzhou",
-    buildInputDigest: digest("a"),
-    runtimeDigest: digest("b"),
     workerProtocolVersion: 1,
   };
   for (const extra of [
@@ -288,6 +285,8 @@ test("public facade rejects extra or contradictory routing in trusted selection"
     { packId: "other" },
     { runtimeProfile: "other" },
     { token: "secret" },
+    { buildInputDigest: digest("a") },
+    { runtimeDigest: digest("b") },
   ])
     assert.throws(
       () =>
