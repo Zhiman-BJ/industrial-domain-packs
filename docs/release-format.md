@@ -22,13 +22,13 @@ Source archives are read from Git objects rather than the working directory, so 
 
 ## Remote runtime release records (schema 1)
 
-`getRuntimeRelease(packId, profileId, environment, selection)` reads a release record
+`getRuntimeRelease(packId, profileId, environment)` reads a release record
 from `packs/<source-directory>/releases/<profile>/<test|prod>.lock.json`. The source
 directory, domain and target platform come from the pinned catalog, not a caller
-path. `selection` must contain exactly `region` and `workerProtocolVersion`, supplied
-by the trusted deployment configuration and consumer protocol implementation.
-Build and runtime digests are returned publication metadata, not consumer inputs. All supplied
-selection fields must match. Extra fields are rejected. The complete Pack integrity
+path. The three arguments select the published record. Region, build identity and
+runtime identity are returned metadata; they are not caller inputs. The Service
+checks the returned region against its deployment constraints. No new worker
+protocol-version contract is introduced. The complete Pack integrity
 check runs before reading; untracked release files, altered bytes, unsafe paths and
 symlinks are rejected. The result is a detached, recursively frozen record.
 
@@ -37,7 +37,7 @@ publication is provided by this API. It does not query the cloud, prove engineer
 qualification, authorize execution, compute actual build inputs or activate profiles.
 The publishing Action must validate actual build inputs, Tool configuration and
 qualification evidence before publishing a usable record. Consumers trust their
-reviewed Pack pin and check deployment routing and protocol compatibility. A `passed` label is not proof.
+reviewed Pack pin and check deployment constraints. A `passed` label is not proof.
 Existing local/remote profile APIs and worker execution behavior are unchanged.
 
 Required fields (unknown fields are rejected, including arbitrary launch settings):
@@ -54,7 +54,6 @@ Required fields (unknown fields are rejected, including arbitrary launch setting
 | image | Exactly `reference` (registry/repository@sha256 digest) and `platform`; no mutable tag, URL scheme or credential authority; platform must match the catalog profile |
 | provider / providerToolId | `tencent-ags`; recorded `sdt-...` resource ID, scoped by region |
 | toolConfigurationDigest | SHA-256 identity of read-back Tool configuration; cloud read-back is a separate requirement |
-| workerProtocolVersion | Positive integer, equal to the consumer-supported version |
 | qualification | `status: passed`, nonempty unique `gates` and `evidence` string arrays; the consumer checks the required gates and evidence for its target environment |
 
 Runtime image source identity and consumer publication identity are separate. A

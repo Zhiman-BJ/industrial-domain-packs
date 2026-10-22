@@ -11,13 +11,12 @@ const expected = () => ({
   domain: "example",
   runtimeProfile: "cpu",
   environment: "test",
-  region: "ap-guangzhou",
-  workerProtocolVersion: 1,
 });
 const release = () => ({
   schemaVersion: 1,
   releaseId: "example-cpu-test-1",
   ...expected(),
+  region: "ap-guangzhou",
   buildInputDigest: digest("a"),
   runtimeDigest: digest("b"),
   buildSourceCommit: "c".repeat(40),
@@ -50,10 +49,10 @@ test("validates a release against trusted selection and returns an isolated immu
   assert.ok(Object.isFrozen(result.image));
 });
 
-test("rejects wrong routing or protocol selection", () => {
+test("rejects wrong routing selection", () => {
   for (const key of Object.keys(expected())) {
     const selection = expected();
-    selection[key] = key === "workerProtocolVersion" ? 2 : "different";
+    selection[key] = "different";
     assert.throws(
       () => api().validateRuntimeRelease(release(), selection),
       /selection|mismatch/i,
@@ -96,7 +95,7 @@ test("rejects malformed, mutable, incomplete and secret-bearing release records"
       r.provider = "arbitrary";
     },
     (r) => {
-      r.workerProtocolVersion = 0;
+      r.region = "invalid region";
     },
     (r) => {
       r.qualification.status = "pending";
@@ -187,19 +186,16 @@ test("public consumer facade derives routing from the pinned catalog and rejects
   const pack = require("../lib/index.cjs");
   assert.equal(typeof pack.getRuntimeRelease, "function");
   assert.throws(
-    () => pack.getRuntimeRelease("missing-pack", "cpu", "test", {}),
+    () => pack.getRuntimeRelease("missing-pack", "cpu", "test"),
     /Unknown Domain Pack/,
   );
   assert.throws(
-    () => pack.getRuntimeRelease("chip-pack", "missing-profile", "test", {}),
+    () => pack.getRuntimeRelease("chip-pack", "missing-profile", "test"),
     /profile/i,
   );
   assert.throws(
     () =>
-      pack.getRuntimeRelease("chip-pack", "rtl-cpu", "test", {
-        region: "ap-guangzhou",
-    workerProtocolVersion: 1,
-      }),
+      pack.getRuntimeRelease("chip-pack", "rtl-cpu", "test"),
     /content lock/i,
   );
 });
@@ -250,10 +246,10 @@ test("package consumer reads a covered lock and rejects altered bytes and a wron
         "-e",
         `
     const pack = require('./lib/index.cjs');
-    const record = pack.getRuntimeRelease('chip-pack', 'rtl-cpu', 'test', {
-      region: 'ap-guangzhou', workerProtocolVersion: 1,
-    });
+    const record = pack.getRuntimeRelease('chip-pack', 'rtl-cpu', 'test');
     console.log(record.providerToolId);
+    if (record.region !== 'ap-guangzhou') throw Error('region missing');
+    if ('workerProtocolVersion' in record) throw Error('unexpected protocol contract');
   `,
       ],
       { cwd: root, encoding: "utf8" },
@@ -271,29 +267,4 @@ test("package consumer reads a covered lock and rejects altered bytes and a wron
   result = invoke();
   assert.notEqual(result.status, 0);
   assert.match(result.stderr, /platform differs/);
-});
-
-test("public facade rejects extra or contradictory routing in trusted selection", () => {
-  const pack = require("../lib/index.cjs");
-  const selection = {
-    region: "ap-guangzhou",
-    workerProtocolVersion: 1,
-  };
-  for (const extra of [
-    { environment: "prod" },
-    { domain: "wrong" },
-    { packId: "other" },
-    { runtimeProfile: "other" },
-    { token: "secret" },
-    { buildInputDigest: digest("a") },
-    { runtimeDigest: digest("b") },
-  ])
-    assert.throws(
-      () =>
-        pack.getRuntimeRelease("chip-pack", "rtl-cpu", "test", {
-          ...selection,
-          ...extra,
-        }),
-      /trusted selection/,
-    );
 });
