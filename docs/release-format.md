@@ -411,3 +411,9 @@ after PR validation.
 Local tag promotion waits up to 60 seconds for the cloud listing to expose the
 new input tag, polling every five seconds. A different digest or query failure
 still fails immediately; an absent tag after the deadline fails for a later retry.
+
+Future experiment: evaluate regctl chunked uploads from GitHub-hosted runners
+against CCR using real large layers. Chunking may avoid long-request failures,
+but runner-to-CCR throughput and stability remain unqualified. This is not a
+prerequisite for local publication; network-heavy work remains local until that
+experiment establishes a reliable alternative.
