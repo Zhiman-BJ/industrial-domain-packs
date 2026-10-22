@@ -79,6 +79,11 @@ test("unknown Docker input syntax, mutable base images and unsafe sources fail c
     "COPY --from=unknown:latest /x /x",
     "COPY content-lock.json /app/",
     "COPY .dockerignore /app/",
+    "ARG BUILDARCH",
+    "ARG BUILDARCH=amd64",
+    "ARG CUSTOM",
+    "ARG EXPANDED=${RUNTIME_DIGEST}",
+    "ARG RUNTIME_DIGEST=other-stage-value",
   ]) {
     f.write(f.recipe, recipe + "\n" + line + "\n");
     assert.throws(

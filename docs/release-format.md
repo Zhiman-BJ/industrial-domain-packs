@@ -172,7 +172,9 @@ The checkout's `.dockerignore` does not govern this fresh context, which contain
 only enumerated files and the Dockerfile.
 
 The reader intentionally supports the existing recipes' explicit file `COPY`,
-image stages, cache mounts and literal `ARG` defaults. Broad/directory copies,
+image stages, cache mounts and unique literal `ARG` defaults. Automatic platform
+arguments, defaultless arguments, expanded defaults and repeated/scoped argument
+definitions are rejected rather than guessing builder-dependent values. Broad/directory copies,
 local glob/variable sources, `ADD`, bind-mounted inputs and unrecognized syntax
 fail rather than silently excluding inputs. All external `FROM`, `COPY --from`
 and Dockerfile frontend references must be digest-pinned. Extend the reader and

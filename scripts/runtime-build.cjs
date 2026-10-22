@@ -73,9 +73,10 @@ function collect({ root, recipe, platform, buildArgs = {} }) {
       if (!stages.has(from[1])) image(from[1]);
       if (from[2]) stages.add(from[2]);
     } else if (instruction === "ARG") {
-      const arg = rest.match(/^([A-Z_][A-Z0-9_]*)(?:=(.*))?$/);
-      if (!arg) throw Error("Unsupported ARG");
-      args[arg[1]] = arg[2] ?? "";
+      const arg = rest.match(/^([A-Z_][A-Z0-9_]*)=([^\s$'"\\]*)$/);
+      if (!arg || /^(BUILD|TARGET)(PLATFORM|OS|ARCH|VARIANT)$/.test(arg[1]) || Object.hasOwn(args, arg[1]))
+        throw Error("Unsupported automatic, expanded or scoped ARG");
+      args[arg[1]] = arg[2];
     } else if (instruction === "COPY") {
       const tokens = rest.split(/\s+/);
       let from;

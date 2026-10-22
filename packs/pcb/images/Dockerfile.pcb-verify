@@ -19,7 +19,7 @@ RUN if [ "$PCB_DEV_INSECURE_APT_TLS" = 1 ]; then \
       python3=3.12.3-0ubuntu2.1 python3-numpy=1:1.26.4+ds-6ubuntu1 \
       python3-scipy=1.11.4-6build1 python3-shapely=2.0.3-1build2 \
       python3-yaml=6.0.1-2build2 python3-cairosvg=2.7.1-1 \
-      curl=8.5.0-2ubuntu10.16 git=1:2.43.0-1ubuntu7.3 \
+      curl=8.5.0-2ubuntu10.16 git=1:2.43.0-1ubuntu7.4 \
     && rm -rf /var/lib/apt/lists/*
 
 # Fetch the signed KiCad 10.0.6 package set selected by the pack lock.
