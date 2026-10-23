@@ -140,3 +140,5 @@ Before adding or changing any remote runtime profile, read the [shared packaging
 Publishing runs separate Check and conditional Publish jobs; unchanged packs skip Publish and still appear in the final summary.
 
 PRs targeting main run `Runtime images ready`; an administrator must make it a required, up-to-date check. Missing images block readiness until local preparation succeeds. See [release format](docs/release-format.md#pr-image-readiness-gate).
+
+Prod lock writeback opens a generated PR to protected main and enables auto-merge after required checks; feature test locks are written directly to their PR branch.

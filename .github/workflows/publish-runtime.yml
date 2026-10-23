@@ -47,10 +47,10 @@ jobs:
         id: source
         run: node scripts/runtime-publication-trigger.cjs
       - name: Require token that triggers PR checks after writeback
-        if: steps.source.outputs.publish == 'true' && env.PUBLICATION_REF != 'refs/heads/main'
+        if: steps.source.outputs.publish == 'true'
         env:
           WRITEBACK_TOKEN: ${{ secrets.PACK_BUMP_PAT }}
-        run: node -e 'if (!process.env.WRITEBACK_TOKEN) throw Error("PACK_BUMP_PAT is required for feature-branch lock writeback")'
+        run: node -e 'if (!process.env.WRITEBACK_TOKEN) throw Error("PACK_BUMP_PAT is required for publication lock writeback")'
 
   images:
     permissions:
@@ -292,7 +292,7 @@ jobs:
         with:
           ref: ${{ env.PUBLICATION_SOURCE }}
           fetch-depth: 0
-          token: ${{ env.PUBLICATION_REF != 'refs/heads/main' && secrets.PACK_BUMP_PAT || github.token }}
+          token: ${{ secrets.PACK_BUMP_PAT }}
       - uses: actions/setup-node@v4
         with:
           node-version: "24"
@@ -311,10 +311,23 @@ jobs:
         id: writeback
         if: needs.check.result == 'success' && needs.plan.result == 'success' && (needs.publish.result == 'success' || needs.publish.result == 'skipped')
         run: node scripts/runtime-publication-batch.cjs writeback
+      - name: Open prod lock PR and enable automatic merge
+        id: prod-pr
+        if: steps.writeback.outcome == 'success' && env.PUBLICATION_REF == 'refs/heads/main'
+        uses: actions/github-script@v7
+        env:
+          WRITEBACK_HEAD: ${{ steps.writeback.outputs.head }}
+        with:
+          github-token: ${{ secrets.PACK_BUMP_PAT }}
+          script: |
+            const {openProductionPR} = require('./scripts/runtime-publication-writeback.cjs');
+            const url = await openProductionPR({github, ...context.repo,
+              source: process.env.PUBLICATION_SOURCE, head: process.env.WRITEBACK_HEAD});
+            await core.summary.addRaw(`Prod lock PR: ${url} (merge waits for required checks).\n`).write();
       - name: Show cloud results and lock writeback status
         if: always()
         env:
-          PUBLICATION_WRITEBACK_STATUS: ${{ steps.writeback.outcome }}
+          PUBLICATION_WRITEBACK_STATUS: ${{ steps.writeback.outcome != 'success' && steps.writeback.outcome || (env.PUBLICATION_REF == 'refs/heads/main' && format('prod PR {0}; merge pending required checks', steps.prod-pr.outcome) || steps.writeback.outcome) }}
         run: node scripts/runtime-publication-batch.cjs summary
 
   test-published:

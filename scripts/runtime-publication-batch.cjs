@@ -11,7 +11,7 @@ const {
 } = require("./publish-runtime.cjs");
 const { inputs } = require("./runtime-build.cjs");
 const { configurationDigest } = require("./runtime-tool-publication.cjs");
-const { pushPublication } = require("./runtime-publication-writeback.cjs");
+const { pushPublication, pushProductionBranch } = require("./runtime-publication-writeback.cjs");
 const domains = ["chip", "freecad", "pcb"];
 const { repositoryFor } = require("./runtime-cloud-image.cjs");
 function collectResults({
@@ -197,7 +197,12 @@ function main(phase) {
     "41898282+github-actions[bot]@users.noreply.github.com",
   );
   git("commit", "-m", `chore: publish ${selected.join(", ")} runtimes`);
-  pushPublication({ cwd: root, branch: ref.slice(11), source });
+  if (ref === "refs/heads/main") {
+    const branch = pushProductionBranch({cwd:root, source});
+    fs.appendFileSync(required("GITHUB_OUTPUT"), `branch=${branch}\nhead=${git("rev-parse", "HEAD")}\n`);
+  } else {
+    pushPublication({ cwd: root, branch: ref.slice(11), source });
+  }
 }
 module.exports = { collectResults, renderSummary };
 if (require.main === module) {

@@ -107,8 +107,8 @@ records do not need comments or an extra generated-marker field.
    Do not change covered files after this final hash calculation; if they change,
    regenerate and revalidate the lock.
 5. Commit the generated records, `content-lock.json` and any generated package
-   file-inventory update together as publication commit B on the triggering
-   branch. If that branch has moved, fail or restart against its new source;
+   file-inventory update together as publication commit B on the feature
+   branch, or in a generated PR targeting main for prod. If that branch has moved, fail or restart against its new source;
    do not attach A's results to unrelated changes. Generated-only writeback must
    not start a recursive publication. Consumers pin B only after success.
 
@@ -365,8 +365,9 @@ Any domain failure prevents the batch writeback. A compare-and-swap push require
 that the source branch still equals the build source. Branch protection is not
 bypassed. Repository-wide workflow concurrency serializes publication. Feature writeback
 uses `PACK_BUMP_PAT` to trigger ordinary PR checks; a validated generated-commit
-guard skips recursive publication (see below). Main still uses `GITHUB_TOKEN`;
-protected-main writeback remains pending and is not bypassed.
+guard skips recursive publication (see below). Main also uses `PACK_BUMP_PAT`, but pushes to `automation/runtime-prod/<source SHA>`
+and opens a PR targeting main instead of pushing main directly. The PR enables
+auto-merge with a merge commit, subject to all existing required checks.
 
 The Action Summary lists immutable image references, Tool IDs, reused/restored
 images, created/updated/reused Tools and cloud status separately from
@@ -471,5 +472,29 @@ its own checks: the generated-commit gate validates all three covered release
 locks against their source parent, then readiness and ordinary checks run without
 recursive publication. A prior head's success does not qualify the new head.
 
-This feature-branch path does not resolve protected-main prod writeback. Prod
-capacity and protected-main publication remain separate pending work.
+### Protected-main prod writeback
+
+After publishing prod, the workflow pushes a generated child of the source commit
+to `automation/runtime-prod/<source SHA>`, opens (or reuses) its PR targeting main,
+and enables auto-merge using a merge commit. `PACK_BUMP_PAT` needs repository
+contents and pull-request write permissions; repository auto-merge must be enabled.
+No branch-protection bypass is used. The Action summary links the PR; successful
+publication means the PR was prepared, not that its locks have already merged.
+
+The generated PR validates prod releases and image readiness without publishing
+test. The existing required `Test runtime published` check accepts this validated
+prod-only writeback too; its name stays stable for branch protection. All three
+prod records must bind the generated commit's parent. The merged main commit skips
+publication only when it is the exact merge of that child onto its unchanged source,
+with an identical tree. Use the configured merge-commit method, not squash/rebase.
+
+If main moves before branch creation, publication fails without pushing main.
+If it moves while the PR waits, strict up-to-date branch protection blocks merging;
+do not update/rebase the generated branch. Close the stale PR and let publication
+of current main produce a fresh one. Existing generated branches with a different
+commit are never overwritten; inspect/reuse their existing PR before retrying.
+Cloud resources already created remain available for reconciliation and reuse.
+Prod Tool capacity is checked by cloud operations independently of this Git flow.
+
+This path has local Git/API fixture coverage; the first real main-triggered prod
+PR and merge still require post-merge qualification.
