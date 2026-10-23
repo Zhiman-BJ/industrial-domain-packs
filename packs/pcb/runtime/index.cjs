@@ -189,7 +189,9 @@ function createRuntimePlugin({ environment = process.env, runtimeApi } = {}) {
       return {
         stage: Object.keys(inputs).some((n) => n.endsWith(".kicad_pcb"))
           ? "layout"
-          : null,
+          : Object.keys(inputs).some((n) => n.endsWith(".kicad_sch") || n === "spec.json")
+            ? "schematic"
+            : null,
         inputHashes: {
           ...inputs,
           "runtime-identity/pcb": hash(

@@ -11,13 +11,13 @@
     "transport": "runtime",
     "packDirectory": "pcb",
     "packId": "pcb-pack",
-    "sourceSha256": "49cf6983109e32fbb260ba06b7ccd9f399e1a2d73c8a9675581ed65285a81fe9",
+    "sourceSha256": "537d18390deb095bcaf3a86ecfea0d53109f06a0aa5b858b68a938f39093da3f",
     "resourceRoots": [
       "runtime"
     ],
     "sourceFiles": {
       "runtime/gateway.cjs": "02d1ed90487963c9501a4755cfc3622367b6b0e0ff6ac1d759324c7fd295e1fc",
-      "runtime/index.cjs": "a73c52665b16c11b219507047574ce90082b3d5605dd742d3d3b31a50751fdfd",
+      "runtime/index.cjs": "9a10627c6aa3c3fb95ff14c51b2b04fc1b0f9fa12cd6bf7a3eabde291b012d6c",
       "runtime/kicad-packages.json": "815c19e4412bf602c921758dcb877c183d6c29cd24d167a4c2a13935ab66c9d9",
       "runtime/native-dependency.json": "990026ffb36aeac47a3a2e935cf00b17a068628a0a46bc1dfe120bbbf3b21c73",
       "runtime/native.py": "5446b0ffe8fa4880fb11c4357e342694a97dffff94c1e5a505defd34071a1f7c",
@@ -893,12 +893,7 @@
       "id": "pcb.design.core",
       "title": "PCB · core",
       "domain": "pcb",
-      "stages": [
-        "requirements",
-        "schematic",
-        "layout",
-        "verification"
-      ],
+      "stages": [],
       "priority": 20,
       "keywords": [
         "project status",
