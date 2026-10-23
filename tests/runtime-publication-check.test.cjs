@@ -15,6 +15,8 @@ for (const scenario of [
   "reuse",
   "query-error",
   "pr-head",
+  "cached",
+  "stale-evidence",
 ]) {
   test(`check phase is read-only: ${scenario}`, async (t) => {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), "publication-readonly-"));
@@ -47,6 +49,37 @@ for (const scenario of [
       Status: "ACTIVE",
       DefaultTimeoutSeconds: 1800,
     };
+    const scope = {
+      GITHUB_REPOSITORY: "owner/packs",
+      GITHUB_RUN_ID: "123",
+      GITHUB_RUN_ATTEMPT: "1",
+    };
+    if (["cached", "stale-evidence"].includes(scenario)) {
+      const { imageEvidence } = realRequire("./runtime-image-evidence.cjs");
+      fs.writeFileSync(
+        path.join(dir, "chip.json"),
+        JSON.stringify(
+          imageEvidence(
+            {
+              domain: "chip",
+              repository: image.reference.split("@")[0],
+              input: { buildInputDigest: hash, platform: image.platform },
+            },
+            image,
+            {
+              identity: {
+                digest: hash,
+                platform: image.platform,
+                verification: "metadata-only",
+              },
+            },
+            { ...scope, GITHUB_RUN_ATTEMPT: scenario === "cached" ? "1" : "0" },
+          ),
+        ),
+      );
+    }
+    let finds = 0,
+      verifications = 0;
     const commands = [];
     const client = {
       async DescribeSandboxToolList() {
@@ -82,14 +115,21 @@ for (const scenario of [
       "./runtime-cloud-image.cjs": {
         ...realRequire("./runtime-cloud-image.cjs"),
         findImage: async () => {
+          finds++;
+          if (scenario === "cached") assert.fail("must reuse image evidence");
           if (scenario === "query-error") throw Error("query denied");
           return scenario === "missing-image" ? null : image;
         },
       },
       "./runtime-image-reuse.cjs": {
-        verifyImage: async () => ({
-          identity: { digest: hash, platform: image.platform },
-        }),
+        verifyImage: async () => {
+          verifications++;
+          if (scenario === "cached")
+            assert.fail("must reuse registry evidence");
+          return {
+            identity: { digest: hash, platform: image.platform },
+          };
+        },
       },
       "tencentcloud-sdk-nodejs-ags": {
         ags: {
@@ -112,6 +152,8 @@ for (const scenario of [
       process: {
         chdir() {},
         env: {
+          ...scope,
+          RUNTIME_IMAGE_EVIDENCE_DIRECTORY: dir,
           PUBLICATION_DIRECTORY: dir,
           PUBLICATION_DOMAIN: "chip",
           GITHUB_REF:
@@ -154,6 +196,16 @@ for (const scenario of [
         fs.existsSync(path.join(dir, "result.json")),
         scenario === "reuse",
       );
+    }
+    if (scenario === "cached") {
+      await context.module.exports.testMain("prepare");
+      assert.equal(finds, 0);
+      assert.equal(verifications, 0);
+    }
+    if (scenario === "stale-evidence") {
+      await context.module.exports.testMain("prepare");
+      assert.equal(finds, 1);
+      assert.equal(verifications, 2);
     }
     assert.equal(commands.includes("docker"), false);
   });

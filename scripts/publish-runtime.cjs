@@ -2,6 +2,7 @@ const fs = require("node:fs"),
   path = require("node:path");
 const { execFileSync } = require("node:child_process");
 const { inputs } = require("./runtime-build.cjs");
+const { consumeEvidence } = require("./runtime-image-evidence.cjs");
 const { verifyImage } = require("./runtime-image-reuse.cjs");
 const {
   planTool,
@@ -167,6 +168,21 @@ function agsClient(region) {
     },
   });
 }
+function checkedImage(candidate) {
+  const directory = process.env.RUNTIME_IMAGE_EVIDENCE_DIRECTORY;
+  if (!directory) return null;
+  try {
+    return consumeEvidence(
+      JSON.parse(
+        fs.readFileSync(path.join(directory, candidate.domain + ".json")),
+      ),
+      candidate,
+      process.env,
+    );
+  } catch {
+    return null;
+  }
+}
 async function checkPlan(plan, dir) {
   const checked = await checkTool(plan.tool, agsClient(plan.tool.region));
   if (checked.result) write(path.join(dir, "result.json"), checked.result);
@@ -237,7 +253,9 @@ async function main(phase) {
         reference: restored.tool.request.CustomConfiguration.Image,
         platform: input.platform,
       };
-      const registry = await verifyImage(image, true, true);
+      const registry =
+        checkedImage({ domain: s.directory, repository, input, image })
+          ?.registry || (await verifyImage(image, true, true));
       if (
         registry.identity?.digest !== image.reference.split("@")[1] ||
         registry.identity?.platform !== input.platform
@@ -249,14 +267,15 @@ async function main(phase) {
       if (phase === "check") await checkPlan(restored, dir);
       return;
     }
-    const image = await findImage({ repository, input });
+    const cached = checkedImage({ domain: s.directory, repository, input });
+    const image = cached?.image || (await findImage({ repository, input }));
     if (!image)
       throw Error(
         `Missing verified image for ${s.directory}; run npm run publish:images locally on this source before retrying the Action`,
       );
     write(path.join(dir, "image.json"), image);
     write(path.join(dir, "image-operation.json"), "reused");
-    const registry = await verifyImage(image, true, true);
+    const registry = cached?.registry || (await verifyImage(image, true, true));
     if (
       registry.identity?.digest !== image.reference.split("@")[1] ||
       registry.identity?.platform !== input.platform

@@ -407,6 +407,15 @@ merge commit (and on the selected source for branch push/manual dispatch). It co
 input tags only in `industrial-mcp-remote`, and verifies immutable manifest/config
 identity and platform without downloading layers. It creates no Tools and writes
 no locks. Documentation or Tool-only changes reuse images when build inputs match.
+Successful readiness uploads per-domain metadata evidence for the current workflow
+run and attempt. Check and prepare reuse it only when repository, build-input
+digest, platform and (for restored plans) immutable image match. This also permits
+PR merge-candidate evidence to serve the PR head when their build inputs match.
+Missing, malformed, older-attempt or mismatched evidence triggers a fresh registry
+check; standalone publication and resumed runs do not trust historical evidence.
+The artifact is an intra-workflow optimization, not a signature, resource lock or
+promise that the image cannot be deleted after verification.
+
 A missing image, registry error or invalid metadata fails the check. Run
 `npm run publish:images` locally on the candidate source, then rerun the failed
 check. If main changed the combined build inputs, update the branch from main
