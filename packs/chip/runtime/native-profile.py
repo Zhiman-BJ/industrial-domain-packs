@@ -87,9 +87,9 @@ def run(root, work):
     version = subprocess.check_output(["verilator", "--version"], text=True).strip()
     if not version.startswith("Verilator 5.026 "):
         raise ValueError("rtl-cpu requires pinned Verilator 5.026")
-    report = {"schemaVersion": "0.2", "profileId": "rtl-cpu",
+    report = {"schemaVersion": "0.3-qualification", "profileId": "rtl-cpu",
         "toolVersion": version, "compileExitCode": None, "simulationExitCode": None,
-        "completed": False, "completionMarker": None, "nativeVerification": None, "diagnostic": None}
+        "completed": False, "completionMarker": None, "qualificationNativeVerification": None, "diagnostic": None}
     exit_code = 1
     with (work / "tool.log").open("wb") as log:
         try:
@@ -102,7 +102,7 @@ def run(root, work):
             evidence = [{"id": kind, "type": kind, "path": name}
                 for kind, name in prepared.outputs.items() if (work / name).is_file()]
             observation = semantic.observe("rtl.simulate", model, work, work / "tool.log", evidence)
-            report["nativeVerification"] = observation.verification.model_dump()
+            report["qualificationNativeVerification"] = observation.verification.model_dump()
             completion = work / "simulation.txt"
             report["completed"] = report["simulationExitCode"] == 0 and completion.is_file() and "EDA_SIMULATION_FINISHED" in completion.read_text()
             if report["completed"]:

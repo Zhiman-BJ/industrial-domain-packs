@@ -1,3 +1,4 @@
+// Qualification candidate only; do not merge this incompatible evidence field.
 const descriptor = {
   schemaVersion: "1",
   id: "chip.rtl.verify",
@@ -19,7 +20,7 @@ const verifier = ({ result, artifacts, readArtifact }) => {
       reason: "Real Verilator assertion failed; inspect collected tool logs.",
       metrics: { assertionFailure: true },
     };
-  if (!report || !wave || !result.nativeVerification)
+  if (!report || !wave || !result.qualificationNativeVerification)
     return {
       status: "insufficient_evidence",
       reason:
@@ -37,7 +38,7 @@ const verifier = ({ result, artifacts, readArtifact }) => {
   const passed =
     complete &&
     genuineWave &&
-    result.nativeVerification.status === "PASS" &&
+    result.qualificationNativeVerification.status === "PASS" &&
     !/%Error/.test(logs);
   return {
     status: passed ? "passed" : "failed",

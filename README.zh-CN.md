@@ -1,5 +1,7 @@
 # Industrial Domain Packs
 
+> 仅用于验收的候选 B：Chip 证据字段刻意不兼容。禁止合入 main 或部署 prod。
+
 开发边界：[已接受的架构契约 IH-ARCH-001](docs/architecture-contract.md)。
 
 [English](README.md)

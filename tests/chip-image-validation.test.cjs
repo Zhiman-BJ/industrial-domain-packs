@@ -14,7 +14,7 @@ if(args[0]==='rm') process.exit(0);
 if(args[args.indexOf('--entrypoint')+1]!=='python3' || !args.includes('/opt/domain-packs/packs/chip/runtime/native-profile.py')) process.exit(42);
 const mount=args.find(a=>a.endsWith(',target=/work'));
 const out=mount.slice('type=bind,source='.length,-',target=/work'.length);
-fs.writeFileSync(path.join(out,'report.json'),JSON.stringify({profileId:'rtl-cpu',completionMarker:'EDA_SIMULATION_FINISHED',nativeVerification:{status:'PASS'}}));
+fs.writeFileSync(path.join(out,'report.json'),JSON.stringify({profileId:'rtl-cpu',completionMarker:'EDA_SIMULATION_FINISHED',qualificationNativeVerification:{status:'PASS'}}));
 fs.writeFileSync(path.join(out,'wave.vcd'),'$var wire 1 a clock $end\\n$enddefinitions $end\\n#1\\n1a');
 fs.writeFileSync(path.join(out,'tool.log'),'finished');
 `,{mode:0o755});

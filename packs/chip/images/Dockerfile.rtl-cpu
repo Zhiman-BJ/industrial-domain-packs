@@ -39,7 +39,7 @@ RUN python3 /opt/domain-packs/packs/chip/runtime/native-profile.py /opt/domain-p
     && test -s /tmp/smoke/wave.vcd && rm -rf /tmp/smoke
 # The runtime identity this image agrees to serve; must match the server's
 # pinned RuntimeProfile runtimeDigest (overridable per qualification build).
-ARG CHIP_RUNTIME_DIGEST=sha256:ba6a3ccb431d95e01e29a0e363b8a8b4f077f7d2d08cc6f6c6e23277fb2e202b
+ARG CHIP_RUNTIME_DIGEST=sha256:483cbb865a357b8ef221a0764026ad0c9f3f27ad94d1a8672dade52adbf5f6d4
 ENV WORKER_RUNTIME_DIGEST=${CHIP_RUNTIME_DIGEST} WORKER_PACK=chip WORKER_PROFILE_ID=rtl-cpu
 # AGS management daemon (binary only, from the public reference image):
 # health checks, command execution, and the snapshot-staging file interface

@@ -84,7 +84,7 @@ test("one verifier accepts local/remote evidence and rejects assertion failures 
       },
     ];
     return verifier({
-      result: { nativeVerification: native },
+      result: { qualificationNativeVerification: native },
       artifacts,
       readArtifact: (a) => a.bytes,
     });

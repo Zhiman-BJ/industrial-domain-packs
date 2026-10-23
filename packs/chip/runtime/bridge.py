@@ -38,7 +38,7 @@ def execute(root):
     return {"executionSucceeded": run["status"] == "SUCCESS", "artifacts": artifacts,
             "toolVersion": run["tool_identities"]["rtl.simulate"].get("version", run["tool_identities"]["rtl.simulate"].get("image_id", "unavailable")),
             "diagnostics": [run["error"]] if run.get("error") else [],
-            "nativeRunId": run["id"], "nativeVerification": native.get("verification"),
+            "nativeRunId": run["id"], "qualificationNativeVerification": native.get("verification"),
             "nativeSteps": [{"action": step["action"], "status": step["status"]} for step in steps]}
 
 

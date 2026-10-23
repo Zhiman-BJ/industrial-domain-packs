@@ -1,5 +1,7 @@
 # Industrial Domain Packs
 
+> Qualification candidate B only: intentionally incompatible Chip evidence schema. Do not merge or deploy to prod.
+
 Development boundary: [accepted architecture contract IH-ARCH-001](docs/architecture-contract.md).
 
 [简体中文](README.zh-CN.md)
