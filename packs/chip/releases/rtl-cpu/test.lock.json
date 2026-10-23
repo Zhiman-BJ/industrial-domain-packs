@@ -1,22 +1,22 @@
 {
   "schemaVersion": 1,
-  "releaseId": "pub-19e1933310a3c02deeda76ab296c04400381b58355196c203ecd552d6668a606",
+  "releaseId": "pub-01b8aeb5505eec4a3a0c1aec0bd85e6b186f55772b2bf53a2dff155cd291890d",
   "packId": "chip-pack",
   "domain": "chip",
   "runtimeProfile": "rtl-cpu",
   "environment": "test",
   "region": "ap-guangzhou",
-  "buildSourceCommit": "10dfd893d70f5f3d96e3d251c20c20867eaed142",
-  "buildSourceContentSha256": "0f1bdf56340668daccb461363fd1a1cd549d5a73fd798ea61a89ba27c31edfbf",
-  "buildInputDigest": "sha256:6d4ce757539bba49f7b4b85b1ffed5198ce1a876213c028bbedab0b22ba8fb22",
-  "runtimeDigest": "sha256:ba6a3ccb431d95e01e29a0e363b8a8b4f077f7d2d08cc6f6c6e23277fb2e202b",
+  "buildSourceCommit": "c6650f09d50982c9864686acade706c19f6da00b",
+  "buildSourceContentSha256": "ff51d5b63d318171d26142b531701b058f89f23c9e5d20f2e44bcc7477970e88",
+  "buildInputDigest": "sha256:fc277562a38ffef241513288cee87ac30da50b94c727e58b8f48c1141a9743af",
+  "runtimeDigest": "sha256:483cbb865a357b8ef221a0764026ad0c9f3f27ad94d1a8672dade52adbf5f6d4",
   "image": {
-    "reference": "ccr.ccs.tencentyun.com/industrial-mcp-remote/chip-rtl@sha256:ef6531dc6b7e3fcb7bdd0f04a05d197b73ac4765e3a6f653c8838140a6189d7a",
+    "reference": "ccr.ccs.tencentyun.com/industrial-mcp-remote/chip-rtl@sha256:7b59b5faf768e46a66e866039018a1ea32b86cf667333610ce3cb42e8d24acf2",
     "platform": "linux/amd64"
   },
   "provider": "tencent-ags",
-  "providerToolId": "sdt-3mpfi02x",
-  "toolConfigurationDigest": "sha256:c4b4581ee9eeadedbd7d4043d5ea91b645b796795cf8b42bac2da9a48f663ece",
+  "providerToolId": "sdt-5fbjjxyn",
+  "toolConfigurationDigest": "sha256:10596264483dec88fd96fcae5d40bd5f489406af7168949dcda098b4e380e043",
   "qualification": {
     "status": "passed",
     "gates": [
@@ -25,7 +25,7 @@
       "ags-tool-configuration"
     ],
     "evidence": [
-      "https://github.com/Zhiman-BJ/industrial-domain-packs/actions/runs/39890016749"
+      "https://github.com/Zhiman-BJ/industrial-domain-packs/actions/runs/39910494126"
     ]
   }
 }
