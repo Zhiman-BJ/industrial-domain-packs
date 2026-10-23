@@ -191,3 +191,222 @@ lock commits do not recursively trigger workflows. Actionlint and all 11
 architecture policy tests passed. Independent review checked branch/environment
 selection, resume, writeback authentication and documentation with no findings.
 No live publication was triggered during this change.
+
+## 2026-10-22 — separate check and conditional publication jobs
+
+The Check matrix is read-only. A selection job produces the Publish matrix from
+its results; fully reusable packs skip Publish while retaining verified results
+for final lock writeback and summary. Publish rechecks cloud state and retains
+durable intent handling. Current selection controls artifact collection, so a
+stale partial publication artifact from an earlier attempt cannot replace fresh
+reuse evidence, and a failed current publication cannot fall back to a check.
+
+Validation: 181 tests, 179 passed and 2 skipped, including four orchestration
+checks proving no image build or Tool mutation in Check and propagation of cloud
+query errors. Architecture policy, content-lock check and actionlint passed.
+Independent review found a mixed-rerun artifact selection issue; it was fixed,
+covered by regression tests and reviewed again with no remaining blockers.
+No new live workflow was dispatched for this revision; the first automatic prod
+run from the prior merged revision was still in progress during these checks.
+
+## 2026-10-22 — local image preparation and lightweight Tool publication
+
+Moved image builds, pushes and complete blob verification to `npm run publish:images`.
+The local command requires all four Tencent credentials before invoking tools,
+uses shared image inputs without an environment selector, and promotes the input
+tag only after full verification. It does not write release locks or create Tools.
+Actions verify manifest/config metadata and publish Tools, then retain the single
+batch release/content-lock writeback. Missing prepared images fail Check.
+
+Validation: 188 Node tests, 186 passed and 2 skipped; 9 Python verifier tests
+passed. Architecture policy, content-lock verification and actionlint passed.
+Independent review found a repeated-build context collision; fresh attempt
+directories and a regression test resolved it, and follow-up review passed.
+Real local Buildx push-by-digest/tag promotion and the revised Action have not
+yet been qualified end to end.
+
+The old prod and feature publication runs were cancelled after prolonged layer
+upload stalls. Bounded registry probes showed fast authentication but slow or
+timed-out bulk uploads from GitHub runners; equivalent local uploads completed.
+The publication workflow remains manually disabled until this revision merges,
+so old main cannot restart heavy uploads. Existing GitHub Secrets/Variables all
+have active consumers and were retained. Native runtime qualification is unchanged.
+
+## 2026-10-22 — PR image readiness check
+
+Added `Runtime images ready` for all pull requests targeting main, checking the
+candidate merge commit with the same image-input fingerprints as local preparation.
+The gate performs read-only registry metadata verification and fails on absent
+images, query errors or identity mismatch. Six focused tests cover these outcomes;
+the complete Node suite passed 192 tests with 2 skipped (194 total). Architecture
+policy, content-lock check and actionlint passed. No native runtime code changed.
+Repository API permissions report write access without administration access;
+required-check enforcement on main remains pending administrator configuration.
+Independent review of the incremental gate found no blocking issues and reran all
+six readiness tests successfully. Live GitHub/registry execution is checked
+separately from these local fixtures.
+
+## 2026-10-22 — local publication tag propagation
+
+The live Chip build completed, pushed immutable digest
+`sha256:ef6531dc6b7e3fcb7bdd0f04a05d197b73ac4765e3a6f653c8838140a6189d7a`,
+passed full blob verification and promoted its input tag. Immediate TCR listing
+still reported absence, while a subsequent read returned the matching digest.
+Added owner-approved readback polling for absent tags, bounded to 60 seconds;
+different digests and query errors still fail immediately. Six regression cases
+passed, including cancellation of in-flight queries and stopping pagination after
+the deadline. The full Node suite passed 198 tests with 2 skipped (200 total).
+Content-lock and diff checks passed. FreeCAD/PCB publication remains in progress.
+
+## 2026-10-22 — OCI export and chunked local upload
+
+FreeCAD built successfully with its pinned AppImage, but Buildx direct large-layer
+uploads encountered broken pipe/closed connection errors. That attempt was
+cancelled without publishing an input tag. Owner approved using regctl to upload
+the local OCI layout with 8 MiB chunks; full verification and tag promotion remain
+mandatory. An isolated two-chunk CCR probe returned 202 for both chunks and 201
+on completion; its readback was not qualified because the probe rejected the
+registry redirect. It created no image manifest, tag or Tool.
+
+Official regctl v0.11.7 darwin/arm64 binary SHA-256 matched the release asset.
+Real FreeCAD OCI export and regctl local digest resolution matched
+`sha256:da7d8d5d1593ea46fdd55807d4bba52db2c0348496b46e89416376f97e65a5ce`.
+The full Node suite passed 199 tests with 2 skipped (201 total); content-lock
+and diff checks passed. Independent incremental review passed, including an
+upload-failure test that prevents tag promotion. Large-layer regctl upload and
+subsequent full verification are still being exercised; no new native runtime
+qualification is claimed.
+
+## 2026-10-22 — full image verification time bound
+
+The FreeCAD regctl digest upload completed, but the subsequent full readback
+terminated at the previous 20-minute bound without publishing the input tag.
+Owner approved a 90-minute full-verification bound and safe elapsed-time messages
+every 30 seconds. Metadata verification remains bounded to 3 minutes; all image
+bytes must still pass digest/size verification before tag promotion. Elapsed-time
+messages are liveness indications, not byte-progress estimates. Four regression
+cases cover bounds, timer cleanup and secret-safe failure reporting. The full
+Node suite passed 203 tests with 2 skipped (205 total); content-lock and diff
+checks passed. Live FreeCAD/PCB full verification remains pending.
+
+## 2026-10-22 — registry HEAD integrity gate
+
+Owner approved replacing mandatory local full readback with manifest/config
+hash and platform verification plus HEAD checks for every referenced blob.
+The previous FreeCAD full readback was stopped; PCB digest upload continued.
+This gate trusts registry content-addressed storage and its digest/size headers;
+it does not claim independent readback of all remote bytes. Full verification
+remains available as a diagnostic command.
+
+Live FreeCAD verification succeeded for digest
+`sha256:da7d8d5d1593ea46fdd55807d4bba52db2c0348496b46e89416376f97e65a5ce`,
+linux/amd64, all 16 layers plus config, with verification mode `registry-heads`.
+The full Node suite passed 204 tests with 2 skipped (206 total), all 11 Python
+verifier tests passed, and content-lock/diff checks passed. Input tag promotion
+and PCB publication remain pending. CI continues to check metadata and the
+trusted publisher-owned input tags without downloading layers.
+
+## 2026-10-22 — completed local shared image publication
+
+`npm run publish:images` completed successfully from source `188d515` on macOS
+arm64 with Docker Desktop/Buildx producing linux/amd64 images and regctl v0.11.7.
+All three manifests/configs and blob HEAD identities passed; all input tags were
+read back successfully. Chip reused its existing image; FreeCAD and PCB reused
+cached OCI build layers and previously uploaded immutable digests, then promoted
+their input tags. The earlier FreeCAD and PCB large-layer chunk uploads completed
+successfully. No Tool was created and no release/content lock was changed.
+
+| Domain | Immutable digest | Layers | Verification |
+| --- | --- | --- | --- |
+| Chip | `sha256:ef6531dc6b7e3fcb7bdd0f04a05d197b73ac4765e3a6f653c8838140a6189d7a` | 29 | registry-heads |
+| FreeCAD | `sha256:da7d8d5d1593ea46fdd55807d4bba52db2c0348496b46e89416376f97e65a5ce` | 16 | registry-heads |
+| PCB | `sha256:9fd7098faef318a95e77b8e08886d029be0f764794e1568c8820556726e1ade0` | 11 | registry-heads |
+
+Evidence lives in the local Git common directory under
+`runtime-image-publications/188d515765f44855856d0609f9fde3e096b41529/<domain>/attempt-*/registry-heads.json`.
+Independent incremental review found no blocking issues and reran all 11 Python
+and 18 focused Node tests successfully. Full-byte readback was previously proven
+for Chip only; this record does not claim full-byte readback or new native AGS
+execution qualification for FreeCAD/PCB. GitHub Tool publication remains disabled
+until this workflow change is merged; required-check enforcement needs admin setup.
+
+## 2026-10-22 — AGS personal CCR image reference correction
+
+Test publication run `39777033553` passed registry checks but all three created
+Tools entered FAILED. AGS StatusReason explicitly rejected digest-only personal
+CCR image references and required tag or tag+digest. Corrected Tool requests to
+use the existing input tag plus immutable digest, preserving canonical digest-only
+identities in release locks and registry API reads. Tests cover tagged request
+reuse/resume, canonical lock output and registry URL construction.
+
+Owner authorized deleting only the three failed test Tools (`sdt-k02zv7lz`,
+`sdt-7d1p957v`, `sdt-ack99r9f`); deletion was confirmed and seven ACTIVE Tools
+remained. No ACTIVE Tool was modified or removed. Independent incremental review
+found no blocking findings; 15 focused tests passed. The complete suite passed
+205 tests with two skipped (207 total), with content-lock and diff checks passing.
+Live retry qualification follows this code correction.
+
+## 2026-10-22 — first test Tool publication and writeback regression
+
+Run `39778046006` successfully created and verified all three test Tools using
+input-tag-plus-digest references. Final lock writeback stopped at `npm test`:
+a pre-publication facade test incorrectly assumed the real checkout could never
+contain a covered Chip test lock. Removed that checkout-state assumption; isolated
+missing-coverage, tampering, platform and successful-read tests remain intact.
+
+All seven release tests passed both in the unpublished checkout and an isolated
+copy with a valid covered test lock. The complete suite passed 205 tests with two
+skipped (207 total); content-lock and diff checks passed. Incremental review was
+skipped for this four-line test-only removal; previous implementation reviews
+remain applicable. The next publication should reuse the three ACTIVE Tools and
+complete lock writeback without creating replacements.
+
+## 2026-10-22 — successful test publication and automatic lock writeback
+
+Run `39778930538` completed successfully on source `3efa363`. All three Check jobs
+reused the ACTIVE Tools created by run `39778046006`; Publish jobs were skipped.
+The finish job passed its checks and pushed commit `dc2d758`, containing all three
+test release locks, package file entries and the final content lock.
+
+- Chip: `sdt-3mpfi02x`.
+- FreeCAD: `sdt-6e1agoen`.
+- PCB: `sdt-lxd25fhf`.
+
+This qualifies test Tool creation, readback, reuse and automatic feature-branch
+lock writeback. It does not qualify native instance execution or prod publication.
+The bot writeback uses GITHUB_TOKEN and therefore does not trigger new PR checks;
+a subsequent documentation push triggers checks on the final lock-bearing tree.
+The account now has ten Tools. Prod creation requires capacity planning, and
+protected-main lock writeback still needs qualification against the enforced PR
+and required-check rules. Neither limitation was bypassed in this test.
+
+## 2026-10-22 — automatic PR test publication preparation
+
+Same-repository PRs targeting main now select the feature head SHA/branch for test
+publication and lock writeback. Feature pushes use existing PACK_BUMP_PAT so the
+new head receives ordinary checks; a generated-commit guard skips recursive
+publication. Fork and Dependabot-triggered PR publication are excluded. Missing
+images still stop the read-only Check phase. Main prod writeback is unchanged.
+
+The full Node suite passed 215 tests with two skipped (217 total); actionlint,
+content-lock and diff checks passed. Tests cover PR head versus merge identity,
+generated commit recognition and negative cases including code/dependency changes
+and incorrect source parents. The guard also recognized real writeback commit
+dc2d758. Live automatic PR trigger/writeback/skip qualification is pending push.
+
+## 2026-10-22 — automatic PR writeback and merge completion gate
+
+PR-triggered run `39782131497` completed successfully on head `d798ac9` and pushed
+feature lock commit `ba28180` using PACK_BUMP_PAT. The push automatically triggered
+ordinary PR checks and publication run `39782302527`; the latter recognized the
+generated commit and skipped cloud publication. No manual event or empty commit
+was needed.
+
+Owner then approved consolidating image readiness into the same workflow and
+requiring successful test publication/writeback before merge. Main protection now
+also requires `Test runtime published` from GitHub Actions. The final gate rejects
+failed/cancelled dependencies and skipped writeback; generated commits must have
+three covered, source-bound locks before taking the non-recursive check path.
+The full suite passed 230 tests with two skipped (232 total), actionlint and
+content-lock checks passed, and the current real generated commit passed the
+additional lock validation. Consolidated-workflow live qualification follows push.

@@ -92,6 +92,14 @@ C++ 工具链、其他 EDA/PDK 前提及工程验收边界。macOS ARM64 已运�
 
 远端发布与消费方可通过 `getRuntimeRelease` 校验 schema-1 运行发布记录，见[发布身份](docs/release-format.md)。该元数据 API 不负责发布 Tool，也不代表执行 profile 已通过资格验收。
 
+先运行 `npm run publish:images` 在本地准备共享镜像，校验 manifest/config 并通过 HEAD 核对每层的 digest 和大小，不完整下载镜像层（Buildx 导出 OCI，regctl 分块上传），所需环境变量和工具见[本地镜像准备](docs/release-format.md#local-image-preparation)。本仓库分支向 main 提 PR 后，Action 自动校验镜像元数据、发布 test Tool，并将最终 lock 写回当前 feature 分支。写回提交会触发普通 PR 检查，不递归发布。
+
 Runtime release lock 由发布 GitHub Action 维护，不要手动修改生成的 image digest、Tool ID 或发布证据。修改发布流程前，请阅读[发布流程与最终 hash 计算顺序](docs/release-format.md#publication-workflow-and-generated-files)。`Publish remote runtime` 在合入 main 后自动发布 prod，feature 分支手动触发发布 test，具体见[腾讯云配置与资格范围](docs/release-format.md#tencent-publishing-action-configuration)。
 
 新增或修改任何 domain 的远端 runtime profile 前，请阅读[统一打包规范](docs/release-format.md#remote-runtime-image-packaging)。 Action 无需填写参数：main 使用 prod，其他分支使用 test；直接查询腾讯云判断 image/Tool 复用。环境配置保存在 `publication/test.cjs` 和 `publication/prod.cjs`，每个文件集中列出各 domain，发布结果和容量预警展示在 Action Summary。
+
+发布流程分为独立的 Check 和按需 Publish job；没有变更的 pack 跳过 Publish，仍会出现在最终汇总中。
+
+面向 main 的 PR 会运行 `Runtime images ready`；管理员需将其设为必须通过且要求分支保持最新的检查。缺少镜像时，需先完成本地准备才能通过。详见[发布格式](docs/release-format.md#pr-image-readiness-gate)。
+
+prod lock 通过机器人 PR 写回受保护的 main，required checks 通过后自动合并；feature 的 test lock 仍直接写回当前 PR 分支。

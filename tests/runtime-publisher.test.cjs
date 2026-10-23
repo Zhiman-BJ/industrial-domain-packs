@@ -29,7 +29,11 @@ test("release binds source A and publication checks without asserting engineerin
       region: "ap-guangzhou",
       request: {
         CustomConfiguration: {
-          Image: "example.com/rtl@sha256:" + "e".repeat(64),
+          Image:
+            "example.com/rtl:input-" +
+            "c".repeat(64) +
+            "@sha256:" +
+            "e".repeat(64),
         },
       },
     },
@@ -42,10 +46,11 @@ test("release binds source A and publication checks without asserting engineerin
     },
     "https://github.com/example/pack/actions/runs/1",
   );
+  assert.equal(r.image.reference, "example.com/rtl@sha256:" + "e".repeat(64));
   assert.equal(r.buildSourceCommit, p.source);
   assert.equal(r.buildSourceContentSha256, p.sourceContent);
   assert.deepEqual(r.qualification.gates, [
-    "registry-integrity",
+    "registry-metadata",
     "ags-tool-active",
     "ags-tool-configuration",
   ]);
@@ -103,7 +108,12 @@ test("resume keeps the first immutable image and token even if a rebuild would d
     region: options.region,
     packId: s.packId,
     profile: s.profile,
-    image: repository + "@sha256:" + "d".repeat(64),
+    image:
+      repository +
+      ":input-" +
+      options.input.buildInputDigest.slice(7) +
+      "@sha256:" +
+      "d".repeat(64),
     configuration,
   });
   const plan = {

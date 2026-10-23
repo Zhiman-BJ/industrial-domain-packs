@@ -11,10 +11,18 @@ const {
 } = require("./publish-runtime.cjs");
 const { inputs } = require("./runtime-build.cjs");
 const { configurationDigest } = require("./runtime-tool-publication.cjs");
-const { pushPublication } = require("./runtime-publication-writeback.cjs");
+const { pushPublication, pushProductionBranch } = require("./runtime-publication-writeback.cjs");
 const domains = ["chip", "freecad", "pcb"];
 const { repositoryFor } = require("./runtime-cloud-image.cjs");
-function collectResults({ directory, selected, ref, source, runId, roleArn }) {
+function collectResults({
+  directory,
+  selected,
+  publishedDomains = selected,
+  ref,
+  source,
+  runId,
+  roleArn,
+}) {
   const pack = require("../lib/index.cjs");
   pack.verifyIntegrity();
   if (
@@ -29,7 +37,11 @@ function collectResults({ directory, selected, ref, source, runId, roleArn }) {
       config = publicationConfig(s),
       profile = pack.getPack(s.packId).profiles.find((p) => p.id === s.profile);
     const row = { domain, environment: s.environment, status: "incomplete" };
-    const folder = path.join(directory, `runtime-result-${domain}-${runId}`);
+    const published = path.join(directory, `runtime-result-${domain}-${runId}`);
+    // Follow this check's selected domains, never a stale result from an older attempt.
+    const folder = publishedDomains.includes(domain)
+      ? published
+      : path.join(directory, `runtime-check-${domain}-${runId}`);
     if (!fs.existsSync(path.join(folder, "plan.json"))) {
       if (fs.existsSync(path.join(folder, "image.json"))) {
         row.image = JSON.parse(
@@ -121,8 +133,8 @@ function main(phase) {
       ...options,
     })?.trim() || "";
   const git = (...args) => run("git", args);
-  const ref = required("GITHUB_REF"),
-    source = required("GITHUB_SHA"),
+  const ref = process.env.PUBLICATION_REF || required("GITHUB_REF"),
+    source = process.env.PUBLICATION_SOURCE || required("GITHUB_SHA"),
     roleArn = required("TENCENT_ROLE_ARN");
   if (phase !== "summary" && git("rev-parse", "HEAD") !== source)
     throw Error("Source commit mismatch");
@@ -130,6 +142,9 @@ function main(phase) {
   const options = {
     directory: required("PUBLICATION_DIRECTORY"),
     selected,
+    publishedDomains: JSON.parse(
+      process.env.PUBLICATION_CHANGED_DOMAINS || "[]",
+    ),
     ref,
     source,
     runId: required("GITHUB_RUN_ID"),
@@ -182,7 +197,12 @@ function main(phase) {
     "41898282+github-actions[bot]@users.noreply.github.com",
   );
   git("commit", "-m", `chore: publish ${selected.join(", ")} runtimes`);
-  pushPublication({ cwd: root, branch: ref.slice(11), source });
+  if (ref === "refs/heads/main") {
+    const branch = pushProductionBranch({cwd:root, source});
+    fs.appendFileSync(required("GITHUB_OUTPUT"), `branch=${branch}\nhead=${git("rev-parse", "HEAD")}\n`);
+  } else {
+    pushPublication({ cwd: root, branch: ref.slice(11), source });
+  }
 }
 module.exports = { collectResults, renderSummary };
 if (require.main === module) {

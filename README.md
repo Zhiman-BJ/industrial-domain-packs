@@ -131,6 +131,14 @@ were downloaded and hash-checked, without asserting native execution support.
 
 Remote publishers and consumers can validate schema-1 runtime release records with `getRuntimeRelease`; see [release identity](docs/release-format.md). This metadata API does not publish Tools or qualify execution profiles.
 
+Prepare shared images locally and verify manifest/config plus every layer’s HEAD digest/size (Buildx OCI export and regctl chunked upload) with `npm run publish:images` first; see [local prerequisites and environment variables](docs/release-format.md#local-image-preparation). Same-repository PRs targeting main automatically verify image metadata, publish test Tools and write the final lock back to the feature branch. The writeback triggers ordinary PR checks and skips recursive publication.
+
 Runtime release lock values are maintained by the publishing GitHub Action; do not hand-edit generated image digests, Tool IDs or publication evidence. Before changing publication, read the [publication workflow and final hashing order](docs/release-format.md#publication-workflow-and-generated-files). `Publish remote runtime` automatically publishes prod on pushes to main; manually dispatch feature branches for test; see the [Tencent configuration and qualification limits](docs/release-format.md#tencent-publishing-action-configuration).
 
 Before adding or changing any remote runtime profile, read the [shared packaging rules](docs/release-format.md#remote-runtime-image-packaging). Dispatch takes no inputs: main selects prod, other branches select test; image/Tool reuse is checked against Tencent Cloud. Environment configuration lives in `publication/test.cjs` and `publication/prod.cjs`, with domains grouped in each file, and results plus capacity warnings appear in the Action Summary.
+
+Publishing runs separate Check and conditional Publish jobs; unchanged packs skip Publish and still appear in the final summary.
+
+PRs targeting main run `Runtime images ready`; an administrator must make it a required, up-to-date check. Missing images block readiness until local preparation succeeds. See [release format](docs/release-format.md#pr-image-readiness-gate).
+
+Prod lock writeback opens a generated PR to protected main and enables auto-merge after required checks; feature test locks are written directly to their PR branch.

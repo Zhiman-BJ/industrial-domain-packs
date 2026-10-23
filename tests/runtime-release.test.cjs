@@ -197,10 +197,6 @@ test("public consumer facade derives routing from the pinned catalog and rejects
     () => pack.getRuntimeRelease("chip-pack", "missing-profile", "test"),
     /profile/i,
   );
-  assert.throws(
-    () => pack.getRuntimeRelease("chip-pack", "rtl-cpu", "test"),
-    /content lock/i,
-  );
 });
 
 test("package consumer reads a covered lock and rejects altered bytes and a wrong platform", (t) => {

@@ -4,8 +4,15 @@ const { execFile } = require("node:child_process");
 const { promisify } = require("node:util");
 const { validateRuntimeRelease } = require("../lib/runtime-release.cjs");
 const run = promisify(execFile);
-async function verifyImage(image, dockerCredentials = false) {
-  const [repository, digest] = image.reference.split("@");
+async function verifyImage(
+  image,
+  dockerCredentials = false,
+  metadataOnly = false,
+  blobHeads = false,
+) {
+  const [repository, digest] = image.reference
+    .replace(/:[^/:@]+(?=@sha256:)/, "")
+    .split("@");
   const slash = repository.indexOf("/");
   const url = `https://${repository.slice(0, slash)}/v2/${repository.slice(slash + 1)}/manifests/${digest}`;
   const args = [
@@ -15,12 +22,45 @@ async function verifyImage(image, dockerCredentials = false) {
     "--platform",
     image.platform,
   ];
+  if (blobHeads) args.push("--blob-heads");
+  if (metadataOnly) args.push("--metadata-only");
   if (dockerCredentials) args.push("--docker-credentials");
-  const { stdout } = await run("python3", args, {
-    maxBuffer: 4 * 1024 * 1024,
-    timeout: 20 * 60 * 1000,
-  });
-  return JSON.parse(stdout);
+  const lightweight = metadataOnly || blobHeads;
+  const minutes = lightweight ? 3 : 90;
+  const label = lightweight
+    ? "Image metadata verification"
+    : "Full image verification";
+  const started = Date.now();
+  const progress = lightweight
+    ? null
+    : setInterval(() => {
+        console.error(
+          `[image verification] still verifying all blobs; elapsed ${Math.floor((Date.now() - started) / 1000)}s (limit ${minutes} minutes)`,
+        );
+      }, 30000);
+  try {
+    const { stdout } = await run("python3", args, {
+      maxBuffer: 4 * 1024 * 1024,
+      timeout: minutes * 60 * 1000,
+    });
+    const evidence = JSON.parse(stdout);
+    if (!lightweight)
+      console.error(
+        `[image verification] complete in ${Math.floor((Date.now() - started) / 1000)}s`,
+      );
+    return evidence;
+  } catch (error) {
+    // Subprocess errors contain arguments and possibly signed registry redirects.
+    // Report only controlled diagnostics; never forward the error object/stderr.
+    if (error.killed && error.signal === "SIGTERM") {
+      throw Error(
+        `${label} timed out after ${minutes} minutes; image remains unverified`,
+      );
+    }
+    throw Error(`${label} failed; image remains unverified`);
+  } finally {
+    if (progress !== null) clearInterval(progress);
+  }
 }
 async function reuseImage({
   input,
@@ -56,4 +96,6 @@ async function reuseImage({
     evidence,
   };
 }
-module.exports = { reuseImage, verifyImage };
+const verifyRegistryImage = (image, dockerCredentials = false) =>
+  verifyImage(image, dockerCredentials, false, true);
+module.exports = { reuseImage, verifyImage, verifyRegistryImage };

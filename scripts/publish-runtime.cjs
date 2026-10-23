@@ -1,11 +1,12 @@
 const fs = require("node:fs"),
   path = require("node:path");
 const { execFileSync } = require("node:child_process");
-const { prepareContext } = require("./runtime-build.cjs");
+const { inputs } = require("./runtime-build.cjs");
 const { verifyImage } = require("./runtime-image-reuse.cjs");
 const {
   planTool,
   ensureTool,
+  checkTool,
   digest,
   configurationDigest,
 } = require("./runtime-tool-publication.cjs");
@@ -72,7 +73,10 @@ function releaseRecord(plan, result, evidence) {
       buildInputDigest: plan.input.buildInputDigest,
       runtimeDigest: runtimes[0][1],
       image: {
-        reference: plan.tool.request.CustomConfiguration.Image,
+        reference: plan.tool.request.CustomConfiguration.Image.replace(
+          /:[^/:@]+(?=@sha256:)/,
+          "",
+        ),
         platform: plan.input.platform,
       },
       provider: "tencent-ags",
@@ -81,7 +85,7 @@ function releaseRecord(plan, result, evidence) {
       qualification: {
         status: "passed",
         gates: [
-          "registry-integrity",
+          "registry-metadata",
           "ags-tool-active",
           "ags-tool-configuration",
         ],
@@ -102,7 +106,12 @@ function resumePlan({
   repository,
 }) {
   const image = plan.tool?.request?.CustomConfiguration?.Image;
-  if (typeof image !== "string" || !image.startsWith(repository + "@"))
+  if (
+    typeof image !== "string" ||
+    !image.startsWith(
+      repository + ":input-" + input.buildInputDigest.slice(7) + "@",
+    )
+  )
     throw Error("Prior intent repository mismatch");
   const tool = planTool({
     environment: s.environment,
@@ -145,6 +154,28 @@ function required(name) {
   if (!process.env[name]) throw Error("Missing configuration: " + name);
   return process.env[name];
 }
+function agsClient(region) {
+  const { ags } = require("tencentcloud-sdk-nodejs-ags");
+  return new ags.v20250920.Client({
+    credential: {
+      secretId: required("TENCENT_SECRET_ID"),
+      secretKey: required("TENCENT_SECRET_KEY"),
+    },
+    region,
+    profile: {
+      httpProfile: { endpoint: "ags.tencentcloudapi.com", reqTimeout: 30 },
+    },
+  });
+}
+async function checkPlan(plan, dir) {
+  const checked = await checkTool(plan.tool, agsClient(plan.tool.region));
+  if (checked.result) write(path.join(dir, "result.json"), checked.result);
+  write(path.join(dir, "check.json"), {
+    domain: plan.selection.directory,
+    needsPublication: checked.action !== "reuse",
+    toolAction: checked.action,
+  });
+}
 async function main(phase) {
   const root = path.resolve(__dirname, "..");
   process.chdir(root);
@@ -152,14 +183,20 @@ async function main(phase) {
   fs.mkdirSync(dir, { recursive: true });
   const planFile = path.join(dir, "plan.json");
   if (phase === "configure") {
-    const s = selection(required("PUBLICATION_DOMAIN"), required("GITHUB_REF"));
+    const s = selection(
+      required("PUBLICATION_DOMAIN"),
+      process.env.PUBLICATION_REF || required("GITHUB_REF"),
+    );
     const config = publicationConfig(s);
     fs.appendFileSync(
       required("GITHUB_OUTPUT"),
       `registry-host=${config.imagePrefix.split("/")[0]}\n`,
     );
-  } else if (phase === "prepare") {
-    const s = selection(required("PUBLICATION_DOMAIN"), required("GITHUB_REF"));
+  } else if (phase === "prepare" || phase === "check") {
+    const s = selection(
+      required("PUBLICATION_DOMAIN"),
+      process.env.PUBLICATION_REF || required("GITHUB_REF"),
+    );
     const roleArn = required("TENCENT_ROLE_ARN");
     const config = publicationConfig(s);
     const region = config.region,
@@ -168,7 +205,7 @@ async function main(phase) {
     if (git("status", "--porcelain"))
       throw Error("Publication source must be clean");
     const source = git("rev-parse", "HEAD");
-    if (source !== required("GITHUB_SHA"))
+    if (source !== (process.env.PUBLICATION_SOURCE || required("GITHUB_SHA")))
       throw Error("Source commit mismatch");
     const pack = require("../lib/index.cjs");
     pack.verifyIntegrity();
@@ -176,10 +213,11 @@ async function main(phase) {
     const profile = pack
       .getPack(s.packId)
       .profiles.find((p) => p.id === s.profile);
-    const input = prepareContext(
-      { root, recipe: s.recipe, platform: profile.platform },
-      path.join(dir, "context"),
-    );
+    const input = inputs({
+      root,
+      recipe: s.recipe,
+      platform: profile.platform,
+    });
     if (!/^[a-z0-9.-]+\/[a-z0-9/_-]+$/.test(prefix))
       throw Error("Invalid image repository prefix");
     const repository = repositoryFor(s.directory);
@@ -199,7 +237,7 @@ async function main(phase) {
         reference: restored.tool.request.CustomConfiguration.Image,
         platform: input.platform,
       };
-      const registry = await verifyImage(image, true);
+      const registry = await verifyImage(image, true, true);
       if (
         registry.identity?.digest !== image.reference.split("@")[1] ||
         registry.identity?.platform !== input.platform
@@ -208,42 +246,17 @@ async function main(phase) {
       write(planFile, restored);
       write(path.join(dir, "registry.json"), registry);
       write(path.join(dir, "image-operation.json"), "restored");
+      if (phase === "check") await checkPlan(restored, dir);
       return;
     }
-    let image = await findImage({ repository, input });
-    const reused = Boolean(image);
-    if (!reused) {
-      const tag = repository + ":input-" + input.buildInputDigest.slice(7);
-      const metadata = path.join(dir, "build-metadata.json");
-      const args = [
-        "buildx",
-        "build",
-        "--platform",
-        input.platform,
-        "--provenance=false",
-        "--sbom=false",
-        "--push",
-        "--tag",
-        tag,
-        "--metadata-file",
-        metadata,
-        "-f",
-        path.join(dir, "context", s.recipe),
-      ];
-      for (const [key, value] of Object.entries(input.buildArgs))
-        args.push("--build-arg", `${key}=${value}`);
-      args.push(path.join(dir, "context"));
-      run("docker", args, { stdio: "inherit" });
-      const hash = JSON.parse(fs.readFileSync(metadata))[
-        "containerimage.digest"
-      ];
-      if (!/^sha256:[a-f0-9]{64}$/.test(hash))
-        throw Error("Missing immutable build digest");
-      image = { reference: repository + "@" + hash, platform: input.platform };
-    }
+    const image = await findImage({ repository, input });
+    if (!image)
+      throw Error(
+        `Missing verified image for ${s.directory}; run npm run publish:images locally on this source before retrying the Action`,
+      );
     write(path.join(dir, "image.json"), image);
-    write(path.join(dir, "image-operation.json"), reused ? "reused" : "built");
-    const registry = await verifyImage(image, true);
+    write(path.join(dir, "image-operation.json"), "reused");
+    const registry = await verifyImage(image, true, true);
     if (
       registry.identity?.digest !== image.reference.split("@")[1] ||
       registry.identity?.platform !== input.platform
@@ -254,7 +267,11 @@ async function main(phase) {
       region,
       packId: s.packId,
       profile: s.profile,
-      image: image.reference,
+      // AGS personal CCR requires a tag even when the digest is pinned.
+      image: image.reference.replace(
+        "@",
+        ":input-" + input.buildInputDigest.slice(7) + "@",
+      ),
       configuration,
     });
     write(planFile, {
@@ -266,31 +283,29 @@ async function main(phase) {
       relative,
     });
     write(path.join(dir, "registry.json"), registry);
-    write(path.join(dir, "image-operation.json"), reused ? "reused" : "built");
+    write(path.join(dir, "image-operation.json"), "reused");
+    if (phase === "check")
+      await checkPlan(JSON.parse(fs.readFileSync(planFile)), dir);
   } else if (phase === "tool") {
     const plan = JSON.parse(fs.readFileSync(planFile));
     if (!/^\d+$/.test(required("PUBLICATION_INTENT_ARTIFACT_ID")))
       throw Error("Durably uploaded intent is required");
-    const { ags } = require("tencentcloud-sdk-nodejs-ags");
-    const client = new ags.v20250920.Client({
-      credential: {
-        secretId: required("TENCENT_SECRET_ID"),
-        secretKey: required("TENCENT_SECRET_KEY"),
-      },
-      region: plan.tool.region,
-      profile: {
-        httpProfile: { endpoint: "ags.tencentcloudapi.com", reqTimeout: 30 },
-      },
-    });
+    const client = agsClient(plan.tool.region);
     const result = await ensureTool(plan.tool, client, {
       persist: async () => {
         /* prior Action step uploaded this exact plan */
       },
     });
     write(path.join(dir, "result.json"), result);
-  } else throw Error("Expected configure, prepare or tool phase");
+  } else throw Error("Expected configure, check, prepare or tool phase");
 }
-module.exports = { selection, publicationConfig, releaseRecord, resumePlan };
+module.exports = {
+  selection,
+  publicationConfig,
+  releaseRecord,
+  resumePlan,
+  recipes,
+};
 if (require.main === module)
   main(process.argv[2]).catch((error) => {
     console.error("Runtime publication failed:", error.code || error.message);

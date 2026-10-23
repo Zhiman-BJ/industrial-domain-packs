@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contentSha256": "1527b7fa0bc98ae998a7cb1e7e450a5a6dc59b629ab76144c1c5469184db55c9",
+  "contentSha256": "1a8be843460039d351e6480a796460bb7a969b88493036f80ff6557fd22f59f9",
   "files": {
     "lib/consumer.cjs": "4d670732dbf3d5a3da33cac41007573e1f47b514a7165ac1df1748c9c2f960ab",
     "lib/consumer.json": "6648e4205c510820a67e8a07788ef777b038269e473747e68a00ea6398015719",
@@ -106,6 +106,7 @@
     "packs/chip/linux-bootstrap.sh": "8006af4b130d81febd9b5835e594566b09fc80b64dd30c5a60a34010b7855e7b",
     "packs/chip/linux-installer-header.sh": "22a635d04702c059f30f2afd886c359064432f23fbd88777dd27da85ea1e2b8a",
     "packs/chip/pack.json": "b44bee1aa16ad1beca146021f0e081fed65460e4a1ce4dda37f45880d132e350",
+    "packs/chip/releases/rtl-cpu/test.lock.json": "aca423cb8d2bcc93ef8fb68c192ae21c1282c4e1457237e02b4be206b0e759e7",
     "packs/chip/resources/klayout-viewer/assets.json": "0e167b4edb8110d7b15a6ca5301797e2c47f7e3d4cf2bbedc776a10f8225a836",
     "packs/chip/resources/klayout-viewer/probe.py": "a53d2d1d97aabdba0da1ebd4b190c8dcaf727cefac8a98e85178edac6ecba8a3",
     "packs/chip/runtime/bridge.py": "3e627610b810042dd4e5ff082d91738f267ab36cab313b8fc2c4ff1b320b13ae",
@@ -143,6 +144,7 @@
     "packs/freecad/harness-pack.json": "e5dbac97796d5b9caf445a427c888193dbba83b0c0208557d8372d1f77712985",
     "packs/freecad/images/Dockerfile.linux-cpu": "fce41911158651fd4b7fbe0bb1c97aed9c9dad1b4802df9c7be3b02b0a6a2e80",
     "packs/freecad/pack.json": "5d5b07cca3ef086a254e405430446073c08441ef925439286ca8aad680065008",
+    "packs/freecad/releases/freecad-linux-cpu/test.lock.json": "b9072283f53acc8650955df5bf42a2f62296a9ace78c8e78823dbfdca65cc740",
     "packs/freecad/runtime/index.cjs": "f76116a8de7fec436c4d1989698b6cbc188d4f081040417164e2aaa45340171e",
     "packs/freecad/runtime/native.py": "c9da3e181617403384cdeb2135480dd3f7b0bf6b238771c81898f69ba559d9dc",
     "packs/freecad/runtime/presentation.cjs": "767c4e97d61d19b3980765c91a4d50ef3e7d4e61684d19cecf1415013facb77e",
@@ -555,6 +557,7 @@
     "packs/pcb/pcb-agent/tools/visualize.py": "e5c7348f14775ef34c7a1123e5f8a6b7de631b0920718f85bd5c8cf16d5ad645",
     "packs/pcb/pcb-agent/tools/workspace.py": "5fd9a62526b5481407b56c8b289368180ed74a1a9818121964eadda1eec2d8ad",
     "packs/pcb/pyproject.toml": "baa7b9c41b2b57b7e19898fa7138828d1d1401b992dd859e6c5a922a1e793951",
+    "packs/pcb/releases/pcb-verify-cpu/test.lock.json": "c15a3b28d423f260be7b51812658c7aa91af833ad81bfd9ec3aa2d40a40f54cf",
     "packs/pcb/resources/kicad-3d-10.0.7.json": "b2387e749197c029a5f61319bd07d2fb9a62a290fe32eab9afa5de39e9f8a83a",
     "packs/pcb/resources/licenses/kicad-3d-LICENSE.md": "45d2bce75e5a4208f5afb01b8fb2c406e700371c4fe2b5f5cd5c443d46db4d8f",
     "packs/pcb/runtime/gateway.cjs": "02d1ed90487963c9501a4755cfc3622367b6b0e0ff6ac1d759324c7fd295e1fc",
