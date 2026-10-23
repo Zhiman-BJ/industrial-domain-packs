@@ -13,6 +13,33 @@ import subprocess
 import sys
 
 
+def verified_version_receipt(policy, version, package_versions, pcbnew_version,
+                             receipt=Path("/opt/kicad-version.json")):
+    """Validate the read-only resolver receipt after all native version probes.
+
+    Older images omit the receipt consumed by the unchanged upstream library
+    resolver. Its historical fallback cannot describe a newer verified image.
+    The gateway supplies pinned expectations; no actor starts before native agreement.
+    """
+    if version != policy["kicadVersion"]:
+        raise RuntimeError("PCB runtime requires KiCad " + policy["kicadVersion"])
+    for package in ("kicad", "kicad-symbols", "kicad-footprints", "kicad-packages3d"):
+        if package_versions.get(package) != policy["kicadPackageVersion"]:
+            raise RuntimeError("PCB runtime package version mismatch: " + package)
+    match = re.match(r"^(\d+\.\d+\.\d+)", pcbnew_version)
+    if not match or match.group(1) != version:
+        raise RuntimeError("pcbnew does not match the KiCad CLI.")
+    if receipt.is_symlink() or not receipt.is_file():
+        raise RuntimeError("KiCad version receipt must be a regular gateway-mounted file.")
+    recorded = json.loads(receipt.read_text())
+    if (recorded.get("schema_version") != 1 or
+            recorded.get("kicad_version") != version or
+            recorded.get("kicad_package_version") != policy["kicadPackageVersion"]):
+        raise RuntimeError("KiCad version receipt disagrees with the verified runtime.")
+    return recorded
+
+
+
 def main():
     policy = json.loads(Path(sys.argv[1]).read_text())
     if sys.platform != "linux" or os.geteuid() != 0:
@@ -22,16 +49,12 @@ def main():
         if file.is_symlink() or hashlib.sha256(file.read_bytes()).hexdigest() != expected:
             raise RuntimeError("PCB runtime source differs from its declared snapshot: " + relative)
     version = subprocess.check_output(["kicad-cli", "version"], text=True).strip()
-    if version != policy["kicadVersion"]:
-        raise RuntimeError("PCB runtime requires KiCad " + policy["kicadVersion"])
+    package_versions = {}
     for package in ("kicad", "kicad-symbols", "kicad-footprints", "kicad-packages3d"):
-        installed = subprocess.check_output(["dpkg-query", "-W", "-f=${Version}", package], text=True).strip()
-        if installed != policy["kicadPackageVersion"]:
-            raise RuntimeError("PCB runtime package version mismatch: " + package)
+        package_versions[package] = subprocess.check_output(
+            ["dpkg-query", "-W", "-f=${Version}", package], text=True).strip()
     import pcbnew
-    match = re.match(r"^(\d+\.\d+\.\d+)", pcbnew.Version())
-    if not match or match.group(1) != policy["kicadVersion"]:
-        raise RuntimeError("pcbnew does not match the KiCad CLI.")
+    verified_version_receipt(policy, version, package_versions, pcbnew.Version())
 
     sys.path.insert(0, "/pcb-agent")
     from tools import agent_session, session_isolation, session_recovery, kimi_mcp, task_contract
@@ -76,8 +99,11 @@ def main():
         with session_recovery.lease(root, "harness-controller"):
             session_recovery.durable_write(identity_file, identity)
             identity_file.chmod(0o600)
-            # Upstream owns action execution, observation guards and recovery.
-            # Pending mutations remain frozen; connecting never replays them.
+            # Resume only after the frozen identity and exclusive controller
+            # lease are validated. Upstream inspects and archives interrupted
+            # receipts without replaying edits; a failed reconciliation stops
+            # this controller before the MCP server can accept new actions.
+            session_recovery.reconcile(root)
             kimi_mcp.main()
     finally:
         os.close(fd)

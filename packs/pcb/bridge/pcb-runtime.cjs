@@ -3,6 +3,25 @@ const path = require("node:path");
 const crypto = require("node:crypto");
 const { resourceDirectory } = require("../../../lib/resources.cjs");
 
+// The container root remains read-only. This receipt is a pinned expectation,
+// not an observation: the controller checks CLI, pcbnew and all native packages
+// before the unchanged upstream resolver is allowed to consume it.
+function writeVersionReceipt(directory, provider) {
+  if (!/^\d+\.\d+\.\d+$/.test(provider.kicadVersion) ||
+      typeof provider.kicadPackageVersion !== "string" || !provider.kicadPackageVersion)
+    throw Error("PCB native version metadata is missing.");
+  const bytes = JSON.stringify({schema_version:1, kicad_version:provider.kicadVersion,
+    kicad_package_version:provider.kicadPackageVersion, source:"pinned-runtime-policy"}) + "\n";
+  const identity = crypto.createHash("sha256").update(bytes).digest("hex").slice(0,24);
+  const file = path.join(directory, `pcb-native-version-${identity}.json`);
+  try { fs.writeFileSync(file, bytes, {flag:"wx",mode:0o444}); }
+  catch (error) { if (error.code !== "EEXIST") throw error; }
+  if (fs.lstatSync(file).isSymbolicLink() || !fs.statSync(file).isFile() ||
+      fs.readFileSync(file,"utf8") !== bytes)
+    throw Error("PCB native version receipt differs from its pinned metadata.");
+  return file;
+}
+
 function pcbRuntime(provider, environment = process.env) {
   const sourceDir = resourceDirectory(provider, environment);
   const packDir = provider.installedDirectory || path.resolve(__dirname, "..");
@@ -101,6 +120,7 @@ function pcbGatewayConfig(
     imageInput: Boolean(options.imageInput),
     cacheDir: path.join(directory, `mcp-${provider.id}-results`),
     controller: path.join(__dirname, "pcb-controller.py"),
+    versionReceipt: writeVersionReceipt(directory, provider),
   };
   fs.writeFileSync(policyFile, JSON.stringify(policy, null, 2), {
     mode: 0o600,
@@ -117,4 +137,4 @@ function pcbGatewayConfig(
   };
 }
 
-module.exports = { pcbRuntime, pcbGatewayConfig };
+module.exports = { pcbRuntime, pcbGatewayConfig, writeVersionReceipt };

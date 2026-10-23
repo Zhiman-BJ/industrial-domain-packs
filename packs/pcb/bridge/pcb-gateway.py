@@ -35,7 +35,8 @@ def backend_parameters(policy, policy_file):
     # supplies the host-side Skill; the controller verifies image resources too.
     mounts = [(policy["projectDir"], "/workspace", False),
               (policy["controller"], "/harness/pcb-controller.py", True),
-              (str(policy_file), "/harness/policy.json", True)]
+              (str(policy_file), "/harness/policy.json", True),
+              (policy["versionReceipt"], "/opt/kicad-version.json", True)]
     if policy.get("requirementsPath"):
         mounts.append((policy["requirementsPath"], "/public/requirements.json", True))
     for source, target, readonly in mounts:
