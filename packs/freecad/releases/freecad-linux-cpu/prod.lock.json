@@ -6,8 +6,8 @@
   "runtimeProfile": "freecad-linux-cpu",
   "environment": "prod",
   "region": "ap-beijing",
-  "buildSourceCommit": "dc16bf3bcaa68b978a3866a99d31e402a87c75e6",
-  "buildSourceContentSha256": "1a8be843460039d351e6480a796460bb7a969b88493036f80ff6557fd22f59f9",
+  "buildSourceCommit": "50c4c5efda1b22a50b28920a8d2eadd0791a91a8",
+  "buildSourceContentSha256": "cda370e20001108ba95325a449439b668836165fdaeb3bc453c572963b129188",
   "buildInputDigest": "sha256:e2c997f76d0f02736083986deb544176e57a0ff0fac1f44028226938a28562cd",
   "runtimeDigest": "sha256:ab4f32aef70022813f0699e034bb11c4caa1655cb766d12985c783a4de04a54d",
   "image": {
@@ -25,7 +25,7 @@
       "ags-tool-configuration"
     ],
     "evidence": [
-      "https://github.com/Zhiman-BJ/industrial-domain-packs/actions/runs/39890461095"
+      "https://github.com/Zhiman-BJ/industrial-domain-packs/actions/runs/39945513207"
     ]
   }
 }
