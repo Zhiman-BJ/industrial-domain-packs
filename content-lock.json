@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contentSha256": "c136d9d3b7019aa4f9bfdc2466bdd3d08a24525b520b937436c8b7086baa9122",
+  "contentSha256": "b556928fff04057d5953d5937965013bf579dde9669f12cad552d27481ff927f",
   "files": {
     "lib/consumer.cjs": "4d670732dbf3d5a3da33cac41007573e1f47b514a7165ac1df1748c9c2f960ab",
     "lib/consumer.json": "6648e4205c510820a67e8a07788ef777b038269e473747e68a00ea6398015719",
@@ -449,9 +449,9 @@
     "packs/pcb/Dockerfile.local-dev": "765ec9e40672562a18819176c9ea6030c65ced6ea2b444d0ee2b9d54ebd834eb",
     "packs/pcb/PROVENANCE.md": "b1ac0a9e54f4b4cd7284222b0835b44869637df5515a415eb4fd587320d97cd2",
     "packs/pcb/README.md": "d5909daa39bcad4651458fc84ccc4c569f5da9574d515ef02cc82d8bc47753f3",
-    "packs/pcb/bridge/pcb-controller.py": "e7571ef15f9d71685938aa0ec46cf9c921edf0d1fa75acf6b259bb5686198e84",
-    "packs/pcb/bridge/pcb-gateway.py": "aef380f4c7392b7fde35977060c1172047759e34aecf97a7db54eda2d55a5b1c",
-    "packs/pcb/bridge/pcb-runtime.cjs": "2ba920c0e2baa23e4a43d05ed4b01699c777777f21ef45c2e017af482e3356f7",
+    "packs/pcb/bridge/pcb-controller.py": "5116f01b64518fd0aacb78a9a04aa56dc4edc7df3d95e14438653df4b50db282",
+    "packs/pcb/bridge/pcb-gateway.py": "213625264454c60840952a4a5f21a70e2f2d83f0619891f919adbba93fbc952f",
+    "packs/pcb/bridge/pcb-runtime.cjs": "38e588b087b13b9d79865fcf704042582b7d7e2030bf670f1f14d19199e925aa",
     "packs/pcb/examples/mounting-board/board.kicad_pcb": "a892beb0e25094c3c55cb859a22b9811bb1b6c0615f4856b588660cec846ff9e",
     "packs/pcb/harness-pack.json": "002fff7743ba0d606a6bb32a5ede03b7de68be2667c092c7bc28769d7f85fab8",
     "packs/pcb/images/Dockerfile.pcb-verify": "9d1fdb3059a4e7b0a0979c6dfa8c690c5a0d5dc84ea9f6d63ba6bb363728aa80",
