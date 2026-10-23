@@ -83,9 +83,16 @@ jobs:
           password: ${{ secrets.TENCENT_REGISTRY_PASSWORD }}
       - name: Verify all candidate image identities (metadata only)
         env:
+          RUNTIME_IMAGE_EVIDENCE_DIRECTORY: ${{ runner.temp }}/runtime-image-evidence
           TENCENT_SECRET_ID: ${{ secrets.TENCENT_SECRET_ID }}
           TENCENT_SECRET_KEY: ${{ secrets.TENCENT_SECRET_KEY }}
         run: node scripts/runtime-image-readiness.cjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: runtime-image-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/runtime-image-evidence
+          if-no-files-found: error
+          retention-days: 1
 
   check:
     name: Check ${{ matrix.domain }} ${{ (github.event_name != 'pull_request' && github.ref == 'refs/heads/main') && 'prod' || 'test' }}
@@ -103,7 +110,9 @@ jobs:
       TENCENT_ROLE_ARN: ${{ vars.TENCENT_ROLE_ARN }}
     steps:
       - name: Set publication scratch directory
-        run: echo "PUBLICATION_DIRECTORY=$RUNNER_TEMP/runtime-publication" >> "$GITHUB_ENV"
+        run: |
+          echo "PUBLICATION_DIRECTORY=$RUNNER_TEMP/runtime-publication" >> "$GITHUB_ENV"
+          echo "RUNTIME_IMAGE_EVIDENCE_DIRECTORY=$RUNNER_TEMP/runtime-image-evidence" >> "$GITHUB_ENV"
       - uses: actions/checkout@v4
         with:
           ref: ${{ env.PUBLICATION_SOURCE }}
@@ -148,6 +157,12 @@ jobs:
           github-token: ${{ github.token }}
           merge-multiple: true
           path: ${{ runner.temp }}/runtime-publication
+      - name: Read image evidence from this workflow attempt
+        uses: actions/download-artifact@v4
+        with:
+          pattern: runtime-image-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          merge-multiple: true
+          path: ${{ runner.temp }}/runtime-image-evidence
       - name: Check image and Tool reuse (read only)
         env:
           TENCENT_SECRET_ID: ${{ secrets.TENCENT_SECRET_ID }}
@@ -209,7 +224,9 @@ jobs:
       TENCENT_ROLE_ARN: ${{ vars.TENCENT_ROLE_ARN }}
     steps:
       - name: Set publication scratch directory
-        run: echo "PUBLICATION_DIRECTORY=$RUNNER_TEMP/runtime-publication" >> "$GITHUB_ENV"
+        run: |
+          echo "PUBLICATION_DIRECTORY=$RUNNER_TEMP/runtime-publication" >> "$GITHUB_ENV"
+          echo "RUNTIME_IMAGE_EVIDENCE_DIRECTORY=$RUNNER_TEMP/runtime-image-evidence" >> "$GITHUB_ENV"
       - uses: actions/checkout@v4
         with:
           ref: ${{ env.PUBLICATION_SOURCE }}
@@ -232,7 +249,13 @@ jobs:
         with:
           name: runtime-check-${{ matrix.domain }}-${{ github.run_id }}
           path: ${{ runner.temp }}/runtime-publication
-      - name: Recheck image metadata; prepare Tool intent
+      - name: Read image evidence from this workflow attempt
+        uses: actions/download-artifact@v4
+        with:
+          pattern: runtime-image-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          merge-multiple: true
+          path: ${{ runner.temp }}/runtime-image-evidence
+      - name: Validate image evidence; prepare Tool intent
         env:
           TENCENT_SECRET_ID: ${{ secrets.TENCENT_SECRET_ID }}
           TENCENT_SECRET_KEY: ${{ secrets.TENCENT_SECRET_KEY }}

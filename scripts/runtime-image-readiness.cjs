@@ -1,4 +1,6 @@
 // Read-only PR gate: no image build, Tool mutation or lock writeback.
+const fs = require("node:fs");
+const { imageEvidence } = require("./runtime-image-evidence.cjs");
 const path = require("node:path");
 const { inputs } = require("./runtime-build.cjs");
 const { recipes } = require("./publish-runtime.cjs");
@@ -6,7 +8,7 @@ const { findImage, repositoryFor } = require("./runtime-cloud-image.cjs");
 const { verifyImage } = require("./runtime-image-reuse.cjs");
 async function checkImage(
   { domain, repository, input },
-  { find = findImage, verify = verifyImage } = {},
+  { find = findImage, verify = verifyImage, save = () => {} } = {},
 ) {
   const image = await find({ repository, input });
   if (!image)
@@ -20,6 +22,7 @@ async function checkImage(
     evidence?.identity?.verification !== "metadata-only"
   )
     throw Error(`${domain}: registry image identity mismatch`);
+  await save(image, evidence);
   return image;
 }
 async function main() {
@@ -38,10 +41,19 @@ async function main() {
         recipe: `packs/${domain}/images/${dockerfile}`,
         platform: profile.platform,
       });
-      const image = await checkImage({
-        domain,
-        repository: repositoryFor(domain),
-        input,
+      const candidate = { domain, repository: repositoryFor(domain), input };
+      const image = await checkImage(candidate, {
+        save: (image, registry) => {
+          const directory = process.env.RUNTIME_IMAGE_EVIDENCE_DIRECTORY;
+          if (!directory) return;
+          fs.mkdirSync(directory, { recursive: true });
+          fs.writeFileSync(
+            path.join(directory, domain + ".json"),
+            JSON.stringify(
+              imageEvidence(candidate, image, registry, process.env),
+            ) + "\n",
+          );
+        },
       });
       console.log(
         `${domain}: ready ${image.reference} (${input.buildInputDigest})`,

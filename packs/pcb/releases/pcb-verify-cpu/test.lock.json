@@ -6,8 +6,8 @@
   "runtimeProfile": "pcb-verify-cpu",
   "environment": "test",
   "region": "ap-guangzhou",
-  "buildSourceCommit": "10dfd893d70f5f3d96e3d251c20c20867eaed142",
-  "buildSourceContentSha256": "0f1bdf56340668daccb461363fd1a1cd549d5a73fd798ea61a89ba27c31edfbf",
+  "buildSourceCommit": "e2cf755d5cb1f33dcb40184915212d7308ab97b7",
+  "buildSourceContentSha256": "d111367f4562863b0a6790e13ecb0fdffcf5ba2bfc9ef2a86e73c43248809ff6",
   "buildInputDigest": "sha256:df85e59ed88f76b959e7a45c0394dac096060699dc79e96cbe1da7fc0732c659",
   "runtimeDigest": "sha256:62ee1ce7ed0058bcc8cab1ff61d6cb278c30cbbb811334529ba0b966030ac8a6",
   "image": {
@@ -25,7 +25,7 @@
       "ags-tool-configuration"
     ],
     "evidence": [
-      "https://github.com/Zhiman-BJ/industrial-domain-packs/actions/runs/39890016749"
+      "https://github.com/Zhiman-BJ/industrial-domain-packs/actions/runs/39938475380"
     ]
   }
 }
