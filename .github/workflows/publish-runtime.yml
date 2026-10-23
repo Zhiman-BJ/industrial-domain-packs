@@ -105,13 +105,14 @@ jobs:
       matrix:
         domain: [chip, freecad, pcb]
     env:
-      RUNTIME_IMAGE_EVIDENCE_DIRECTORY: ${{ runner.temp }}/runtime-image-evidence
       PUBLICATION_DOMAIN: ${{ matrix.domain }}
       PUBLICATION_ENVIRONMENT: ${{ (github.event_name != 'pull_request' && github.ref == 'refs/heads/main') && 'prod' || 'test' }}
       TENCENT_ROLE_ARN: ${{ vars.TENCENT_ROLE_ARN }}
     steps:
       - name: Set publication scratch directory
-        run: echo "PUBLICATION_DIRECTORY=$RUNNER_TEMP/runtime-publication" >> "$GITHUB_ENV"
+        run: |
+          echo "PUBLICATION_DIRECTORY=$RUNNER_TEMP/runtime-publication" >> "$GITHUB_ENV"
+          echo "RUNTIME_IMAGE_EVIDENCE_DIRECTORY=$RUNNER_TEMP/runtime-image-evidence" >> "$GITHUB_ENV"
       - uses: actions/checkout@v4
         with:
           ref: ${{ env.PUBLICATION_SOURCE }}
@@ -218,13 +219,14 @@ jobs:
       matrix:
         domain: ${{ fromJSON(needs.plan.outputs.domains) }}
     env:
-      RUNTIME_IMAGE_EVIDENCE_DIRECTORY: ${{ runner.temp }}/runtime-image-evidence
       PUBLICATION_DOMAIN: ${{ matrix.domain }}
       PUBLICATION_ENVIRONMENT: ${{ (github.event_name != 'pull_request' && github.ref == 'refs/heads/main') && 'prod' || 'test' }}
       TENCENT_ROLE_ARN: ${{ vars.TENCENT_ROLE_ARN }}
     steps:
       - name: Set publication scratch directory
-        run: echo "PUBLICATION_DIRECTORY=$RUNNER_TEMP/runtime-publication" >> "$GITHUB_ENV"
+        run: |
+          echo "PUBLICATION_DIRECTORY=$RUNNER_TEMP/runtime-publication" >> "$GITHUB_ENV"
+          echo "RUNTIME_IMAGE_EVIDENCE_DIRECTORY=$RUNNER_TEMP/runtime-image-evidence" >> "$GITHUB_ENV"
       - uses: actions/checkout@v4
         with:
           ref: ${{ env.PUBLICATION_SOURCE }}
