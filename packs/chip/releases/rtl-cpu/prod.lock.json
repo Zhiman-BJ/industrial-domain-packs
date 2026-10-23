@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "releaseId": "pub-689ee3b4c779d1783f97105a7908e5c4d460037b201b10d54516d4251422d08e",
+  "packId": "chip-pack",
+  "domain": "chip",
+  "runtimeProfile": "rtl-cpu",
+  "environment": "prod",
+  "region": "ap-beijing",
+  "buildSourceCommit": "dc16bf3bcaa68b978a3866a99d31e402a87c75e6",
+  "buildSourceContentSha256": "1a8be843460039d351e6480a796460bb7a969b88493036f80ff6557fd22f59f9",
+  "buildInputDigest": "sha256:6d4ce757539bba49f7b4b85b1ffed5198ce1a876213c028bbedab0b22ba8fb22",
+  "runtimeDigest": "sha256:ba6a3ccb431d95e01e29a0e363b8a8b4f077f7d2d08cc6f6c6e23277fb2e202b",
+  "image": {
+    "reference": "ccr.ccs.tencentyun.com/industrial-mcp-remote/chip-rtl@sha256:ef6531dc6b7e3fcb7bdd0f04a05d197b73ac4765e3a6f653c8838140a6189d7a",
+    "platform": "linux/amd64"
+  },
+  "provider": "tencent-ags",
+  "providerToolId": "sdt-gksvh3ak",
+  "toolConfigurationDigest": "sha256:c4b4581ee9eeadedbd7d4043d5ea91b645b796795cf8b42bac2da9a48f663ece",
+  "qualification": {
+    "status": "passed",
+    "gates": [
+      "registry-metadata",
+      "ags-tool-active",
+      "ags-tool-configuration"
+    ],
+    "evidence": [
+      "https://github.com/Zhiman-BJ/industrial-domain-packs/actions/runs/39890461095"
+    ]
+  }
+}
