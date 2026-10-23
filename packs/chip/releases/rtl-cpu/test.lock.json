@@ -6,8 +6,8 @@
   "runtimeProfile": "rtl-cpu",
   "environment": "test",
   "region": "ap-guangzhou",
-  "buildSourceCommit": "881c7a2efcf0642dcd404c9ee990eae8f04cc081",
-  "buildSourceContentSha256": "e6c1286669695cfbbd87d3d5079a4e9be174eb20fdb9d2fb1c617f7ccdfdf335",
+  "buildSourceCommit": "10dfd893d70f5f3d96e3d251c20c20867eaed142",
+  "buildSourceContentSha256": "0f1bdf56340668daccb461363fd1a1cd549d5a73fd798ea61a89ba27c31edfbf",
   "buildInputDigest": "sha256:6d4ce757539bba49f7b4b85b1ffed5198ce1a876213c028bbedab0b22ba8fb22",
   "runtimeDigest": "sha256:ba6a3ccb431d95e01e29a0e363b8a8b4f077f7d2d08cc6f6c6e23277fb2e202b",
   "image": {
@@ -25,7 +25,7 @@
       "ags-tool-configuration"
     ],
     "evidence": [
-      "https://github.com/Zhiman-BJ/industrial-domain-packs/actions/runs/39783377953"
+      "https://github.com/Zhiman-BJ/industrial-domain-packs/actions/runs/39890016749"
     ]
   }
 }
